@@ -16,9 +16,12 @@ QSHttp
 [fastjson-1.1.45.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/fastjson-1.1.45.jar)
 
 2.精简版
-[qshttp-simple-1.1.1..jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/qshttp-simple-1.1.1.jar)  
+[qshttp-simple-1.1.1..jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/qshttp-simple-1.1.1.jar)
+
 3.下载qshttp文件夹 添加为自己的项目依赖即可
+
 4.gradle......
+
 ### 最简单的使用例子
 ```
 QSHttp.get("http://xxx").buildAndExecute();
