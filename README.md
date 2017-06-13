@@ -5,17 +5,17 @@
   * 详细的请求信息回调、错误类型(网络链接失败,超时,断网,解析失败,404...)
   * 详细的访问日记打印,满足一般调试
   * 提供精简包仅有50+K(基于原生实现,移除okhttp,fastjson)
-  * 后续可能会继续增强功能吧...
+  * 提供拦截器,可添加一些鉴权参数...
 
 ### 使用方法
 1.完整版
-[qshttp-1.1.jar](https://git.oschina.net/sakaue/QSHttp/raw/master/libs/qshttp-1.1.jar) 
-[okhttp-3.2.0.jar](https://git.oschina.net/sakaue/QSHttp/raw/master/libs/okhttp-3.2.0.jar) 
-[okio-1.7.0.jar](https://git.oschina.net/sakaue/QSHttp/raw/master/libs/okio-1.7.0.jar) 
-[fastjson-1.1.45.jar](https://git.oschina.net/sakaue/QSHttp/raw/master/libs/fastjson-1.1.45.jar)
+[qshttp-1.1.1.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/qshttp-1.1.1.jar) 
+[okhttp-3.2.0.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/okhttp-3.2.0.jar) 
+[okio-1.7.0.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/okio-1.7.0.jar) 
+[fastjson-1.1.45.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/fastjson-1.1.45.jar)
 
 2.精简版
-[qshttp-simple-1.0.jar](https://git.oschina.net/sakaue/QSHttp/raw/master/libs/qshttp-simple-1.0.jar)  
+[qshttp-simple-1.1.1..jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/qshttp-simple-1.1.1.jar)  
 3.下载qshttp文件夹 添加为自己的项目依赖即可
 4.gradle......
 ### 最简单的使用例子
