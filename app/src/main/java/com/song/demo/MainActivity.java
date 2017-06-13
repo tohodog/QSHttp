@@ -31,6 +31,7 @@ public class MainActivity extends AppCompatActivity {
         //初始化框架 调用一次即可
         HttpManage.init(getApplication());
         //配置需要自签名的网站 读取assets/cers文件夹里的证书
+        //设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
         HttpManage.setSSL(Utils.getAssetsSocketFactory(this, "cers"), "kyfw.12306.cn","...");
         HttpManage.xx_http = HttpEnum.XX_Http.JAVA_HTTP;
         //...

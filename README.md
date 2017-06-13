@@ -150,6 +150,19 @@ QSHttp.get("http://xxx").buildAndExecute();
         //使用前进行初始化 在Application初始化即可
         HttpConfing.init(getApplication());
 
+        //配置自签名 读取assets/cers文件夹里的证书
+        //设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
+        HttpManage.setSSL(Utils.getAssetsSocketFactory(this, "cers"), "kyfw.12306.cn","...");
+
+        //拦截器 添加头参数 鉴权
+                HttpManage .setInterceptor(new Interceptor() {
+                    @Override
+                    public ResponseParams intercept(Chain chain) throws HttpException {
+                        RequestParams r = chain.request().newBuild().header("username", "23333").build();
+                        return chain.proceed(r);
+                    }
+                });
+
         String url = "https://www.baidu.com/s";
         QSHttp.post(url)//选择请求的类型
                 .param("userid", 123456)//键值对参数,get post postJson upload(multipart)支持此参数
