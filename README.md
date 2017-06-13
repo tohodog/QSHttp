@@ -1,4 +1,5 @@
-#QSHttp
+QSHttp
+====
   * 一句代码联网,参数控制方便,自动json解析,使用简单(介绍也很简单(X
   * 模块化设计,联网模块可更换,目前提供OkHttp和java原生两种实现
   * 支持http/自签名https(get post put head...) 文件上传、下载、进度监听、自动解析,基于Okhttp的支持cookie自动管理,缓存控制
