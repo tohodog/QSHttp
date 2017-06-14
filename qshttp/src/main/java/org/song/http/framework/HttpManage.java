@@ -2,8 +2,8 @@ package org.song.http.framework;
 
 import android.app.Application;
 
-import org.song.http.framework.java.JavaHttp;
-import org.song.http.framework.ok.OkHttp;
+import org.song.http.framework.java.JavaHttpClient;
+import org.song.http.framework.ok.OkHttpClient;
 
 import javax.net.ssl.SSLSocketFactory;
 
@@ -42,18 +42,16 @@ public class HttpManage {
     static String[] sslHost;
 
     public static void setInterceptor(Interceptor interceptor) {
-        HttpManage.interceptor = interceptor;
+        getHttpClient().interceptor(interceptor);
     }
 
-    static Interceptor interceptor;
-
-    static AbsHttp getHttp() {
+    static AbsHttpClient getHttpClient() {
         switch (xx_http) {
             case OK_HTTP:
-                return OkHttp.getInstance();
+                return OkHttpClient.getInstance();
             case JAVA_HTTP:
             default:
-                return JavaHttp.getInstance();
+                return JavaHttpClient.getInstance();
         }
     }
 
@@ -66,7 +64,7 @@ public class HttpManage {
     public static int DEFAULT_CACHE_SIZE = 110 * 1024 * 1024;
 
     //超时
-    public static int TIMEOUT_CONNECTION = 10000;
+    public static int TIMEOUT_CONNECTION = 12000;
     public static int TIMEOUT_SOCKET_READ = 15000;
     public static int TIMEOUT_SOCKET_WRITE = 15000;
     //进度回调的频率 毫秒

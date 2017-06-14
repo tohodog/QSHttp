@@ -239,9 +239,9 @@ public class Utils {
             file = new File("/sdcard/qshttp_cache");
         else if ((Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable())) {
-            file = new File(context.getExternalCacheDir(), "http_cache");
+            file = new File(context.getExternalCacheDir(), "qshttp_cache");
         } else {
-            file = new File(context.getCacheDir(), "http_cache");
+            file = new File(context.getCacheDir(), "qshttp_cache");
         }
         if (!file.exists())
             file.mkdirs();

@@ -12,10 +12,16 @@ import java.util.concurrent.Executors;
  * 需要子类提供具体联网实现
  * 联网模块可更换
  */
-public abstract class AbsHttp {
+public abstract class AbsHttpClient {
 
     private static ExecutorService executorService;
     private IHttpTask iHttpTask;
+    private Interceptor interceptor;
+
+    public AbsHttpClient interceptor(Interceptor interceptor) {
+        this.interceptor = interceptor;
+        return this;
+    }
 
     static {
         executorService = Executors.newFixedThreadPool(HttpManage.DEFAULT_THREAD_POOL_SIZE);
@@ -25,7 +31,7 @@ public abstract class AbsHttp {
         // scheduleAtFixedRate固定时间点执行 scheduleWithFixedDelay固定执行间隔
     }
 
-    public AbsHttp(IHttpTask iHttpTask) {
+    public AbsHttpClient(IHttpTask iHttpTask) {
         this.iHttpTask = iHttpTask;
     }
 
@@ -49,8 +55,8 @@ public abstract class AbsHttp {
                 ResponseParams response = null;
                 final HttpProgress hp = isProgress ? new HttpProgress(mThreadWhat) : null;
                 try {
-                    if (HttpManage.interceptor != null) {//拦截器
-                        response = HttpManage.interceptor.intercept(new Interceptor.Chain() {
+                    if (interceptor != null) {//拦截器
+                        response = interceptor.intercept(new Interceptor.Chain() {
                             @Override
                             public RequestParams request() {
                                 return _request;

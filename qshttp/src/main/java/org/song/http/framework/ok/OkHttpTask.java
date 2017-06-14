@@ -280,7 +280,7 @@ public class OkHttpTask implements IHttpTask {
         if (headers == null)
             headers = new HashMap<>();
         if (!headers.containsKey("User-Agent"))
-            headers.put("User-Agent", "Android/OkHttp/Song");
+            headers.put("User-Agent", "Android/OkHttpClient/Song");
         return Headers.of(headers);
     }
 

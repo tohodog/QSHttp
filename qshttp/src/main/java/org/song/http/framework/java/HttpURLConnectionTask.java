@@ -132,7 +132,7 @@ public class HttpURLConnectionTask implements IHttpTask {
             if (head == null)
                 head = new HashMap<>();
             if (!head.containsKey("User-Agent"))
-                head.put("User-Agent", "Android/JavaHttp/Song");
+                head.put("User-Agent", "Android/JavaHttpClient/Song");
             for (Map.Entry<String, String> entry : head.entrySet())
                 conn.setRequestProperty(entry.getKey(), entry.getValue());
 

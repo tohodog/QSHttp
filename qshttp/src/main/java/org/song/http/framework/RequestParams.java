@@ -436,6 +436,6 @@ public class RequestParams {
 
     //
     public int execute(HttpCallback cb) {
-        return HttpManage.getHttp().execute(this, cb);
+        return HttpManage.getHttpClient().execute(this, cb);
     }
 }
