@@ -16,7 +16,7 @@ QSHttp
 [fastjson-1.1.45.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/fastjson-1.1.45.jar)
 
 2.精简版
-[qshttp-simple-1.1.1..jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/qshttp-simple-1.1.1.jar)
+[qshttp-simple-1.1.1.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/qshttp-simple-1.1.1.jar)
 
 3.下载项目,拷贝源码到自己项目
 
