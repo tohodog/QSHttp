@@ -18,7 +18,7 @@ QSHttp
 2.精简版
 [qshttp-simple-1.1.1..jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/qshttp-simple-1.1.1.jar)
 
-3.下载qshttp文件夹 添加为自己的项目依赖即可
+3.下载项目,拷贝源码到自己项目
 
 4.gradle......
 
