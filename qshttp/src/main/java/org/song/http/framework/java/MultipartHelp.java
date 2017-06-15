@@ -12,6 +12,7 @@ import java.util.Map;
 
 /**
  * Created by song on 2017/1/19.
+ * Multipart方式上传内容构造
  */
 
 public class MultipartHelp {

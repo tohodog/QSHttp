@@ -164,7 +164,7 @@ public class Utils {
 
     public static String URLEncoder(String value) {
         try {
-            value = URLEncoder.encode(value, "utf-8");// 中文转化为网址格式（%xx%xx
+            value = URLEncoder.encode(value, charset(HttpManage.CONTENT_TYPE_URL).name());// 中文转化为网址格式（%xx%xx
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
