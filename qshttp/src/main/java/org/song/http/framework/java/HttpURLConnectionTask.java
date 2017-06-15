@@ -155,6 +155,8 @@ public class HttpURLConnectionTask implements IHttpTask {
     private void writeFromBody(HttpURLConnection conn, Map<String, String> params) throws HttpException {
         conn.setDoOutput(true);// 允许输出
         conn.setRequestProperty(HttpManage.HEAD_KEY_CT, HttpManage.CONTENT_TYPE_URL);
+        Charset charset = Utils.charset(HttpManage.CONTENT_TYPE_URL);
+
         if (params == null || params.size() == 0)
             return;
         StringBuilder sb = new StringBuilder();
@@ -168,7 +170,7 @@ public class HttpURLConnectionTask implements IHttpTask {
         try {
             OutputStream os = conn.getOutputStream();
             WriteHelp wh = new WriteHelp(os);
-            wh.writeBytes(sb.toString().getBytes());
+            wh.writeBytes(sb.toString().getBytes(charset));
         } catch (SocketTimeoutException e) {
             conn.disconnect();
             throw HttpException.HttpTimeOut(e);
@@ -192,6 +194,7 @@ public class HttpURLConnectionTask implements IHttpTask {
             file = (File) content;
             len = (int) file.length();
         } else if (content instanceof byte[]) {
+            bytes = (byte[]) content;
             len = bytes.length;
         } else if (content != null) {
             bytes = content.toString().getBytes(charset);
