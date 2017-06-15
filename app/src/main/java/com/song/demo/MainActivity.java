@@ -49,30 +49,8 @@ public class MainActivity extends AppCompatActivity {
 
         tv = (TextView) findViewById(R.id.textview);
         imageView = (ImageView) findViewById(R.id.imageView);
-        //httpsTest("https://www.baidu.com/s");
-        //httpsTest("https://kyfw.12306.cn/otn/");
-        getImg();
-    }
-
-    private void getImg() {
-        QSHttp.get("http://cdn.sinacloud.net/sakaue/58969670_p0_master1200.jpg")
-                .resultByBytes()
-                .buildAndExecute(new ProgressCallback() {
-                    @Override
-                    public void onProgress(long var1, long var2, String var3) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(ResponseParams response) {
-                        imageView.setImageBitmap(response.bitmap());
-                    }
-
-                    @Override
-                    public void onFailure(HttpException e) {
-
-                    }
-                });
+        httpsTest("https://www.baidu.com/s");
+        httpsTest("https://kyfw.12306.cn/otn/");
     }
 
 
@@ -214,6 +192,27 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+
+    private void getImg() {
+        QSHttp.get("http://cdn.sinacloud.net/sakaue/58969670_p0_master1200.jpg")
+                .resultByBytes()
+                .buildAndExecute(new ProgressCallback() {
+                    @Override
+                    public void onProgress(long var1, long var2, String var3) {
+
+                    }
+
+                    @Override
+                    public void onSuccess(ResponseParams response) {
+                        imageView.setImageBitmap(response.bitmap());
+                    }
+
+                    @Override
+                    public void onFailure(HttpException e) {
+
+                    }
+                });
+    }
 
     //基本所有api介绍
     public void allAPI() {
