@@ -99,6 +99,7 @@ public class MultipartHelp {
             file = (File) content;
             len = (int) file.length();
         } else if (content instanceof byte[]) {
+            bytes = (byte[]) content;
             len = bytes.length;
         } else if (content != null) {
             bytes = content.toString().getBytes(charset);

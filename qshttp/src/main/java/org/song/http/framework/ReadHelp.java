@@ -40,7 +40,7 @@ public class ReadHelp {
     //读取成字节数组
     public byte[] readBytes() throws IOException {
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
-        byte[] buf = new byte[4 * 1024];
+        byte[] buf = new byte[1024];
         int len;
         while ((len = read(buf)) > 0) {
             baos.write(buf, 0, len);
@@ -58,7 +58,7 @@ public class ReadHelp {
     public void readToFile(File file) throws IOException {
         FileOutputStream fos = new FileOutputStream(file);
         BufferedOutputStream bos = new BufferedOutputStream(fos);
-        byte[] buf = new byte[4 * 1024];
+        byte[] buf = new byte[1024];
         int len;
         while ((len = read(buf)) > 0) {
             bos.write(buf, 0, len);
@@ -75,6 +75,11 @@ public class ReadHelp {
             hp.onProgress(readCount, len < 0 ? readCount : allCount, "");
         return len;
     }
+
+    public void close() throws IOException {
+        is.close();
+    }
+
 //
 //    //线性链表
 //    private class Segment {

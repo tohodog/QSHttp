@@ -19,7 +19,7 @@ public class WriteHelp {
     private OutputStream os;
     private IHttpProgress hp;
     private int writeCount, allCount = -1;
-    private  String mark = "";
+    private String mark = "";
 
     public WriteHelp(OutputStream os, IHttpProgress hp, int allCount) {
         this.os = os;
@@ -38,7 +38,7 @@ public class WriteHelp {
     public void writeBytes(byte[] bytes) throws IOException {
         mark = "up byte[]";
 
-        int offset = 0, all = bytes.length, buf = 4 * 1024;
+        int offset = 0, all = bytes.length, buf = 1024;
         while (offset < all) {
             int len = Math.min(buf, all - offset);
             write(bytes, offset, len);
@@ -51,7 +51,7 @@ public class WriteHelp {
         mark = file.getName();
         FileInputStream fis = new FileInputStream(file);
         BufferedInputStream bis = new BufferedInputStream(fis);
-        byte[] buf = new byte[4 * 1024];
+        byte[] buf = new byte[1024];
         int len;
         while ((len = bis.read(buf)) > 0) {
             write(buf, 0, len);
@@ -65,6 +65,10 @@ public class WriteHelp {
         writeCount += count;
         if (hp != null)
             hp.onProgress(writeCount, allCount, mark);
+    }
+
+    public void close() throws IOException {
+        os.close();
     }
 
 }

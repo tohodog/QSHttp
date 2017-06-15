@@ -217,7 +217,7 @@ public class Utils {
                 }
             }
 
-            public void dele(File files) {
+            void dele(File files) {
                 for (File file : files.listFiles())
                     if (file.isDirectory()) {
                         dele(file);
@@ -267,7 +267,7 @@ public class Utils {
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(f);
-            fos.write(bytes);
+            fos.write(bytes, 0, bytes.length);
             return true;
         } catch (IOException e) {
             e.printStackTrace();
@@ -282,11 +282,11 @@ public class Utils {
     }
 
     /**
-     * 读取字节
+     * 读取字符
      */
     public static String readString(String s) {
         byte[] b = readBytes(s);
-        if (b == null || b.length == 0)
+        if (b == null)
             return null;
         return new String(b);
     }
@@ -297,16 +297,14 @@ public class Utils {
     public static byte[] readBytes(String s) {
         s = getDiskCacheDir() + "/" + s;
         FileInputStream fos = null;
-        BufferedInputStream bos = null;
-        byte[] bytes = null;
+        byte[] bytes;
         File f = new File(s);
         try {
             if (!f.exists())
                 return null;
             bytes = new byte[(int) f.length()];
             fos = new FileInputStream(s);
-            bos = new BufferedInputStream(fos);
-            bos.read(bytes);
+            fos.read(bytes, 0, bytes.length);
             return bytes;
 
         } catch (IOException e) {
@@ -317,8 +315,6 @@ public class Utils {
             try {
                 if (fos != null)
                     fos.close();
-                if (bos != null)
-                    bos.close();
             } catch (IOException e) {
             }
         }
@@ -333,18 +329,17 @@ public class Utils {
      */
     public static boolean fileCopy(String from, String to) {
         boolean result = false;
-        int size = 4 * 1024;
+        int size = 8 * 1024;//大于8K就不需要buffered了 会变慢
         FileInputStream in = null;
         FileOutputStream out = null;
         try {
             in = new FileInputStream(from);
             out = new FileOutputStream(to);
             byte[] buffer = new byte[size];
-            int bytesRead = -1;
+            int bytesRead;
             while ((bytesRead = in.read(buffer)) != -1) {
                 out.write(buffer, 0, bytesRead);
             }
-            out.flush();
             result = true;
         } catch (FileNotFoundException e) {
             e.printStackTrace();
