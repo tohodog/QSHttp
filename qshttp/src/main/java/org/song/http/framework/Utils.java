@@ -288,7 +288,7 @@ public class Utils {
         byte[] b = readBytes(s);
         if (b == null || b.length == 0)
             return null;
-        return new String(readBytes(s));
+        return new String(b);
     }
 
     /**

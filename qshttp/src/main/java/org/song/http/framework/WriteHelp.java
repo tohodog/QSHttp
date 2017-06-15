@@ -5,6 +5,8 @@ import org.song.http.framework.IHttpProgress;
 import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
@@ -14,10 +16,10 @@ import java.io.OutputStream;
 
 public class WriteHelp {
 
-    OutputStream os;
-    IHttpProgress hp;
-    int writeCount, allCount=-1;
-    String mark = "";
+    private OutputStream os;
+    private IHttpProgress hp;
+    private int writeCount, allCount = -1;
+    private  String mark = "";
 
     public WriteHelp(OutputStream os, IHttpProgress hp, int allCount) {
         this.os = os;
@@ -27,6 +29,10 @@ public class WriteHelp {
 
     public WriteHelp(OutputStream os) {
         this.os = os;
+    }
+
+    public WriteHelp(File f) throws FileNotFoundException {
+        this.os = new FileOutputStream(f);
     }
 
     public void writeBytes(byte[] bytes) throws IOException {

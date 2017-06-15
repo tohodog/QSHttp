@@ -5,6 +5,8 @@ import org.song.http.framework.IHttpProgress;
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -17,9 +19,9 @@ import java.nio.charset.Charset;
 
 public class ReadHelp {
 
-    InputStream is;
-    IHttpProgress hp;
-    int readCount, allCount = -1;
+    private InputStream is;
+    private IHttpProgress hp;
+    private int readCount, allCount = -1;
 
     public ReadHelp(InputStream is, IHttpProgress hp, int allCount) {
         this.is = is;
@@ -29,6 +31,10 @@ public class ReadHelp {
 
     public ReadHelp(InputStream is) {
         this.is = is;
+    }
+
+    public ReadHelp(File f) throws FileNotFoundException {
+        this.is = new FileInputStream(f);
     }
 
     //读取成字节数组
