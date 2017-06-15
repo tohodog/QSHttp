@@ -10,13 +10,13 @@ QSHttp
 
 ### 使用方法
 1.完整版
-[qshttp-1.1.1.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/qshttp-1.1.1.jar) 
+[qshttp-1.1.2.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/qshttp-1.1.2.jar)
 [okhttp-3.2.0.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/okhttp-3.2.0.jar) 
 [okio-1.7.0.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/okio-1.7.0.jar) 
 [fastjson-1.1.45.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/fastjson-1.1.45.jar)
 
 2.精简版
-[qshttp-simple-1.1.1.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/qshttp-simple-1.1.1.jar)
+[qshttp-simple-1.1.2.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/qshttp-simple-1.1.2.jar)
 
 3.下载项目,拷贝源码到自己项目
 
