@@ -5,11 +5,9 @@ import org.song.http.framework.HttpEnum;
 import org.song.http.framework.HttpException;
 import org.song.http.framework.IHttpProgress;
 import org.song.http.framework.IHttpTask;
-import org.song.http.framework.ReadHelp;
 import org.song.http.framework.RequestParams;
 import org.song.http.framework.ResponseParams;
 import org.song.http.framework.Utils;
-import org.song.http.framework.WriteHelp;
 
 import java.io.File;
 import java.io.IOException;

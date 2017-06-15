@@ -42,7 +42,7 @@ public abstract class AbsHttpClient {
      * @param request 请求参数类
      * @return 返回标记id 标记此次请求 返回会带上
      */
-    protected int execute(final RequestParams request, HttpCallback cb) {
+    public int execute(final RequestParams request, HttpCallback cb) {
         final int mThreadWhat = ThreadHandler.AddHttpCallback(cb);
         final boolean isProgress = cb instanceof ProgressCallback;
 
@@ -52,7 +52,7 @@ public abstract class AbsHttpClient {
 
             @Override
             public void run() {
-                ResponseParams response = null;
+                ResponseParams response;
                 final HttpProgress hp = isProgress ? new HttpProgress(mThreadWhat) : null;
                 try {
                     if (interceptor != null) {//拦截器
@@ -68,8 +68,7 @@ public abstract class AbsHttpClient {
                                 return access(request, hp);
                             }
                         });
-                    }
-                    if (response == null)//联网
+                    } else
                         response = access(_request, hp);
                     response.setSuccess(true);
                 } catch (Exception e) {

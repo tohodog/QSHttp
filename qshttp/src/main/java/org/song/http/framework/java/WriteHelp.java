@@ -1,4 +1,4 @@
-package org.song.http.framework;
+package org.song.http.framework.java;
 
 import org.song.http.framework.IHttpProgress;
 
@@ -38,9 +38,9 @@ public class WriteHelp {
     public void writeBytes(byte[] bytes) throws IOException {
         mark = "up byte[]";
 
-        int offset = 0, all = bytes.length, buf = 1024;
+        int offset = 0, all = bytes.length;
         while (offset < all) {
-            int len = Math.min(buf, all - offset);
+            int len = Math.min(1024, all - offset);
             write(bytes, offset, len);
             offset += len;
         }

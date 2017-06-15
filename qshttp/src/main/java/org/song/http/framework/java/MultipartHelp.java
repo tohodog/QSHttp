@@ -2,7 +2,6 @@ package org.song.http.framework.java;
 
 import org.song.http.framework.HttpManage;
 import org.song.http.framework.IHttpProgress;
-import org.song.http.framework.WriteHelp;
 
 import java.io.File;
 import java.io.IOException;
