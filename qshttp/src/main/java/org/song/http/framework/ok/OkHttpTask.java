@@ -158,21 +158,7 @@ public class OkHttpTask implements IHttpTask {
 
     private Request getRequest(RequestParams params, RequestBody requestBody) {
         Request.Builder builder = new Request.Builder();
-        //缓存控制
-        switch (params.cacheMode()) {
-            case SERVER_CACHE:
-                break;
-            case NO_CACHE:
-                builder.cacheControl(new CacheControl.Builder().noCache().build());
-                break;
-            case ONLY_CACHE:
-                builder.cacheControl(new CacheControl.Builder().onlyIfCached().build());
-                break;
-            case NO_STORE:
-            default:
-                builder.cacheControl(new CacheControl.Builder().noStore().build());
-                break;
-        }
+
 
         switch (params.requestType()) {
             case GET:
@@ -201,6 +187,23 @@ public class OkHttpTask implements IHttpTask {
                 break;
         }
         builder.headers(getHeaders(params.headers()));
+
+        //缓存控制 要放在headers后面...不然设置会被覆盖掉
+        switch (params.cacheMode()) {
+            case SERVER_CACHE:
+                break;
+            case NO_CACHE:
+                builder.cacheControl(new CacheControl.Builder().noCache().build());
+                break;
+            case ONLY_CACHE:
+                builder.cacheControl(new CacheControl.Builder().onlyIfCached().build());
+                break;
+            case NO_STORE:
+            default:
+                builder.cacheControl(new CacheControl.Builder().noStore().build());
+                break;
+        }
+
         return builder.build();
     }
 
