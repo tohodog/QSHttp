@@ -292,7 +292,13 @@ public class RequestParams {
          * get/post请求键值对参数
          */
         public RequestParams.Builder param(Map<String, String> params) {
-            this.params = params;
+            if (params != null) {
+                if (this.params == null)
+                    this.params = new HashMap<>();
+                for (String key : params.keySet()) {
+                    this.params.put(key, params.get(key));
+                }
+            }
             return this;
         }
 
