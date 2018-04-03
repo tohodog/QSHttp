@@ -283,7 +283,8 @@ public class RequestParams {
         public RequestParams.Builder param(String key, Object value) {
             if (params == null)
                 params = new HashMap<>();
-            params.put(key, String.valueOf(value));
+            if (value != null)
+                params.put(key, String.valueOf(value));
             return this;
         }
 
@@ -334,7 +335,8 @@ public class RequestParams {
         public RequestParams.Builder header(String key, String value) {
             if (headers == null)
                 headers = new HashMap<>();
-            headers.put(key, value);
+            if (value != null)
+                headers.put(key, value);
             return this;
         }
 
