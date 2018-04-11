@@ -6,7 +6,6 @@ import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.Log;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -135,7 +134,7 @@ public class Utils {
                 break;
             case POST:
             case PUT:
-                Log.e("HTTP", type + "->" + params.url()
+                Log.e("HTTP", type + "->" + params.urlRestful()
                         + "\nHeaders->" + head_map
                         + sbParams.toString()
                         + "\n请求结果-> ↓↓↓" + result);
@@ -143,7 +142,7 @@ public class Utils {
                 break;
             case POST_CUSTOM:
             case PUT_CUSTOM:
-                Log.e("HTTP", type + "->" + params.url()
+                Log.e("HTTP", type + "->" + params.urlRestful()
                         + "\nHeaders->" + head_map
                         + "\nContent-Type->" + params.customContent().getContentType()
                         + "\nContent->" + params.customContent().getContent()
@@ -151,7 +150,7 @@ public class Utils {
                 break;
             case POST_MULTIPART:
             case PUT_MULTIPART:
-                Log.e("HTTP", type + "->" + params.url()
+                Log.e("HTTP", type + "->" + params.urlRestful()
                         + "\nHeaders->" + head_map
                         + sbParams.toString()
                         + "\nUpContent->" + params.uploadContent()
