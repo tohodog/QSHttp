@@ -56,42 +56,42 @@ public class HttpURLConnectionTask implements IHttpTask {
 
     @Override
     public ResponseParams POST(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.url(), "POST", params.headers());
+        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "POST", params.headers());
         writeFromBody(conn, params.params());
         return getResponse(conn, params, hp);
     }
 
     @Override
     public ResponseParams POST_CUSTOM(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.url(), "POST", params.headers());
+        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "POST", params.headers());
         writeMediaBody(conn, params.customContent().getContentType(), params.customContent().getContent(), hp);
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams POST_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.url(), "POST", params.headers());
+        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "POST", params.headers());
         writeMultipartBody(conn, params.params(), params.uploadContent(), hp);
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams PUT(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.url(), "PUT", params.headers());
+        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "PUT", params.headers());
         writeFromBody(conn, params.params());
         return getResponse(conn, params, hp);
     }
 
     @Override
     public ResponseParams PUT_CUSTOM(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.url(), "PUT", params.headers());
+        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "PUT", params.headers());
         writeMediaBody(conn, params.customContent().getContentType(), params.customContent().getContent(), hp);
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams PUT_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.url(), "PUT", params.headers());
+        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "PUT", params.headers());
         writeMultipartBody(conn, params.params(), params.uploadContent(), hp);
         return getResponse(conn, params, null);
     }
@@ -218,7 +218,7 @@ public class HttpURLConnectionTask implements IHttpTask {
     /**
      * Multipart方式的body 上传多文件/参数
      */
-    private void writeMultipartBody(HttpURLConnection conn, Map<String, String> params, Map<String, Object> content, IHttpProgress hp) throws HttpException {
+    private void writeMultipartBody(HttpURLConnection conn, Map<String, String> params, Map<String, RequestParams.RequestBody> content, IHttpProgress hp) throws HttpException {
         try {
             conn.setDoOutput(true);// 允许输出
             new MultipartHelp(conn, params, content, hp).writeBody();

@@ -231,7 +231,7 @@ public class MainActivity extends AppCompatActivity {
                 .resultByBytes()//请求结果返回一个字节组 默认是返回字符
                 .resultByFile(".../1.txt")//本地路径 有此参数 请求的内容将被写入文件
 
-                .customContent("image/jpeg", new File("xx.jpg"))//直接上传自定义的内容 自定义contentType (postjson内部是调用这个实现)
+                .requestBody("image/jpeg", new File("xx.jpg"))//直接上传自定义的内容 自定义contentType (postjson内部是调用这个实现)
                 .errCache()//开启这个 [联网失败]会使用缓存,如果有的话
 
                 .openServerCache()//开启服务器缓存规则 基于okhttp支持
