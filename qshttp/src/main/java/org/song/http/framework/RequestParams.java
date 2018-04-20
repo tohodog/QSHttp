@@ -349,6 +349,16 @@ public class RequestParams {
         }
 
         /**
+         * 上传
+         */
+        public RequestParams.Builder upload(String contentType, String key, String filename, Object value) {
+            if (uploadContent == null)
+                uploadContent = new HashMap<>();
+            uploadContent.put(key, new RequestBody(contentType, filename, value));
+            return this;
+        }
+
+        /**
          * http头参数
          * 非Content-Type的头参数
          */
@@ -437,11 +447,18 @@ public class RequestParams {
 
         private String contentType;
         private Object content;
+        private String filename;
 
 
         public RequestBody(String contentType, Object content) {
+            this(contentType, Long.toString(System.currentTimeMillis()), content);
+        }
+
+        public RequestBody(String contentType, String filename, Object content) {
             this.contentType = contentType;
             this.content = content;
+            this.filename = filename;
+
         }
 
         public Object getContent() {
@@ -458,6 +475,14 @@ public class RequestParams {
 
         public void setContentType(String contentType) {
             this.contentType = contentType;
+        }
+
+        public String getFilename() {
+            return filename;
+        }
+
+        public void setFilename(String filename) {
+            this.filename = filename;
         }
 
         @Override

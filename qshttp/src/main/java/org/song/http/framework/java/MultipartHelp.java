@@ -74,7 +74,7 @@ public class MultipartHelp {
                 sb1.append(BOUNDARY);
                 sb1.append(LINEND);
                 sb1.append("Content-Disposition: form-data; name=\"" + content.getKey() + "\"; filename=\""
-                        + System.currentTimeMillis() + "\"" + LINEND);
+                        + body.getFilename() + "\"" + LINEND);
                 sb1.append("Content-Type: " + body.getContentType() + "; charset="
                         + charset + LINEND);
                 sb1.append(LINEND);

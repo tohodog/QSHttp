@@ -6,6 +6,7 @@ import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.Log;
 
+import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -31,6 +32,8 @@ import javax.net.ssl.TrustManagerFactory;
  */
 
 public class Utils {
+
+    private static final String TAG = "QSHTTP";
 
     /**
      * 读取assets/path文件夹里的证书
@@ -114,6 +117,7 @@ public class Utils {
     }
 
     public static void Log(RequestParams params, String result) {
+        //result = formatJson(result);
         HttpEnum.RequestType type = params.requestType();
 
         Map<String, String> head_map = params.headers();
@@ -128,13 +132,13 @@ public class Utils {
             case GET:
             case HEAD:
             case DELETE:
-                Log.e("HTTP", type + "->" + params.urlFormat()
+                Log.e(TAG, type + "->" + params.urlFormat()
                         + "\nHeaders->" + head_map
                         + "\n请求结果-> ↓↓↓" + result);
                 break;
             case POST:
             case PUT:
-                Log.e("HTTP", type + "->" + params.urlRestful()
+                Log.e(TAG, type + "->" + params.urlRestful()
                         + "\nHeaders->" + head_map
                         + sbParams.toString()
                         + "\n请求结果-> ↓↓↓" + result);
@@ -142,7 +146,7 @@ public class Utils {
                 break;
             case POST_CUSTOM:
             case PUT_CUSTOM:
-                Log.e("HTTP", type + "->" + params.urlRestful()
+                Log.e(TAG, type + "->" + params.urlRestful()
                         + "\nHeaders->" + head_map
                         + "\nContent-Type->" + params.customContent().getContentType()
                         + "\nContent->" + params.customContent().getContent()
@@ -150,7 +154,7 @@ public class Utils {
                 break;
             case POST_MULTIPART:
             case PUT_MULTIPART:
-                Log.e("HTTP", type + "->" + params.urlRestful()
+                Log.e(TAG, type + "->" + params.urlRestful()
                         + "\nHeaders->" + head_map
                         + sbParams.toString()
                         + "\nUpContent->" + params.uploadContent()

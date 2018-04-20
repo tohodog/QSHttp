@@ -64,7 +64,7 @@ public class HttpManage {
     public static int DEFAULT_CACHE_SIZE = 110 * 1024 * 1024;
 
     //超时
-    public static int TIMEOUT_CONNECTION = 12000;
+    public static int TIMEOUT_CONNECTION = 10000;
     public static int TIMEOUT_SOCKET_READ = 15000;
     public static int TIMEOUT_SOCKET_WRITE = 15000;
     //进度回调的频率 毫秒

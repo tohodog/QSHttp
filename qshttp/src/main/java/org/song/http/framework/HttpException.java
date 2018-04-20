@@ -21,7 +21,7 @@ public class HttpException extends Exception {
 
     public final static int TYPE_CUSTOM = 0x08;//自定义异常内容
 
-    private int requestID;//标记此次请求的id
+    private ResponseParams responseParams;//此次请求的
     private final int type;//异常类型
     private int httpStatusCode;//http错误状态码
     private String customErr;//自定义异常
@@ -93,12 +93,12 @@ public class HttpException extends Exception {
         return "看到这个提示表示有毒";
     }
 
-    public int requestID() {
-        return requestID;
+    public ResponseParams responseParams() {
+        return responseParams;
     }
 
-    public HttpException requestID(int requestID) {
-        this.requestID = requestID;
+    public HttpException responseParams(ResponseParams responseParams) {
+        this.responseParams = responseParams;
         return this;
     }
 

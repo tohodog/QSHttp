@@ -350,7 +350,7 @@ public class OkHttpTask implements IHttpTask {
                     requestBody = buildRequestBody(body.getContentType(), body.getContent());
                 else
                     requestBody = new RequestBodyProgress(MediaType.parse(body.getContentType()), body.getContent(), hp);
-                builder.addFormDataPart(entry.getKey(), Long.toString(System.currentTimeMillis()), requestBody);
+                builder.addFormDataPart(entry.getKey(), body.getFilename(), requestBody);
             }
         }
         return builder.build();
