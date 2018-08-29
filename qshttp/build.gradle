@@ -6,8 +6,8 @@ android {
     defaultConfig {
         minSdkVersion 9
         targetSdkVersion 22
-        versionCode 3
-        versionName "1.1.2"
+        versionCode 4
+        versionName "1.1.3"
     }
     buildTypes {
         release {
@@ -33,11 +33,7 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    testCompile 'junit:junit:4.12'
-
-    compile files('libs/fastjson-1.1.45.jar')
-    compile files('libs/okio-1.7.0.jar')
-    compile files('libs/okhttp-3.2.0.jar')
+    compile 'com.alibaba:fastjson:1.1.70.android'
+    compile 'com.squareup.okhttp3:okhttp:3.10.0'
 }
 //apply from: '../gradle/maven_push.gradle'

@@ -111,7 +111,6 @@ public class HttpException extends Exception {
     }
 
     public void show() {
-        if (HttpManage.application != null)
-            Toast.makeText(HttpManage.application, getPrompt(), Toast.LENGTH_LONG).show();
+        Utils.showToast(getPrompt());
     }
 }

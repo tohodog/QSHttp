@@ -5,22 +5,14 @@ QSHttp
   * 支持http/自签名https(get post put head...) 文件上传、下载、进度监听、自动解析,基于Okhttp的支持cookie自动管理,缓存控制
   * 详细的请求信息回调、错误类型(网络链接失败,超时,断网,解析失败,404...)
   * 详细的访问日记打印,满足一般调试
-  * 提供精简包仅有50+K(基于原生实现,移除okhttp fastjson,没有cookie 缓存管理)
   * 提供拦截器,可添加一些鉴权参数...
 
-### 使用方法
-1.完整版
-[qshttp-1.1.2.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/qshttp-1.1.2.jar)
-[okhttp-3.2.0.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/okhttp-3.2.0.jar) 
-[okio-1.7.0.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/okio-1.7.0.jar) 
-[fastjson-1.1.45.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/fastjson-1.1.45.jar)
-
-2.精简版
-[qshttp-simple-1.1.2.jar](https://raw.githubusercontent.com/tohodog/QSHttp/master/libs/qshttp-simple-1.1.2.jar)
-
-3.下载项目,拷贝源码到自己项目
-
-4.gradle......
+### Gradle
+```
+dependencies {
+    compile 'com.github.tohodog:QSHtp:1.1.3'
+}
+```
 
 ### 最简单的使用例子
 ```

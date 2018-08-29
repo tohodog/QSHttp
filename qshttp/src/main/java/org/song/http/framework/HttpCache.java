@@ -18,6 +18,7 @@ import org.song.http.framework.HttpEnum.CacheMode;
 public class HttpCache {
 
     private static HttpCache instance;
+    private final String TAG = Utils.TAG;
 
     public static HttpCache instance() {
         if (instance == null)
@@ -44,7 +45,7 @@ public class HttpCache {
                 String s = Utils.readString(MD5);
                 if (s == null)
                     return false;
-                Log.e("HTTP", "getErrCache->" + s);
+                Log.e(TAG, "getErrCache->" + s);
                 response.setString(s);
                 return true;
             case FILE:
@@ -54,7 +55,7 @@ public class HttpCache {
                 byte[] b = Utils.readBytes(MD5);
                 if (b == null || b.length == 0)
                     return false;
-                Log.e("HTTP", "getErrCache->" + b.length);
+                Log.e(TAG, "getErrCache->" + b.length);
                 response.setBytes(b);
                 return true;
         }
@@ -67,7 +68,7 @@ public class HttpCache {
 
         if (response.requestParams().cacheMode() == CacheMode.ERR_CACHE) {
             String MD5 = getRequestMD5(response.requestParams());
-            Log.e("HTTP", "saveErrCache->" + MD5);
+            Log.e(TAG, "saveErrCache->" + MD5);
             switch (response.requestParams().resultType()) {
                 case STRING:
                     return Utils.writerString(MD5, response.string());

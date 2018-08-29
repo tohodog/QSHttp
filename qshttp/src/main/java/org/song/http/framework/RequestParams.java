@@ -1,6 +1,7 @@
 package org.song.http.framework;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -295,6 +296,22 @@ public class RequestParams {
                 params = new HashMap<>();
             if (value != null)
                 params.put(key, String.valueOf(value));
+            else
+                params.remove(key);
+            return this;
+        }
+
+        /**
+         * get/post请求键值对参数
+         */
+        public RequestParams.Builder param(Object object) {
+            if (object != null) {
+                if (object.getClass().isArray())
+                    throw new IllegalArgumentException("can not array");
+                JSONObject jsonObject = (JSONObject) JSON.toJSON(object);
+                for (String key : jsonObject.keySet())
+                    param(key, jsonObject.get(key));
+            }
             return this;
         }
 
@@ -303,11 +320,7 @@ public class RequestParams {
          */
         public RequestParams.Builder param(Map<String, String> params) {
             if (params != null) {
-                if (this.params == null)
-                    this.params = new HashMap<>();
-                for (String key : params.keySet()) {
-                    this.params.put(key, params.get(key));
-                }
+                this.params = params;
             }
             return this;
         }
@@ -320,7 +333,8 @@ public class RequestParams {
                 restfulParams = new ArrayList<>();
             if (value != null)
                 for (Object o : value)
-                    restfulParams.add(String.valueOf(o));
+                    if (o != null)
+                        restfulParams.add(String.valueOf(o));
             return this;
         }
 
@@ -328,25 +342,16 @@ public class RequestParams {
          * 上传文件参数
          */
         public RequestParams.Builder uploadFile(String key, File value) {
-            return upload(HttpManage.CONTENT_TYPE_DATA, key, value);
+            return upload(HttpManage.CONTENT_TYPE_DATA, key, value.getName(), value);
         }
 
         /**
          * 上传字节参数
          */
         public RequestParams.Builder uploadByte(String key, byte[] value) {
-            return upload(HttpManage.CONTENT_TYPE_DATA, key, value);
+            return upload(HttpManage.CONTENT_TYPE_DATA, key, "bytes", value);
         }
 
-        /**
-         * 上传
-         */
-        public RequestParams.Builder upload(String contentType, String key, Object value) {
-            if (uploadContent == null)
-                uploadContent = new HashMap<>();
-            uploadContent.put(key, new RequestBody(contentType, value));
-            return this;
-        }
 
         /**
          * 上传
@@ -377,6 +382,7 @@ public class RequestParams {
             requestBody(HttpManage.CONTENT_TYPE_JSON, JSON.toJSONString(postJson));
             return this;
         }
+
 
         /**
          * post 一个自定义内容(file byte[] string）
@@ -439,7 +445,7 @@ public class RequestParams {
 
         //构建并执行
         public int buildAndExecute() {
-            return build().execute(null);
+            return buildAndExecute(null);
         }
     }
 
@@ -487,7 +493,7 @@ public class RequestParams {
 
         @Override
         public String toString() {
-            return contentType + "->" + content;
+            return "{ " + "ContentType:" + contentType + "; filename:" + filename + "; Content:" + content + " }";
         }
     }
 

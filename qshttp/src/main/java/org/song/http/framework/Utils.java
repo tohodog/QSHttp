@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -33,7 +34,7 @@ import javax.net.ssl.TrustManagerFactory;
 
 public class Utils {
 
-    private static final String TAG = "QSHTTP";
+    public static final String TAG = "QSHTTP";
 
     /**
      * 读取assets/path文件夹里的证书
@@ -98,22 +99,23 @@ public class Utils {
     }
 
     public static void Log(RequestParams params, ResponseParams response) {
-        if (HttpManage.DEBUG) {
-            if (response.isSuccess())
-                switch (response.resultType()) {
-                    case STRING:
-                        Log(params, "\nHeaders->" + response.headers() + "\nResult->" + response.string());
-                        break;
-                    case FILE:
-                        Log(params, "\nHeaders->" + response.headers() + "\nResult->" + response.string());
-                        break;
-                    case BYTES:
-                        Log(params, "\nHeaders" + response.headers() + "\nResult->" + response.bytes().length);
-                        break;
-                }
-            else
-                Log(params, "\nError->" + response.exception().getMessage());
-        }
+        if (!HttpManage.DEBUG)
+            return;
+        if (response.isSuccess())
+            switch (response.resultType()) {
+                case STRING:
+                    Log(params, "\nHeaders->" + response.headers() + "\nResult->" + response.string());
+                    break;
+                case FILE:
+                    Log(params, "\nHeaders->" + response.headers() + "\nResult->" + response.string());
+                    break;
+                case BYTES:
+                    Log(params, "\nHeaders" + response.headers() + "\nResult->" + response.bytes().length);
+                    break;
+            }
+        else
+            Log(params, "\nError->" + response.exception().getMessage());
+
     }
 
     public static void Log(RequestParams params, String result) {
@@ -203,6 +205,11 @@ public class Utils {
         return networkInfo != null && networkInfo.isAvailable();
     }
 
+    public static void showToast(String str) {
+        if (HttpManage.application != null)
+            Toast.makeText(HttpManage.application, str, Toast.LENGTH_LONG).show();
+    }
+
 
     public static void cleanCache() {
         deleteAllFile(new File(getDiskCacheDir()));
@@ -239,7 +246,7 @@ public class Utils {
         File file;
         Context context = HttpManage.application;
         if (context == null)
-            file = new File("/sdcard/qshttp_cache");
+            file = new File(Environment.getExternalStorageDirectory().getPath() + "/qshttp_cache");
         else if ((Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable())) {
             file = new File(context.getExternalCacheDir(), "qshttp_cache");
