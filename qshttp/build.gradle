@@ -33,7 +33,9 @@ android {
 }
 
 dependencies {
-    compile 'com.alibaba:fastjson:1.1.70.android'
-    compile 'com.squareup.okhttp3:okhttp:3.10.0'
+    compile fileTree(dir: 'libs', include: ['*.jar'])
+
+//    compile 'com.alibaba:fastjson:1.1.70.android'
+//    compile 'com.squareup.okhttp3:okhttp:3.10.0'
 }
 //apply from: '../gradle/maven_push.gradle'
