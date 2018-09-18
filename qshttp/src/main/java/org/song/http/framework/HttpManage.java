@@ -13,7 +13,7 @@ import javax.net.ssl.SSLSocketFactory;
  */
 public class HttpManage {
 
-    public static final boolean DEBUG = true;
+    public static boolean DEBUG = true;
 
     public static Application application;
     public static HttpEnum.XX_Http xx_http = HttpEnum.XX_Http.OK_HTTP;//
@@ -65,8 +65,8 @@ public class HttpManage {
 
     //超时
     public static int TIMEOUT_CONNECTION = 12000;
-    public static int TIMEOUT_SOCKET_READ = 15000;
-    public static int TIMEOUT_SOCKET_WRITE = 15000;
+    public static int TIMEOUT_SOCKET_READ = 18000;
+    public static int TIMEOUT_SOCKET_WRITE = 18000;
     //进度回调的频率 毫秒
     public static int PROGRESS_SPACE = 500;
 

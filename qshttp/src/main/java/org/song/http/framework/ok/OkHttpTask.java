@@ -168,13 +168,13 @@ public class OkHttpTask implements IHttpTask {
             case POST:
             case POST_CUSTOM:
             case POST_MULTIPART:
-                builder.url(params.url());
+                builder.url(params.urlRestful());
                 builder.post(requestBody);
                 break;
             case PUT:
             case PUT_CUSTOM:
             case PUT_MULTIPART:
-                builder.url(params.url());
+                builder.url(params.urlRestful());
                 builder.put(requestBody);
                 break;
             case HEAD:
@@ -334,21 +334,23 @@ public class OkHttpTask implements IHttpTask {
      * @param hp      进度回调
      * @return MultipartBody
      */
-    private MultipartBody buildMultipartBody(Map<String, String> params, Map<String, Object> content, IHttpProgress hp) {
+    private MultipartBody buildMultipartBody(Map<String, String> params, Map<String, RequestParams.RequestBody> content, IHttpProgress hp) {
         MultipartBody.Builder builder = new MultipartBody.Builder();
+        builder.setType(MultipartBody.FORM);
         if (params != null) {//
             for (Map.Entry<String, String> entry : params.entrySet()) {
                 builder.addFormDataPart(entry.getKey(), entry.getValue());
             }
         }
         if (content != null) {
-            for (Map.Entry<String, Object> entry : content.entrySet()) {
+            for (Map.Entry<String, RequestParams.RequestBody> entry : content.entrySet()) {
                 RequestBody requestBody;
+                RequestParams.RequestBody body = entry.getValue();
                 if (hp == null)
-                    requestBody = buildRequestBody(HttpManage.CONTENT_TYPE_DATA, entry.getValue());
+                    requestBody = buildRequestBody(body.getContentType(), body.getContent());
                 else
-                    requestBody = new RequestBodyProgress(MultipartBody.FORM, entry.getValue(), hp);
-                builder.addFormDataPart(entry.getKey(), Long.toString(System.currentTimeMillis()), requestBody);
+                    requestBody = new RequestBodyProgress(MediaType.parse(body.getContentType()), body.getContent(), hp);
+                builder.addFormDataPart(entry.getKey(), body.getFilename(), requestBody);
             }
         }
         return builder.build();

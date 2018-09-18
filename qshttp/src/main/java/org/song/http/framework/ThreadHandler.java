@@ -47,12 +47,16 @@ public class ThreadHandler extends Handler {
         switch (message.arg1) {
             case HttpManage.HTTP_SUCCESS:
                 sparseArray.remove(what);
+                if (cb instanceof HttpCallbackEx && ((HttpCallbackEx) cb).isDestroy())
+                    break;
                 cb.onSuccess((ResponseParams) message.obj);
                 if (cb instanceof HttpCallbackEx)
                     ((HttpCallbackEx) cb).onEnd();
                 break;
             case HttpManage.HTTP_FAILURE:
                 sparseArray.remove(what);
+                if (cb instanceof HttpCallbackEx && ((HttpCallbackEx) cb).isDestroy())
+                    break;
                 cb.onFailure((HttpException) message.obj);
                 if (cb instanceof HttpCallbackEx)
                     ((HttpCallbackEx) cb).onEnd();
@@ -105,7 +109,7 @@ public class ThreadHandler extends Handler {
         Exception e = obj.exception();
         if (!(e instanceof HttpException))
             e = HttpException.Run(e);
-        msg.obj = ((HttpException) e).requestID(obj.requestID());
+        msg.obj = ((HttpException) e).responseParams(obj);
         getInstance().sendMessage(msg);
     }
 

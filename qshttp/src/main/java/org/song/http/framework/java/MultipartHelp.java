@@ -2,6 +2,7 @@ package org.song.http.framework.java;
 
 import org.song.http.framework.HttpManage;
 import org.song.http.framework.IHttpProgress;
+import org.song.http.framework.RequestParams;
 
 import java.io.File;
 import java.io.IOException;
@@ -17,7 +18,7 @@ import java.util.Map;
 public class MultipartHelp {
     HttpURLConnection conn;
     Map<String, String> params;
-    Map<String, Object> upContent;
+    Map<String, RequestParams.RequestBody> upContent;
     IHttpProgress hp;
 
     final String charset = "utf-8";
@@ -28,7 +29,7 @@ public class MultipartHelp {
 
     MultipartHelp(HttpURLConnection conn,
                   Map<String, String> params,
-                  Map<String, Object> upContent,
+                  Map<String, RequestParams.RequestBody> upContent,
                   IHttpProgress hp) {
         this.conn = conn;
         this.params = params;
@@ -66,19 +67,20 @@ public class MultipartHelp {
         }
 
         if (upContent != null)
-            for (Map.Entry<String, Object> content : upContent.entrySet()) {
+            for (Map.Entry<String, RequestParams.RequestBody> content : upContent.entrySet()) {
+                RequestParams.RequestBody body = content.getValue();
                 StringBuilder sb1 = new StringBuilder();
                 sb1.append(PREFIX);
                 sb1.append(BOUNDARY);
                 sb1.append(LINEND);
                 sb1.append("Content-Disposition: form-data; name=\"" + content.getKey() + "\"; filename=\""
-                        + System.currentTimeMillis() + "\"" + LINEND);
-                sb1.append("Content-Type: multipart/form-data; charset="
+                        + body.getFilename() + "\"" + LINEND);
+                sb1.append("Content-Type: " + body.getContentType() + "; charset="
                         + charset + LINEND);
                 sb1.append(LINEND);
                 os.write(sb1.toString().getBytes(charset));
                 //写入上传内容
-                writeObject(os, content.getValue());
+                writeObject(os, body.getContent());
                 //结束
                 os.write(LINEND.getBytes(charset));
             }

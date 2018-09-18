@@ -14,6 +14,7 @@ public class ResponseParams {
 
     private boolean success;//响应结果
     private boolean isCache;//是否缓存
+    private Object tag;
 
 
     private HttpEnum.ResultType resultType = HttpEnum.ResultType.STRING;//返回内容类型
@@ -32,6 +33,10 @@ public class ResponseParams {
     //get
     public int requestID() {
         return requestID;
+    }
+
+    public Object tag() {
+        return tag;
     }
 
     public HttpEnum.ResultType resultType() {
@@ -138,6 +143,7 @@ public class ResponseParams {
 
     public ResponseParams setRequestParams(RequestParams requestParams) {
         this.requestParams = requestParams;
+        tag = requestParams.tag();
         return this;
     }
 }

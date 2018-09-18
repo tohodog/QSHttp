@@ -5,6 +5,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
 import android.util.Log;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.File;
@@ -32,6 +33,8 @@ import javax.net.ssl.TrustManagerFactory;
  */
 
 public class Utils {
+
+    public static final String TAG = "QSHTTP";
 
     /**
      * 读取assets/path文件夹里的证书
@@ -96,25 +99,27 @@ public class Utils {
     }
 
     public static void Log(RequestParams params, ResponseParams response) {
-        if (HttpManage.DEBUG) {
-            if (response.isSuccess())
-                switch (response.resultType()) {
-                    case STRING:
-                        Log(params, "\nHeaders->" + response.headers() + "\nResult->" + response.string());
-                        break;
-                    case FILE:
-                        Log(params, "\nHeaders->" + response.headers() + "\nResult->" + response.string());
-                        break;
-                    case BYTES:
-                        Log(params, "\nHeaders" + response.headers() + "\nResult->" + response.bytes().length);
-                        break;
-                }
-            else
-                Log(params, "\nError->" + response.exception().getMessage());
-        }
+        if (!HttpManage.DEBUG)
+            return;
+        if (response.isSuccess())
+            switch (response.resultType()) {
+                case STRING:
+                    Log(params, "\nHeaders->" + response.headers() + "\nResult->" + response.string());
+                    break;
+                case FILE:
+                    Log(params, "\nHeaders->" + response.headers() + "\nResult->" + response.string());
+                    break;
+                case BYTES:
+                    Log(params, "\nHeaders" + response.headers() + "\nResult->" + response.bytes().length);
+                    break;
+            }
+        else
+            Log(params, "\nError->" + response.exception().getMessage());
+
     }
 
     public static void Log(RequestParams params, String result) {
+        //result = formatJson(result);
         HttpEnum.RequestType type = params.requestType();
 
         Map<String, String> head_map = params.headers();
@@ -129,13 +134,13 @@ public class Utils {
             case GET:
             case HEAD:
             case DELETE:
-                Log.e("HTTP", type + "->" + params.urlFormat()
+                Log.e(TAG, type + "->" + params.urlFormat()
                         + "\nHeaders->" + head_map
                         + "\n请求结果-> ↓↓↓" + result);
                 break;
             case POST:
             case PUT:
-                Log.e("HTTP", type + "->" + params.url()
+                Log.e(TAG, type + "->" + params.urlRestful()
                         + "\nHeaders->" + head_map
                         + sbParams.toString()
                         + "\n请求结果-> ↓↓↓" + result);
@@ -143,7 +148,7 @@ public class Utils {
                 break;
             case POST_CUSTOM:
             case PUT_CUSTOM:
-                Log.e("HTTP", type + "->" + params.url()
+                Log.e(TAG, type + "->" + params.urlRestful()
                         + "\nHeaders->" + head_map
                         + "\nContent-Type->" + params.customContent().getContentType()
                         + "\nContent->" + params.customContent().getContent()
@@ -151,7 +156,7 @@ public class Utils {
                 break;
             case POST_MULTIPART:
             case PUT_MULTIPART:
-                Log.e("HTTP", type + "->" + params.url()
+                Log.e(TAG, type + "->" + params.urlRestful()
                         + "\nHeaders->" + head_map
                         + sbParams.toString()
                         + "\nUpContent->" + params.uploadContent()
@@ -200,6 +205,11 @@ public class Utils {
         return networkInfo != null && networkInfo.isAvailable();
     }
 
+    public static void showToast(String str) {
+        if (HttpManage.application != null)
+            Toast.makeText(HttpManage.application, str, Toast.LENGTH_LONG).show();
+    }
+
 
     public static void cleanCache() {
         deleteAllFile(new File(getDiskCacheDir()));
@@ -236,7 +246,7 @@ public class Utils {
         File file;
         Context context = HttpManage.application;
         if (context == null)
-            file = new File("/sdcard/qshttp_cache");
+            file = new File(Environment.getExternalStorageDirectory().getPath() + "/qshttp_cache");
         else if ((Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable())) {
             file = new File(context.getExternalCacheDir(), "qshttp_cache");

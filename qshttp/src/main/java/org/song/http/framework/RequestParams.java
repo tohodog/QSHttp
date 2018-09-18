@@ -1,6 +1,7 @@
 package org.song.http.framework;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -15,10 +16,10 @@ import java.util.Map;
 public class RequestParams {
 
     private String url;
-    private CustomContent customContent;//自定义的post内容
+    private RequestBody requestBody;//自定义的post内容
     private Map<String, String> params;//键值对参数
     private List<String> restfulParams;//restful参数
-    private Map<String, Object> uploadContent;//上传内容参数
+    private Map<String, RequestBody> uploadContent;//上传内容参数
     private Map<String, String> headers;//头参数
 
     private Object tag;//标记
@@ -54,15 +55,15 @@ public class RequestParams {
         return cacheMode;
     }
 
-    public CustomContent customContent() {
-        return customContent;
+    public RequestBody customContent() {
+        return requestBody;
     }
 
     public Map<String, String> params() {
         return params;
     }
 
-    public Map<String, Object> uploadContent() {
+    public Map<String, RequestBody> uploadContent() {
         return uploadContent;
     }
 
@@ -94,19 +95,13 @@ public class RequestParams {
         return downloadPath;
     }
 
+
     /**
      * 提取参数数据 构建带参数url格式
      */
     public String urlFormat() {
-        StringBuffer sbUrl = new StringBuffer();
-        sbUrl.append(url);
-
-        if (restfulParams != null) {
-            for (String value : restfulParams) {
-                value = Utils.URLEncoder(value);
-                sbUrl.append("/").append(value);
-            }
-        }
+        StringBuilder sbUrl = new StringBuilder();
+        sbUrl.append(urlRestful());
 
         if (params != null) {
             sbUrl.append("?");
@@ -121,10 +116,26 @@ public class RequestParams {
         return sbUrl.toString();
     }
 
+    /**
+     * 提取参数数据 构建带参数url格式
+     */
+    public String urlRestful() {
+        StringBuilder sbUrl = new StringBuilder(url);
+
+        if (restfulParams != null) {
+            for (String value : restfulParams) {
+                value = Utils.URLEncoder(value);
+                sbUrl.append("/").append(value);
+            }
+        }
+
+        return sbUrl.toString();
+    }
+
     public Builder newBuild() {
         Builder builder = new Builder(url);
         builder.url = url;
-        builder.customContent = customContent;
+        builder.requestBody = requestBody;
         builder.restfulParams = restfulParams;
         builder.params = params;
         builder.uploadContent = uploadContent;
@@ -149,11 +160,11 @@ public class RequestParams {
 
     public static final class Builder {
         private String url;
-        private CustomContent customContent;
+        private RequestBody requestBody;
         private Map<String, String> headers;
         private Map<String, String> params;
         private List<String> restfulParams;
-        private Map<String, Object> uploadContent;
+        private Map<String, RequestBody> uploadContent;
 
         private Object tag;//标记
 
@@ -173,12 +184,12 @@ public class RequestParams {
         }
 
         public RequestParams build() {
-            if (customContent == null && requestType == HttpEnum.RequestType.POST_CUSTOM)
+            if (requestBody == null && requestType == HttpEnum.RequestType.POST_CUSTOM)
                 postJson(params);
             RequestParams requestParams = new RequestParams();
             requestParams.url = url;
             requestParams.restfulParams = restfulParams;
-            requestParams.customContent = customContent;
+            requestParams.requestBody = requestBody;
             requestParams.params = params;
             requestParams.uploadContent = uploadContent;
             requestParams.headers = headers;
@@ -283,7 +294,24 @@ public class RequestParams {
         public RequestParams.Builder param(String key, Object value) {
             if (params == null)
                 params = new HashMap<>();
-            params.put(key, String.valueOf(value));
+            if (value != null)
+                params.put(key, String.valueOf(value));
+            else
+                params.remove(key);
+            return this;
+        }
+
+        /**
+         * get/post请求键值对参数
+         */
+        public RequestParams.Builder param(Object object) {
+            if (object != null) {
+                if (object.getClass().isArray())
+                    throw new IllegalArgumentException("can not array");
+                JSONObject jsonObject = (JSONObject) JSON.toJSON(object);
+                for (String key : jsonObject.keySet())
+                    param(key, jsonObject.get(key));
+            }
             return this;
         }
 
@@ -291,7 +319,9 @@ public class RequestParams {
          * get/post请求键值对参数
          */
         public RequestParams.Builder param(Map<String, String> params) {
-            this.params = params;
+            if (params != null) {
+                this.params = params;
+            }
             return this;
         }
 
@@ -303,7 +333,8 @@ public class RequestParams {
                 restfulParams = new ArrayList<>();
             if (value != null)
                 for (Object o : value)
-                    restfulParams.add(String.valueOf(o));
+                    if (o != null)
+                        restfulParams.add(String.valueOf(o));
             return this;
         }
 
@@ -311,19 +342,24 @@ public class RequestParams {
          * 上传文件参数
          */
         public RequestParams.Builder uploadFile(String key, File value) {
-            if (uploadContent == null)
-                uploadContent = new HashMap<>();
-            uploadContent.put(key, value);
-            return this;
+            return upload(HttpManage.CONTENT_TYPE_DATA, key, value.getName(), value);
         }
 
         /**
          * 上传字节参数
          */
         public RequestParams.Builder uploadByte(String key, byte[] value) {
+            return upload(HttpManage.CONTENT_TYPE_DATA, key, "bytes", value);
+        }
+
+
+        /**
+         * 上传
+         */
+        public RequestParams.Builder upload(String contentType, String key, String filename, Object value) {
             if (uploadContent == null)
                 uploadContent = new HashMap<>();
-            uploadContent.put(key, value);
+            uploadContent.put(key, new RequestBody(contentType, filename, value));
             return this;
         }
 
@@ -334,7 +370,8 @@ public class RequestParams {
         public RequestParams.Builder header(String key, String value) {
             if (headers == null)
                 headers = new HashMap<>();
-            headers.put(key, value);
+            if (value != null)
+                headers.put(key, value);
             return this;
         }
 
@@ -342,17 +379,16 @@ public class RequestParams {
          * post 一个json参数
          */
         public RequestParams.Builder postJson(Object postJson) {
-            customContent(HttpManage.CONTENT_TYPE_JSON, JSON.toJSONString(postJson));
+            requestBody(HttpManage.CONTENT_TYPE_JSON, JSON.toJSONString(postJson));
             return this;
         }
+
 
         /**
          * post 一个自定义内容(file byte[] string）
          */
-        public RequestParams.Builder customContent(String contentType, Object content) {
-            customContent = new CustomContent();
-            customContent.setContent(content);
-            customContent.setContentType(contentType);
+        public RequestParams.Builder requestBody(String contentType, Object content) {
+            requestBody = new RequestBody(contentType, content);
             return this;
         }
 
@@ -409,13 +445,27 @@ public class RequestParams {
 
         //构建并执行
         public int buildAndExecute() {
-            return build().execute(null);
+            return buildAndExecute(null);
         }
     }
 
-    public static class CustomContent {
-        private Object content;
+    public static class RequestBody {
+
         private String contentType;
+        private Object content;
+        private String filename;
+
+
+        public RequestBody(String contentType, Object content) {
+            this(contentType, Long.toString(System.currentTimeMillis()), content);
+        }
+
+        public RequestBody(String contentType, String filename, Object content) {
+            this.contentType = contentType;
+            this.content = content;
+            this.filename = filename;
+
+        }
 
         public Object getContent() {
             return content;
@@ -431,6 +481,19 @@ public class RequestParams {
 
         public void setContentType(String contentType) {
             this.contentType = contentType;
+        }
+
+        public String getFilename() {
+            return filename;
+        }
+
+        public void setFilename(String filename) {
+            this.filename = filename;
+        }
+
+        @Override
+        public String toString() {
+            return "{ " + "ContentType:" + contentType + "; filename:" + filename + "; Content:" + content + " }";
         }
     }
 

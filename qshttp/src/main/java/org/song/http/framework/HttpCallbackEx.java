@@ -8,5 +8,6 @@ public interface HttpCallbackEx extends HttpCallback {
     void onStart();
 
     void onEnd();
-
+    //返回true 则不会回调
+    boolean isDestroy();
 }
