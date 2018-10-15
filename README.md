@@ -10,7 +10,7 @@ QSHttp
 ### Gradle
 ```
 dependencies {
-    compile 'com.github.tohodog:QSHttp:1.1.3r'
+    compile 'com.github.tohodog:QSHttp:1.1.4'
 }
 ```
 
