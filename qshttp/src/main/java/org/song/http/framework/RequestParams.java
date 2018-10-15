@@ -34,6 +34,7 @@ public class RequestParams {
     private Parser parser;//手动解析需要的实现类
 
     private int cacheTime;//手动缓存 设置有效时间 [非服务器给的缓存配置 功能待定
+    private int timeOut;// 超时ms
 
     private RequestParams() {
     }
@@ -85,6 +86,10 @@ public class RequestParams {
 
     public Object tag() {
         return tag;
+    }
+
+    public int timeOut() {
+        return timeOut;
     }
 
     public int cacheTime() {
@@ -149,8 +154,10 @@ public class RequestParams {
 
         builder._class = _class;
         builder.parser = parser;
-        builder.cacheTime = cacheTime;
         builder.downloadPath = downloadPath;
+        builder.cacheTime = cacheTime;
+        builder.timeOut = timeOut;
+
         return builder;
     }
 
@@ -178,6 +185,7 @@ public class RequestParams {
         private String downloadPath;
 
         private int cacheTime;//手动缓存 设置有效时间 [非服务器给的缓存配置 功能待定
+        private int timeOut;// 超时ms
 
         public Builder(String url) {
             this.url = url;
@@ -194,6 +202,7 @@ public class RequestParams {
             requestParams.uploadContent = uploadContent;
             requestParams.headers = headers;
             requestParams.tag = tag;
+            requestParams.timeOut = timeOut;
 
             requestParams.requestType = requestType;
             requestParams.resultType = resultType;
@@ -428,6 +437,13 @@ public class RequestParams {
             return this;
         }
 
+        /**
+         * 超时时间
+         */
+        public RequestParams.Builder timeOut(int timeOut) {
+            this.timeOut = timeOut;
+            return this;
+        }
 
         /**
          * 缓存时间 秒

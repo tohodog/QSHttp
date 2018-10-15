@@ -50,66 +50,66 @@ public class HttpURLConnectionTask implements IHttpTask {
 
     @Override
     public ResponseParams GET(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlFormat(), "GET", params.headers());
+        HttpURLConnection conn = getHttpURLConnection(params.urlFormat(), "GET", params.headers(), params.timeOut());
         return getResponse(conn, params, hp);
     }
 
     @Override
     public ResponseParams POST(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "POST", params.headers());
+        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "POST", params.headers(), params.timeOut());
         writeFromBody(conn, params.params());
         return getResponse(conn, params, hp);
     }
 
     @Override
     public ResponseParams POST_CUSTOM(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "POST", params.headers());
+        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "POST", params.headers(), params.timeOut());
         writeMediaBody(conn, params.customContent().getContentType(), params.customContent().getContent(), hp);
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams POST_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "POST", params.headers());
+        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "POST", params.headers(), params.timeOut());
         writeMultipartBody(conn, params.params(), params.uploadContent(), hp);
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams PUT(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "PUT", params.headers());
+        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "PUT", params.headers(), params.timeOut());
         writeFromBody(conn, params.params());
         return getResponse(conn, params, hp);
     }
 
     @Override
     public ResponseParams PUT_CUSTOM(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "PUT", params.headers());
+        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "PUT", params.headers(), params.timeOut());
         writeMediaBody(conn, params.customContent().getContentType(), params.customContent().getContent(), hp);
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams PUT_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "PUT", params.headers());
+        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "PUT", params.headers(), params.timeOut());
         writeMultipartBody(conn, params.params(), params.uploadContent(), hp);
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams HEAD(RequestParams params) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlFormat(), "HEAD", params.headers());
+        HttpURLConnection conn = getHttpURLConnection(params.urlFormat(), "HEAD", params.headers(), params.timeOut());
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams DELETE(RequestParams params) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlFormat(), "DELETE", params.headers());
+        HttpURLConnection conn = getHttpURLConnection(params.urlFormat(), "DELETE", params.headers(), params.timeOut());
         return getResponse(conn, params, null);
     }
 
 
-    private HttpURLConnection getHttpURLConnection(String url, String method, Map<String, String> head) throws HttpException {
+    private HttpURLConnection getHttpURLConnection(String url, String method, Map<String, String> head, int timeOut) throws HttpException {
         try {
             HttpURLConnection conn;
             URL uri = new URL(url);
@@ -120,8 +120,8 @@ public class HttpURLConnectionTask implements IHttpTask {
                     ((HttpsURLConnection) conn).setSSLSocketFactory(sslSocketFactory);
             }
 
-            conn.setConnectTimeout(HttpManage.TIMEOUT_CONNECTION);
-            conn.setReadTimeout(HttpManage.TIMEOUT_SOCKET_READ);
+            conn.setConnectTimeout(timeOut > 0 ? timeOut : HttpManage.TIMEOUT_CONNECTION);
+            conn.setReadTimeout(timeOut > 0 ? timeOut : HttpManage.TIMEOUT_SOCKET_READ);
             conn.setDoInput(true);// 允许输入
             //conn.setDoOutput(true);// 允许输出 设置了强制POST
             conn.setUseCaches(false);

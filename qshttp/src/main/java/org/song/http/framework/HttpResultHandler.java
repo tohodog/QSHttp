@@ -67,7 +67,10 @@ public class HttpResultHandler {
         HttpEnum.ParserMode type = response.requestParams().parserMode();
         switch (type) {
             case JSON:
-                obj = JSON.parseObject(result, response.requestParams().get_class());
+                if (result.startsWith("{"))
+                    obj = JSON.parseObject(result, response.requestParams().get_class());
+                else if (result.startsWith("["))
+                    obj = JSON.parseArray(result, response.requestParams().get_class());
                 break;
             case COSTOM:
                 obj = response.requestParams().parser().parser(result);

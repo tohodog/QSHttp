@@ -86,7 +86,7 @@ public class OkHttpTask implements IHttpTask {
     @Override
     public ResponseParams GET(RequestParams params, IHttpProgress hp) throws HttpException {
         Request request = getRequest(params, null);
-        Response response = getResponse(editOkHttpClient(request, hp), request);
+        Response response = getResponse(editOkHttpClient(params, hp), request);
         return dealResponse(params, response);
     }
 
@@ -94,7 +94,7 @@ public class OkHttpTask implements IHttpTask {
     public ResponseParams POST(RequestParams params, IHttpProgress hp) throws HttpException {
         FormBody requestBody = buildFormBody(params.params());
         Request request = getRequest(params, requestBody);
-        Response response = getResponse(editOkHttpClient(request, hp), request);
+        Response response = getResponse(editOkHttpClient(params, hp), request);
         return dealResponse(params, response);
     }
 
@@ -104,7 +104,7 @@ public class OkHttpTask implements IHttpTask {
         if (hp != null)
             requestBody = new RequestBodyProgress(requestBody, hp);
         Request request = getRequest(params, requestBody);
-        Response response = getResponse(editOkHttpClient(request, null), request);
+        Response response = getResponse(editOkHttpClient(params, null), request);
         return dealResponse(params, response);
     }
 
@@ -112,7 +112,7 @@ public class OkHttpTask implements IHttpTask {
     public ResponseParams POST_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
         MultipartBody multipartBody = buildMultipartBody(params.params(), params.uploadContent(), hp);
         Request request = getRequest(params, multipartBody);
-        Response response = getResponse(editOkHttpClient(request, null), request);
+        Response response = getResponse(editOkHttpClient(params, null), request);
         return dealResponse(params, response);
     }
 
@@ -120,7 +120,7 @@ public class OkHttpTask implements IHttpTask {
     public ResponseParams PUT(RequestParams params, IHttpProgress hp) throws HttpException {
         FormBody requestBody = buildFormBody(params.params());
         Request request = getRequest(params, requestBody);
-        Response response = getResponse(editOkHttpClient(request, hp), request);
+        Response response = getResponse(editOkHttpClient(params, hp), request);
         return dealResponse(params, response);
     }
 
@@ -130,7 +130,7 @@ public class OkHttpTask implements IHttpTask {
         if (hp != null)
             requestBody = new RequestBodyProgress(requestBody, hp);
         Request request = getRequest(params, requestBody);
-        Response response = getResponse(editOkHttpClient(request, null), request);
+        Response response = getResponse(editOkHttpClient(params, null), request);
         return dealResponse(params, response);
     }
 
@@ -138,21 +138,21 @@ public class OkHttpTask implements IHttpTask {
     public ResponseParams PUT_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
         MultipartBody multipartBody = buildMultipartBody(params.params(), params.uploadContent(), hp);
         Request request = getRequest(params, multipartBody);
-        Response response = getResponse(editOkHttpClient(request, null), request);
+        Response response = getResponse(editOkHttpClient(params, null), request);
         return dealResponse(params, response);
     }
 
     @Override
     public ResponseParams HEAD(RequestParams params) throws HttpException {
         Request request = getRequest(params, null);
-        Response response = getResponse(editOkHttpClient(request, null), request);
+        Response response = getResponse(editOkHttpClient(params, null), request);
         return dealResponse(params, response);
     }
 
     @Override
     public ResponseParams DELETE(RequestParams params) throws HttpException {
         Request request = getRequest(params, null);
-        Response response = getResponse(editOkHttpClient(request, null), request);
+        Response response = getResponse(editOkHttpClient(params, null), request);
         return dealResponse(params, response);
     }
 
@@ -359,14 +359,20 @@ public class OkHttpTask implements IHttpTask {
     /**
      * 根据访问需求 改变mOkHttpClient
      */
-    private OkHttpClient editOkHttpClient(Request request, final IHttpProgress iHttpProgress) {
-        SSLSocketFactory ssl = Utils.checkSSL(request.url().toString());
-        if (iHttpProgress == null & ssl == null)
+    private OkHttpClient editOkHttpClient(RequestParams params, final IHttpProgress iHttpProgress) {
+        SSLSocketFactory ssl = Utils.checkSSL(params.url());
+        if (iHttpProgress == null & ssl == null & params.timeOut() <= 0)
             return mOkHttpClient;
         OkHttpClient.Builder ob = mOkHttpClient.newBuilder();
         //添加https规则
         if (ssl != null) {
             ob.sslSocketFactory(ssl);
+        }
+        //超时
+        if (params.timeOut() > 0) {
+            ob.connectTimeout(params.timeOut(), TimeUnit.MILLISECONDS)
+                    .readTimeout(params.timeOut(), TimeUnit.MILLISECONDS)
+                    .writeTimeout(params.timeOut(), TimeUnit.MILLISECONDS);
         }
         //增加拦截器
         if (iHttpProgress != null)
