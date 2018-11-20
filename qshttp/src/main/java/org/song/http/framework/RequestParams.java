@@ -291,7 +291,6 @@ public class RequestParams {
         }
 
         //开启由客户端决定的缓存配置
-        @Deprecated
         public RequestParams.Builder clientCache(int timeout) {
             cacheTime(timeout);
             return cacheMode(HttpEnum.CacheMode.CLIENT_CACHE);
@@ -449,7 +448,7 @@ public class RequestParams {
          * 缓存时间 秒
          * 暂时没用
          */
-        public RequestParams.Builder cacheTime(int cacheTime) {
+        private RequestParams.Builder cacheTime(int cacheTime) {
             this.cacheTime = cacheTime;
             return this;
         }

@@ -94,7 +94,14 @@ public abstract class AbsHttpClient {
 
     //具体联网逻辑 保证返回ResponseParams对象不为null
     private ResponseParams access(final RequestParams request, final HttpProgress hp) throws HttpException {
-        ResponseParams response = HttpCache.instance().checkAndGetCache(request);
+        ResponseParams response = null;
+
+        try {
+            response = HttpCache.instance().checkAndGetCache(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
         if (response != null) {
             response.setCacheYes();
         } else {

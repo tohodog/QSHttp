@@ -51,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
         imageView = (ImageView) findViewById(R.id.imageView);
         httpsTest("https://www.baidu.com/s");
         httpsTest("https://kyfw.12306.cn/otn/");
+        getImg();
     }
 
 
@@ -194,7 +195,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void getImg() {
-        QSHttp.get("http://cdn.sinacloud.net/sakaue/58969670_p0_master1200.jpg")
+        QSHttp.get("http://www.5uzdd.com/image/tal_3.png")
+                .openServerCache()
                 .resultByBytes()
                 .buildAndExecute(new ProgressCallback() {
                     @Override

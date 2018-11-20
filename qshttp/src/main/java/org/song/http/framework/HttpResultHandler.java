@@ -61,15 +61,15 @@ public class HttpResultHandler {
     }
 
     private Object parser(String result) throws Exception {
-//        if (result == null)
-//            throw new IllegalArgumentException("server response result is null");
+        if (result == null || result.isEmpty())
+            throw new IllegalArgumentException("server response result is null");
         Object obj = null;
         HttpEnum.ParserMode type = response.requestParams().parserMode();
         switch (type) {
             case JSON:
-                if (result.startsWith("{"))
+                if (result.charAt(0) == '{')
                     obj = JSON.parseObject(result, response.requestParams().get_class());
-                else if (result.startsWith("["))
+                else if (result.charAt(0) == '[')
                     obj = JSON.parseArray(result, response.requestParams().get_class());
                 break;
             case COSTOM:

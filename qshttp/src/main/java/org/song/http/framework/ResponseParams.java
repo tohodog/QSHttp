@@ -44,7 +44,7 @@ public class ResponseParams {
     }
 
     public String string() {
-        return string == null ? "" : string;
+        return string;
     }
 
     public String file() {

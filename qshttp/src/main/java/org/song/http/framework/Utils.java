@@ -110,7 +110,7 @@ public class Utils {
                     Log(params, "\nHeaders->" + response.headers() + "\nResult->" + response.string());
                     break;
                 case BYTES:
-                    Log(params, "\nHeaders" + response.headers() + "\nResult->" + response.bytes().length);
+                    Log(params, "\nHeaders->" + response.headers() + "\nResult->" + response.bytes().length);
                     break;
             }
         else
@@ -273,7 +273,6 @@ public class Utils {
      * @return 布尔值
      */
     public static boolean writerBytes(String f, byte[] bytes) {
-        f = getDiskCacheDir() + "/" + f;
         FileOutputStream fos = null;
         try {
             fos = new FileOutputStream(f);
@@ -305,7 +304,6 @@ public class Utils {
      * 读取字节
      */
     public static byte[] readBytes(String s) {
-        s = getDiskCacheDir() + "/" + s;
         FileInputStream fos = null;
         byte[] bytes;
         File f = new File(s);
