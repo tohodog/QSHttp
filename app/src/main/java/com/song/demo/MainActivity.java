@@ -196,7 +196,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void getImg() {
         QSHttp.get("http://www.5uzdd.com/image/tal_3.png")
-                .openServerCache()
+                .errCache()
                 .resultByBytes()
                 .buildAndExecute(new ProgressCallback() {
                     @Override

@@ -62,27 +62,7 @@ public class HttpCache {
         if (response.requestParams().cacheMode() != CacheMode.ERR_CACHE)
             return false;
         String MD5 = getRequestMD5(response.requestParams());
-        switch (response.requestParams().resultType()) {
-            case STRING:
-                String s = Utils.readString(MD5);
-                if (s == null)
-                    return false;
-                Log.e(TAG, "getErrCache->" + s);
-                response.setString(s);
-                return true;
-            case FILE:
-
-                break;
-            case BYTES:
-                byte[] b = Utils.readBytes(MD5);
-                if (b == null || b.length == 0)
-                    return false;
-                Log.e(TAG, "getErrCache->" + b.length);
-                response.setBytes(b);
-                return true;
-        }
-
-        return false;
+        return read(response, MD5);
     }
 
     //检测持久化缓存-联网成功后
