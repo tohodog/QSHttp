@@ -45,7 +45,7 @@ public class ThreadHandler extends Handler {
             return;
         }
         switch (message.arg1) {
-            case HttpManage.HTTP_SUCCESS:
+            case HttpEnum.HTTP_SUCCESS:
                 sparseArray.remove(what);
                 if (cb instanceof HttpCallbackEx && ((HttpCallbackEx) cb).isDestroy())
                     break;
@@ -53,7 +53,7 @@ public class ThreadHandler extends Handler {
                 if (cb instanceof HttpCallbackEx)
                     ((HttpCallbackEx) cb).onEnd();
                 break;
-            case HttpManage.HTTP_FAILURE:
+            case HttpEnum.HTTP_FAILURE:
                 sparseArray.remove(what);
                 if (cb instanceof HttpCallbackEx && ((HttpCallbackEx) cb).isDestroy())
                     break;
@@ -61,7 +61,7 @@ public class ThreadHandler extends Handler {
                 if (cb instanceof HttpCallbackEx)
                     ((HttpCallbackEx) cb).onEnd();
                 break;
-            case HttpManage.HTTP_PROGRESS:
+            case HttpEnum.HTTP_PROGRESS:
                 if (cb instanceof ProgressCallback) {
                     Object[] arr = (Object[]) message.obj;
                     ((ProgressCallback) cb).onProgress((long) arr[0], (long) arr[1], (String) arr[2]);
@@ -94,7 +94,7 @@ public class ThreadHandler extends Handler {
     public static void Success(ResponseParams obj) {
         Message msg = Message.obtain();
         msg.what = obj.requestID();
-        msg.arg1 = HttpManage.HTTP_SUCCESS;
+        msg.arg1 = HttpEnum.HTTP_SUCCESS;
         msg.obj = obj;
         getInstance().sendMessage(msg);
     }
@@ -105,7 +105,7 @@ public class ThreadHandler extends Handler {
     public static void Failure(ResponseParams obj) {
         Message msg = Message.obtain();
         msg.what = obj.requestID();
-        msg.arg1 = HttpManage.HTTP_FAILURE;
+        msg.arg1 = HttpEnum.HTTP_FAILURE;
         Exception e = obj.exception();
         if (!(e instanceof HttpException))
             e = HttpException.Run(e);
@@ -123,7 +123,7 @@ public class ThreadHandler extends Handler {
             var2 = -1;
         Message msg = Message.obtain();
         msg.what = mThreadWhat;
-        msg.arg1 = HttpManage.HTTP_PROGRESS;
+        msg.arg1 = HttpEnum.HTTP_PROGRESS;
         msg.obj = new Object[]{var1, var2, var3};
         getInstance().sendMessage(msg);
 

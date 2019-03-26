@@ -132,10 +132,10 @@ public class HttpCache {
 
 
     private String getRequestMD5(RequestParams params) {
-        if (params.customContent() != null)
-            return StringToMD5(params.url() + params.customContent().getContent());
+        if (params.requestBody() != null)
+            return StringToMD5(params.url() + params.requestBody().getContent());
         else
-            return StringToMD5(params.urlFormat());
+            return StringToMD5(params.urlEncode());
     }
 
     private static String StringToMD5(String string) {

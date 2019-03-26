@@ -7,7 +7,6 @@ import android.os.Environment;
 import android.util.Log;
 import android.widget.Toast;
 
-import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -107,10 +106,10 @@ public class Utils {
                     Log(params, "\nHeaders->" + response.headers() + "\nResult->" + response.string());
                     break;
                 case FILE:
-                    Log(params, "\nHeaders->" + response.headers() + "\nResult->" + response.string());
+                    Log(params, "\nHeaders->" + response.headers() + "\nResult->file:" + response.file());
                     break;
                 case BYTES:
-                    Log(params, "\nHeaders->" + response.headers() + "\nResult->" + response.bytes().length);
+                    Log(params, "\nHeaders->" + response.headers() + "\nResult->bytes:" + response.bytes().length);
                     break;
             }
         else
@@ -118,50 +117,46 @@ public class Utils {
 
     }
 
-    public static void Log(RequestParams params, String result) {
+    public static void Log(RequestParams request, String result) {
         //result = formatJson(result);
-        HttpEnum.RequestType type = params.requestType();
+        HttpEnum.RequestMethod type = request.requestMethod();
 
-        Map<String, String> head_map = params.headers();
+        Map<String, String> head_map = request.headers();
 
-        Map<String, String> param_map = params.params();
+        Map<String, Object> param_map = request.params();
         StringBuilder sbParams = new StringBuilder();
         if (param_map != null)
-            for (Map.Entry<String, String> entry : param_map.entrySet())
+            for (Map.Entry<String, Object> entry : param_map.entrySet())
                 sbParams.append("\nParam->" + entry.getKey() + "=" + entry.getValue());
 
         switch (type) {
             case GET:
             case HEAD:
             case DELETE:
-                Log.e(TAG, type + "->" + params.urlFormat()
+                Log.e(TAG, type + "->" + request.urlEncode()
                         + "\nHeaders->" + head_map
                         + "\n请求结果-> ↓↓↓" + result);
                 break;
             case POST:
             case PUT:
-                Log.e(TAG, type + "->" + params.urlRestful()
-                        + "\nHeaders->" + head_map
-                        + sbParams.toString()
-                        + "\n请求结果-> ↓↓↓" + result);
-
-                break;
-            case POST_CUSTOM:
-            case PUT_CUSTOM:
-                Log.e(TAG, type + "->" + params.urlRestful()
-                        + "\nHeaders->" + head_map
-                        + "\nContent-Type->" + params.customContent().getContentType()
-                        + "\nContent->" + params.customContent().getContent()
-                        + "\n请求结果-> ↓↓↓" + result);
-                break;
-            case POST_MULTIPART:
-            case PUT_MULTIPART:
-                Log.e(TAG, type + "->" + params.urlRestful()
-                        + "\nHeaders->" + head_map
-                        + sbParams.toString()
-                        + "\nUpContent->" + params.uploadContent()
-                        + "\n请求结果-> ↓↓↓" + result);
-
+                if (request.multipartBody() != null) {
+                    Log.e(TAG, type + "->" + request.urlAndPath()
+                            + "\nHeaders->" + head_map
+                            + sbParams.toString()
+                            + "\nUpContent->" + request.multipartBody()
+                            + "\n请求结果-> ↓↓↓" + result);
+                } else if (request.requestBody() != null) {
+                    Log.e(TAG, type + "->" + request.urlAndPath()
+                            + "\nHeaders->" + head_map
+                            + "\nContent-Type->" + request.requestBody().getContentType()
+                            + "\nContent->" + request.requestBody().getContent()
+                            + "\n请求结果-> ↓↓↓" + result);
+                } else {
+                    Log.e(TAG, type + "->" + request.urlAndPath()
+                            + "\nHeaders->" + head_map
+                            + sbParams.toString()
+                            + "\n请求结果-> ↓↓↓" + result);
+                }
                 break;
         }
 
@@ -169,7 +164,7 @@ public class Utils {
 
     public static String URLEncoder(String value) {
         try {
-            value = URLEncoder.encode(value, charset(HttpManage.CONTENT_TYPE_URL).name());// 中文转化为网址格式（%xx%xx
+            value = URLEncoder.encode(value, HttpEnum.CHARSET);// 中文转化为网址格式（%xx%xx
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

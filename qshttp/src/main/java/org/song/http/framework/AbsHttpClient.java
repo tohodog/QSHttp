@@ -105,27 +105,25 @@ public abstract class AbsHttpClient {
         if (response != null) {
             response.setCacheYes();
         } else {
-            switch (request.requestType()) {
+            switch (request.requestMethod()) {
                 case GET:
                     response = iHttpTask.GET(request, hp);
                     break;
                 case POST:
-                    response = iHttpTask.POST(request, hp);
-                    break;
-                case POST_CUSTOM:
-                    response = iHttpTask.POST_CUSTOM(request, hp);
-                    break;
-                case POST_MULTIPART:
-                    response = iHttpTask.POST_MULTIPART(request, hp);
+                    if (request.multipartBody() != null)
+                        response = iHttpTask.POST_MULTIPART(request, hp);
+                    else if (request.requestBody() != null)
+                        response = iHttpTask.POST_CUSTOM(request, hp);
+                    else
+                        response = iHttpTask.POST_FORM(request, hp);
                     break;
                 case PUT:
-                    response = iHttpTask.PUT(request, hp);
-                    break;
-                case PUT_CUSTOM:
-                    response = iHttpTask.PUT_CUSTOM(request, hp);
-                    break;
-                case PUT_MULTIPART:
-                    response = iHttpTask.PUT_MULTIPART(request, hp);
+                    if (request.multipartBody() != null)
+                        response = iHttpTask.PUT_MULTIPART(request, hp);
+                    else if (request.requestBody() != null)
+                        response = iHttpTask.PUT_CUSTOM(request, hp);
+                    else
+                        response = iHttpTask.PUT_FORM(request, hp);
                     break;
                 case HEAD:
                     response = iHttpTask.HEAD(request);

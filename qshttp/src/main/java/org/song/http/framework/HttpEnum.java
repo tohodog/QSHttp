@@ -6,17 +6,34 @@ package org.song.http.framework;
 
 public class HttpEnum {
 
+    //请求回调类型
+    final static public int HTTP_SUCCESS = 0X200;// 访问成功
+    final static public int HTTP_FAILURE = 0X201;// 访问出错
+    final static public int HTTP_PROGRESS = 0X202;//进度
+
+    public static final String CHARSET = "utf-8";
+    public static final String CONTENT_TYPE_DATA = "multipart/form-data";
+    public static final String CONTENT_TYPE_JSON = "application/json; charset=" + CHARSET;
+    public static final String CONTENT_TYPE_URL = "application/x-www-form-urlencoded; charset=" + CHARSET;
+    public static final String HEAD_KEY_CT = "Content-Type";
+    public static final String HEAD_KEY_CR = "Content-Range";
+    public static final String HEAD_KEY_UA = "User-Agent";
+
     //请求类型
-    public enum RequestType {
+    public enum RequestMethod {
         GET,
         POST,
-        POST_CUSTOM,
-        POST_MULTIPART,
         PUT,
-        PUT_CUSTOM,
-        PUT_MULTIPART,
         HEAD,
         DELETE
+    }
+
+    //发送数据类型
+    public enum BodyType {
+        FORM,
+        MULTIPART,
+        JSON,
+        CUSTOM,
     }
 
     //返回数据类型

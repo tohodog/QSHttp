@@ -16,16 +16,17 @@ import java.util.Map;
 public class RequestParams {
 
     private String url;
-    private RequestBody requestBody;//自定义的post内容
-    private Map<String, String> params;//键值对参数
-    private List<String> restfulParams;//restful参数
-    private Map<String, RequestBody> uploadContent;//上传内容参数
+    private List<String> pathParams;//path参数
     private Map<String, String> headers;//头参数
+
+    private Map<String, Object> params;//键值对参数
+    private RequestBody requestBody;//自定义post/put内容
+    private Map<String, RequestBody> multipartBody;//上传内容参数
 
     private Object tag;//标记
 
-    private HttpEnum.RequestType requestType;//请求模式 GET/POST/...
-    private HttpEnum.ResultType resultType;//返回类型
+    private HttpEnum.RequestMethod requestMethod;//请求模式 GET/POST_FORM/...
+    private HttpEnum.ResultType resultType;//返回数据类型
     private HttpEnum.ParserMode parserMode;//解析模式 返回类型为string有效
     private HttpEnum.CacheMode cacheMode;//服务器设置了缓存时的控制
 
@@ -33,7 +34,7 @@ public class RequestParams {
     private Class<?> _class;//自动解析需要的模型
     private Parser parser;//手动解析需要的实现类
 
-    private int cacheTime;//手动缓存 设置有效时间 [非服务器给的缓存配置 功能待定
+    private int cacheTime;//手动缓存 设置有效时间 [非服务器给的缓存配置,有缓存时不会联网
     private int timeOut;// 超时ms
 
     private RequestParams() {
@@ -44,8 +45,8 @@ public class RequestParams {
         return url;
     }
 
-    public HttpEnum.RequestType requestType() {
-        return requestType;
+    public HttpEnum.RequestMethod requestMethod() {
+        return requestMethod;
     }
 
     public HttpEnum.ResultType resultType() {
@@ -56,16 +57,16 @@ public class RequestParams {
         return cacheMode;
     }
 
-    public RequestBody customContent() {
+    public RequestBody requestBody() {
         return requestBody;
     }
 
-    public Map<String, String> params() {
+    public Map<String, Object> params() {
         return params;
     }
 
-    public Map<String, RequestBody> uploadContent() {
-        return uploadContent;
+    public Map<String, RequestBody> multipartBody() {
+        return multipartBody;
     }
 
     public Map<String, String> headers() {
@@ -104,16 +105,18 @@ public class RequestParams {
     /**
      * 提取参数数据 构建带参数url格式
      */
-    public String urlFormat() {
+    public String urlEncode() {
         StringBuilder sbUrl = new StringBuilder();
-        sbUrl.append(urlRestful());
+        sbUrl.append(urlAndPath());
 
         if (params != null) {
             sbUrl.append("?");
             for (String name : params.keySet()) {
                 String value = String.valueOf(params.get(name));
-                value = Utils.URLEncoder(value);
-                sbUrl.append(name).append("=").append(value).append("&");
+                sbUrl.append(Utils.URLEncoder(name))
+                        .append("=")
+                        .append(Utils.URLEncoder(value))
+                        .append("&");
             }
             sbUrl.deleteCharAt(sbUrl.length() - 1);
         }
@@ -124,11 +127,11 @@ public class RequestParams {
     /**
      * 提取参数数据 构建带参数url格式
      */
-    public String urlRestful() {
+    public String urlAndPath() {
         StringBuilder sbUrl = new StringBuilder(url);
 
-        if (restfulParams != null) {
-            for (String value : restfulParams) {
+        if (pathParams != null) {
+            for (String value : pathParams) {
                 value = Utils.URLEncoder(value);
                 sbUrl.append("/").append(value);
             }
@@ -141,13 +144,13 @@ public class RequestParams {
         Builder builder = new Builder(url);
         builder.url = url;
         builder.requestBody = requestBody;
-        builder.restfulParams = restfulParams;
+        builder.pathParams = pathParams;
         builder.params = params;
-        builder.uploadContent = uploadContent;
+        builder.multipartBody = multipartBody;
         builder.headers = headers;
         builder.tag = tag;
 
-        builder.requestType = requestType;
+        builder.requestMethod = requestMethod;
         builder.resultType = resultType;
         builder.parserMode = parserMode;
         builder.cacheMode = cacheMode;
@@ -169,13 +172,13 @@ public class RequestParams {
         private String url;
         private RequestBody requestBody;
         private Map<String, String> headers;
-        private Map<String, String> params;
-        private List<String> restfulParams;
-        private Map<String, RequestBody> uploadContent;
+        private Map<String, Object> params;
+        private List<String> pathParams;
+        private Map<String, RequestBody> multipartBody;
 
         private Object tag;//标记
 
-        private HttpEnum.RequestType requestType = HttpEnum.RequestType.GET;//请求模式 GET/POST/...
+        private HttpEnum.RequestMethod requestMethod = HttpEnum.RequestMethod.GET;//请求模式 GET/POST_FORM/...
         private HttpEnum.ResultType resultType = HttpEnum.ResultType.STRING;//返回类型
         private HttpEnum.ParserMode parserMode = HttpEnum.ParserMode.NOTHING;//解析模式
         private HttpEnum.CacheMode cacheMode = HttpEnum.CacheMode.NO_STORE;//缓存控制
@@ -187,24 +190,27 @@ public class RequestParams {
         private int cacheTime;//手动缓存 设置有效时间 [非服务器给的缓存配置 功能待定
         private int timeOut;// 超时ms
 
+        private boolean toJsonBodyFlag;
+
         public Builder(String url) {
             this.url = url;
         }
 
         public RequestParams build() {
-            if (requestBody == null && requestType == HttpEnum.RequestType.POST_CUSTOM)
-                postJson(params);
+            if (toJsonBodyFlag) {
+                jsonBody(params);
+            }
             RequestParams requestParams = new RequestParams();
             requestParams.url = url;
-            requestParams.restfulParams = restfulParams;
+            requestParams.pathParams = pathParams;
             requestParams.requestBody = requestBody;
             requestParams.params = params;
-            requestParams.uploadContent = uploadContent;
+            requestParams.multipartBody = multipartBody;
             requestParams.headers = headers;
             requestParams.tag = tag;
             requestParams.timeOut = timeOut;
 
-            requestParams.requestType = requestType;
+            requestParams.requestMethod = requestMethod;
             requestParams.resultType = resultType;
             requestParams.parserMode = parserMode;
             requestParams.cacheMode = cacheMode;
@@ -222,9 +228,9 @@ public class RequestParams {
          * 请求方式
          * get/post/..
          */
-        public RequestParams.Builder requestType(HttpEnum.RequestType requestType) {
-            if (requestType != null)
-                this.requestType = requestType;
+        public RequestParams.Builder requestMethod(HttpEnum.RequestMethod requestMethod) {
+            if (requestMethod != null)
+                this.requestMethod = requestMethod;
             return this;
         }
 
@@ -296,6 +302,32 @@ public class RequestParams {
             return cacheMode(HttpEnum.CacheMode.CLIENT_CACHE);
         }
 
+
+        /**
+         * http头参数
+         * 非Content-Type的头参数
+         */
+        public RequestParams.Builder header(String key, String value) {
+            if (headers == null)
+                headers = new HashMap<>();
+            if (value != null)
+                headers.put(key, value);
+            return this;
+        }
+
+        /**
+         * get请求/xx/xxx参数
+         */
+        public RequestParams.Builder path(Object... value) {
+            if (pathParams == null)
+                pathParams = new ArrayList<>();
+            if (value != null)
+                for (Object o : value)
+                    if (o != null)
+                        pathParams.add(String.valueOf(o));
+            return this;
+        }
+
         /**
          * get/post请求键值对参数
          */
@@ -303,7 +335,7 @@ public class RequestParams {
             if (params == null)
                 params = new HashMap<>();
             if (value != null)
-                params.put(key, String.valueOf(value));
+                params.put(key, value);
             else
                 params.remove(key);
             return this;
@@ -326,23 +358,37 @@ public class RequestParams {
         /**
          * get/post请求键值对参数
          */
-        public RequestParams.Builder param(Map<String, String> params) {
+        public RequestParams.Builder param(Map<String, ?> params) {
             if (params != null) {
-                this.params = params;
+                for (String key : params.keySet())
+                    param(key, params.get(key));
             }
             return this;
         }
 
+
         /**
-         * get请求/xx/xxx参数
+         * post/put 一个json参数
          */
-        public RequestParams.Builder restful(Object... value) {
-            if (restfulParams == null)
-                restfulParams = new ArrayList<>();
-            if (value != null)
-                for (Object o : value)
-                    if (o != null)
-                        restfulParams.add(String.valueOf(o));
+        public RequestParams.Builder jsonBody(Object postJson) {
+            requestBody(HttpEnum.CONTENT_TYPE_JSON, JSON.toJSONString(postJson));
+            return this;
+        }
+
+        /**
+         * 把 params 转为一个json参数
+         */
+        public RequestParams.Builder toJsonBody() {
+            toJsonBodyFlag = true;
+            return this;
+        }
+
+
+        /**
+         * post/put 一个自定义内容(file byte[] string）
+         */
+        public RequestParams.Builder requestBody(String contentType, Object content) {
+            requestBody = new RequestBody(contentType, content);
             return this;
         }
 
@@ -350,55 +396,27 @@ public class RequestParams {
          * 上传文件参数
          */
         public RequestParams.Builder uploadFile(String key, File value) {
-            return upload(HttpManage.CONTENT_TYPE_DATA, key, value.getName(), value);
+            return multipartBody(HttpEnum.CONTENT_TYPE_DATA, key, value.getName(), value);
         }
 
         /**
          * 上传字节参数
          */
         public RequestParams.Builder uploadByte(String key, byte[] value) {
-            return upload(HttpManage.CONTENT_TYPE_DATA, key, "bytes", value);
+            return multipartBody(HttpEnum.CONTENT_TYPE_DATA, key, "bytes", value);
         }
 
 
         /**
          * 上传
          */
-        public RequestParams.Builder upload(String contentType, String key, String filename, Object value) {
-            if (uploadContent == null)
-                uploadContent = new HashMap<>();
-            uploadContent.put(key, new RequestBody(contentType, filename, value));
+        public RequestParams.Builder multipartBody(String contentType, String key, String filename, Object value) {
+            if (multipartBody == null)
+                multipartBody = new HashMap<>();
+            multipartBody.put(key, new RequestBody(contentType, filename, value));
             return this;
         }
 
-        /**
-         * http头参数
-         * 非Content-Type的头参数
-         */
-        public RequestParams.Builder header(String key, String value) {
-            if (headers == null)
-                headers = new HashMap<>();
-            if (value != null)
-                headers.put(key, value);
-            return this;
-        }
-
-        /**
-         * post 一个json参数
-         */
-        public RequestParams.Builder postJson(Object postJson) {
-            requestBody(HttpManage.CONTENT_TYPE_JSON, JSON.toJSONString(postJson));
-            return this;
-        }
-
-
-        /**
-         * post 一个自定义内容(file byte[] string）
-         */
-        public RequestParams.Builder requestBody(String contentType, Object content) {
-            requestBody = new RequestBody(contentType, content);
-            return this;
-        }
 
         /**
          * 下载路径 请求时有这个参数则写入文件
@@ -411,7 +429,7 @@ public class RequestParams {
 
         /**
          * 自动解析模型
-         * 默认json
+         * 返回json解析成对象
          */
         public RequestParams.Builder jsonModel(Class<?> _class) {
             this._class = _class;
@@ -467,9 +485,8 @@ public class RequestParams {
     public static class RequestBody {
 
         private String contentType;
-        private Object content;
+        private Object content;//byte file string ouputstream
         private String filename;
-
 
         public RequestBody(String contentType, Object content) {
             this(contentType, Long.toString(System.currentTimeMillis()), content);
@@ -479,7 +496,6 @@ public class RequestParams {
             this.contentType = contentType;
             this.content = content;
             this.filename = filename;
-
         }
 
         public Object getContent() {

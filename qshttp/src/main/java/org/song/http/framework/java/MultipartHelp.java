@@ -1,6 +1,6 @@
 package org.song.http.framework.java;
 
-import org.song.http.framework.HttpManage;
+import org.song.http.framework.HttpEnum;
 import org.song.http.framework.IHttpProgress;
 import org.song.http.framework.RequestParams;
 
@@ -16,19 +16,19 @@ import java.util.Map;
  */
 
 public class MultipartHelp {
-    HttpURLConnection conn;
-    Map<String, String> params;
-    Map<String, RequestParams.RequestBody> upContent;
-    IHttpProgress hp;
+    private HttpURLConnection conn;
+    private Map<String, Object> params;
+    private Map<String, RequestParams.RequestBody> upContent;
+    private IHttpProgress hp;
 
-    final String charset = "utf-8";
-    final String BOUNDARY = java.util.UUID.randomUUID().toString();
-    final String PREFIX = "--", LINEND = "\r\n";
-    final String MULTIPART_FROM_DATA = HttpManage.CONTENT_TYPE_DATA;
+    private final String charset = "utf-8";
+    private final String BOUNDARY = java.util.UUID.randomUUID().toString();
+    private final String PREFIX = "--", LINEND = "\r\n";
+    private final String MULTIPART_FROM_DATA = HttpEnum.CONTENT_TYPE_DATA;
 
 
     MultipartHelp(HttpURLConnection conn,
-                  Map<String, String> params,
+                  Map<String, Object> params,
                   Map<String, RequestParams.RequestBody> upContent,
                   IHttpProgress hp) {
         this.conn = conn;
@@ -41,7 +41,7 @@ public class MultipartHelp {
     public void writeBody() throws IOException {
 
         conn.setRequestProperty("Charset", charset);
-        conn.setRequestProperty(HttpManage.HEAD_KEY_CT, MULTIPART_FROM_DATA
+        conn.setRequestProperty(HttpEnum.HEAD_KEY_CT, MULTIPART_FROM_DATA
                 + ";boundary=" + BOUNDARY);
         OutputStream os = conn.getOutputStream();
 
@@ -50,7 +50,7 @@ public class MultipartHelp {
         // 首先组拼文本类型的参数
         StringBuilder sb = new StringBuilder();
         if (params != null) {
-            for (Map.Entry<String, String> entry : params.entrySet()) {
+            for (Map.Entry<String, Object> entry : params.entrySet()) {
                 sb.append(PREFIX);
                 sb.append(BOUNDARY);
                 sb.append(LINEND);

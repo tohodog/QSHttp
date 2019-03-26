@@ -70,17 +70,6 @@ public class HttpManage {
     //进度回调的频率 毫秒
     public static int PROGRESS_SPACE = 500;
 
-    //请求回调类型
-    final static public int HTTP_SUCCESS = 0X200;// 访问成功
-    final static public int HTTP_FAILURE = 0X201;// 访问出错
-    final static public int HTTP_PROGRESS = 0X202;//进度
-
-    public static final String CONTENT_TYPE_DATA = "multipart/form-data";
-    public static final String CONTENT_TYPE_JSON = "application/json; charset=utf-8";
-    public static final String CONTENT_TYPE_URL = "application/x-www-form-urlencoded; charset=utf-8";
-    public static final String HEAD_KEY_CT = "Content-Type";
-    public static final String HEAD_KEY_CR = "Content-Range";
-    public static final String HEAD_KEY_UA = "User-Agent";
 
 
 }

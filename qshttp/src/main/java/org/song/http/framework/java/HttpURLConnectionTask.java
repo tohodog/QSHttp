@@ -50,61 +50,61 @@ public class HttpURLConnectionTask implements IHttpTask {
 
     @Override
     public ResponseParams GET(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlFormat(), "GET", params.headers(), params.timeOut());
+        HttpURLConnection conn = getHttpURLConnection(params.urlEncode(), "GET", params.headers(), params.timeOut());
         return getResponse(conn, params, hp);
     }
 
     @Override
-    public ResponseParams POST(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "POST", params.headers(), params.timeOut());
+    public ResponseParams POST_FORM(RequestParams params, IHttpProgress hp) throws HttpException {
+        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), "POST_FORM", params.headers(), params.timeOut());
         writeFromBody(conn, params.params());
         return getResponse(conn, params, hp);
     }
 
     @Override
     public ResponseParams POST_CUSTOM(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "POST", params.headers(), params.timeOut());
-        writeMediaBody(conn, params.customContent().getContentType(), params.customContent().getContent(), hp);
+        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), "POST_FORM", params.headers(), params.timeOut());
+        writeMediaBody(conn, params.requestBody().getContentType(), params.requestBody().getContent(), hp);
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams POST_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "POST", params.headers(), params.timeOut());
-        writeMultipartBody(conn, params.params(), params.uploadContent(), hp);
+        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), "POST_FORM", params.headers(), params.timeOut());
+        writeMultipartBody(conn, params.params(), params.multipartBody(), hp);
         return getResponse(conn, params, null);
     }
 
     @Override
-    public ResponseParams PUT(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "PUT", params.headers(), params.timeOut());
+    public ResponseParams PUT_FORM(RequestParams params, IHttpProgress hp) throws HttpException {
+        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), "PUT_FORM", params.headers(), params.timeOut());
         writeFromBody(conn, params.params());
         return getResponse(conn, params, hp);
     }
 
     @Override
     public ResponseParams PUT_CUSTOM(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "PUT", params.headers(), params.timeOut());
-        writeMediaBody(conn, params.customContent().getContentType(), params.customContent().getContent(), hp);
+        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), "PUT_FORM", params.headers(), params.timeOut());
+        writeMediaBody(conn, params.requestBody().getContentType(), params.requestBody().getContent(), hp);
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams PUT_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlRestful(), "PUT", params.headers(), params.timeOut());
-        writeMultipartBody(conn, params.params(), params.uploadContent(), hp);
+        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), "PUT_FORM", params.headers(), params.timeOut());
+        writeMultipartBody(conn, params.params(), params.multipartBody(), hp);
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams HEAD(RequestParams params) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlFormat(), "HEAD", params.headers(), params.timeOut());
+        HttpURLConnection conn = getHttpURLConnection(params.urlEncode(), "HEAD", params.headers(), params.timeOut());
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams DELETE(RequestParams params) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlFormat(), "DELETE", params.headers(), params.timeOut());
+        HttpURLConnection conn = getHttpURLConnection(params.urlEncode(), "DELETE", params.headers(), params.timeOut());
         return getResponse(conn, params, null);
     }
 
@@ -150,10 +150,10 @@ public class HttpURLConnectionTask implements IHttpTask {
     /**
      * 键值对表单body
      */
-    private void writeFromBody(HttpURLConnection conn, Map<String, String> params) throws HttpException {
+    private void writeFromBody(HttpURLConnection conn, Map<String, Object> params) throws HttpException {
         conn.setDoOutput(true);// 允许输出
-        conn.setRequestProperty(HttpManage.HEAD_KEY_CT, HttpManage.CONTENT_TYPE_URL);
-        Charset charset = Utils.charset(HttpManage.CONTENT_TYPE_URL);
+        conn.setRequestProperty(HttpEnum.HEAD_KEY_CT, HttpEnum.CONTENT_TYPE_URL);
+        Charset charset = Utils.charset(HttpEnum.CONTENT_TYPE_URL);
 
         if (params == null || params.size() == 0)
             return;
@@ -183,7 +183,7 @@ public class HttpURLConnectionTask implements IHttpTask {
      */
     private void writeMediaBody(HttpURLConnection conn, String contentType, Object content, IHttpProgress hp) throws HttpException {
         conn.setDoOutput(true);// 允许输出
-        conn.setRequestProperty(HttpManage.HEAD_KEY_CT, contentType);
+        conn.setRequestProperty(HttpEnum.HEAD_KEY_CT, contentType);
         Charset charset = Utils.charset(contentType);
         int len = 0;
         byte[] bytes = null;
@@ -218,7 +218,7 @@ public class HttpURLConnectionTask implements IHttpTask {
     /**
      * Multipart方式的body 上传多文件/参数
      */
-    private void writeMultipartBody(HttpURLConnection conn, Map<String, String> params, Map<String, RequestParams.RequestBody> content, IHttpProgress hp) throws HttpException {
+    private void writeMultipartBody(HttpURLConnection conn, Map<String, Object> params, Map<String, RequestParams.RequestBody> content, IHttpProgress hp) throws HttpException {
         try {
             conn.setDoOutput(true);// 允许输出
             new MultipartHelp(conn, params, content, hp).writeBody();
@@ -248,7 +248,7 @@ public class HttpURLConnectionTask implements IHttpTask {
             HttpEnum.ResultType type = params.resultType();
             if (type == HttpEnum.ResultType.STRING)
                 response.setString(rh.readString(
-                        Utils.charset(conn.getHeaderField(HttpManage.HEAD_KEY_CT))));
+                        Utils.charset(conn.getHeaderField(HttpEnum.HEAD_KEY_CT))));
             if (type == HttpEnum.ResultType.BYTES)
                 response.setBytes(rh.readBytes());
             if (type == HttpEnum.ResultType.FILE) {

@@ -91,7 +91,7 @@ public class OkHttpTask implements IHttpTask {
     }
 
     @Override
-    public ResponseParams POST(RequestParams params, IHttpProgress hp) throws HttpException {
+    public ResponseParams POST_FORM(RequestParams params, IHttpProgress hp) throws HttpException {
         FormBody requestBody = buildFormBody(params.params());
         Request request = getRequest(params, requestBody);
         Response response = getResponse(editOkHttpClient(params, hp), request);
@@ -100,7 +100,7 @@ public class OkHttpTask implements IHttpTask {
 
     @Override
     public ResponseParams POST_CUSTOM(RequestParams params, IHttpProgress hp) throws HttpException {
-        RequestBody requestBody = buildRequestBody(params.customContent().getContentType(), params.customContent().getContent());
+        RequestBody requestBody = buildRequestBody(params.requestBody().getContentType(), params.requestBody().getContent());
         if (hp != null)
             requestBody = new RequestBodyProgress(requestBody, hp);
         Request request = getRequest(params, requestBody);
@@ -110,14 +110,14 @@ public class OkHttpTask implements IHttpTask {
 
     @Override
     public ResponseParams POST_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        MultipartBody multipartBody = buildMultipartBody(params.params(), params.uploadContent(), hp);
+        MultipartBody multipartBody = buildMultipartBody(params.params(), params.multipartBody(), hp);
         Request request = getRequest(params, multipartBody);
         Response response = getResponse(editOkHttpClient(params, null), request);
         return dealResponse(params, response);
     }
 
     @Override
-    public ResponseParams PUT(RequestParams params, IHttpProgress hp) throws HttpException {
+    public ResponseParams PUT_FORM(RequestParams params, IHttpProgress hp) throws HttpException {
         FormBody requestBody = buildFormBody(params.params());
         Request request = getRequest(params, requestBody);
         Response response = getResponse(editOkHttpClient(params, hp), request);
@@ -126,7 +126,7 @@ public class OkHttpTask implements IHttpTask {
 
     @Override
     public ResponseParams PUT_CUSTOM(RequestParams params, IHttpProgress hp) throws HttpException {
-        RequestBody requestBody = buildRequestBody(params.customContent().getContentType(), params.customContent().getContent());
+        RequestBody requestBody = buildRequestBody(params.requestBody().getContentType(), params.requestBody().getContent());
         if (hp != null)
             requestBody = new RequestBodyProgress(requestBody, hp);
         Request request = getRequest(params, requestBody);
@@ -136,7 +136,7 @@ public class OkHttpTask implements IHttpTask {
 
     @Override
     public ResponseParams PUT_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        MultipartBody multipartBody = buildMultipartBody(params.params(), params.uploadContent(), hp);
+        MultipartBody multipartBody = buildMultipartBody(params.params(), params.multipartBody(), hp);
         Request request = getRequest(params, multipartBody);
         Response response = getResponse(editOkHttpClient(params, null), request);
         return dealResponse(params, response);
@@ -160,29 +160,25 @@ public class OkHttpTask implements IHttpTask {
         Request.Builder builder = new Request.Builder();
 
 
-        switch (params.requestType()) {
+        switch (params.requestMethod()) {
             case GET:
-                builder.url(params.urlFormat());
+                builder.url(params.urlEncode());
                 builder.get();
                 break;
             case POST:
-            case POST_CUSTOM:
-            case POST_MULTIPART:
-                builder.url(params.urlRestful());
+                builder.url(params.urlAndPath());
                 builder.post(requestBody);
                 break;
             case PUT:
-            case PUT_CUSTOM:
-            case PUT_MULTIPART:
-                builder.url(params.urlRestful());
+                builder.url(params.urlAndPath());
                 builder.put(requestBody);
                 break;
             case HEAD:
-                builder.url(params.urlFormat());
+                builder.url(params.urlEncode());
                 builder.head();
                 break;
             case DELETE:
-                builder.url(params.urlFormat());
+                builder.url(params.urlEncode());
                 builder.delete();
                 break;
         }
@@ -314,11 +310,11 @@ public class OkHttpTask implements IHttpTask {
      * @param values 参数
      * @return FormBody
      */
-    private FormBody buildFormBody(Map<String, String> values) {
+    private FormBody buildFormBody(Map<String, Object> values) {
         FormBody.Builder builder = new FormBody.Builder();
         if (values != null) {
-            for (Map.Entry<String, String> entry : values.entrySet()) {
-                builder.add(entry.getKey(), entry.getValue());
+            for (Map.Entry<String, ?> entry : values.entrySet()) {
+                builder.add(entry.getKey(), String.valueOf(entry.getValue()));
             }
         }
         return builder.build();
@@ -334,12 +330,12 @@ public class OkHttpTask implements IHttpTask {
      * @param hp      进度回调
      * @return MultipartBody
      */
-    private MultipartBody buildMultipartBody(Map<String, String> params, Map<String, RequestParams.RequestBody> content, IHttpProgress hp) {
+    private MultipartBody buildMultipartBody(Map<String, Object> params, Map<String, RequestParams.RequestBody> content, IHttpProgress hp) {
         MultipartBody.Builder builder = new MultipartBody.Builder();
         builder.setType(MultipartBody.FORM);
         if (params != null) {//
-            for (Map.Entry<String, String> entry : params.entrySet()) {
-                builder.addFormDataPart(entry.getKey(), entry.getValue());
+            for (Map.Entry<String, ?> entry : params.entrySet()) {
+                builder.addFormDataPart(entry.getKey(), String.valueOf(entry.getValue()));
             }
         }
         if (content != null) {

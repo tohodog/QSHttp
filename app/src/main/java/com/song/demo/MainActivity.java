@@ -83,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         QSHttp.get(url)
                 .param("wd", "安卓http")
                 .param("ie", "UTF-8")//自动构建url--https://www.baidu.com/s?ie=UTF-8&wd=安卓http
-                //.restful(123,11) 这个参数会构建这样的url--https://www.baidu.com/s/123/11
+                //.path(123,11) 这个参数会构建这样的url--https://www.baidu.com/s/123/11
                 .buildAndExecute(new HttpCallback() {
                     @Override
                     public void onSuccess(ResponseParams response) {
@@ -120,10 +120,10 @@ public class MainActivity extends AppCompatActivity {
     //post一个json给服务器 并自动解析服务器返回信息
     public void jsonPost() {
         String url = "https://www.baidu.com";
-        QSHttp.postCustom(url)
+        QSHttp.postJSON(url)
                 .param("userid", 10086)
                 .param("password", "qwe123456")
-                //.postJson(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
+                //.jsonBody(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
                 .jsonModel(Bean.class)
                 .buildAndExecute(new HttpCallback() {
                     @Override
@@ -144,7 +144,8 @@ public class MainActivity extends AppCompatActivity {
     //文件下载
     public void downGET() {
         String url = "https://www.baidu.com";
-        QSHttp.download(url, ".../xxx.txt")
+        QSHttp.get(url)
+                .downloadPath(".../xxx.txt")
                 .buildAndExecute(new ProgressCallback() {
                     @Override
                     public void onProgress(long var1, long var2, String var3) {
@@ -167,7 +168,7 @@ public class MainActivity extends AppCompatActivity {
     //文件上传
     public void upLoad() {
         String url = "https://www.baidu.com";
-        QSHttp.upload(url)
+        QSHttp.post(url)
                 .param("userid", 10086)
                 .param("password", "qwe123456")
 
@@ -220,9 +221,9 @@ public class MainActivity extends AppCompatActivity {
     public void allAPI() {
         String url = "https://www.baidu.com/s";
         QSHttp.post(url)//选择请求的类型
-                .param("userid", 123456)//键值对参数,get post postjson upload(multipart)支持此参数
-                .restful("video", 2333)//构建成这样的url https://www.baidu.com/s/video/233
-                .postJson(new Bean())//传入一个对象 会自动转化为json上传
+                .param("userid", 123456)//键值对参数,get post postjson multipartBody(multipart)支持此参数
+                .path("video", 2333)//构建成这样的url https://www.baidu.com/s/video/233
+                .jsonBody(new Bean())//传入一个对象 会自动转化为json上传
                 .header("User-Agent", "QsHttp/Android")//添加请求头
                 .uploadByte("bytes", new byte[1024])//multipart方式上传一个字节数组
                 .uploadFile("file", new File("xx.jpg"))//multipart方式上传一个文件
