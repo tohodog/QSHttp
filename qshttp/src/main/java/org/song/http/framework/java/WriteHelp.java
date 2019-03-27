@@ -36,7 +36,7 @@ public class WriteHelp {
     }
 
     public void writeBytes(byte[] bytes) throws IOException {
-        mark = "up byte[]";
+        mark = "byte[]";
 
         int offset = 0, all = bytes.length;
         while (offset < all) {

@@ -11,7 +11,7 @@ import javax.net.ssl.SSLSocketFactory;
  * Created by song on 2016/9/18.
  * http框架的一些配置、常量
  */
-public class HttpManage {
+public class QSHttpManage {
 
     public static boolean DEBUG = true;
 
@@ -23,7 +23,7 @@ public class HttpManage {
      * 才能支持缓存 cookie ssl证书 网络状态判断
      */
     public static void init(Application application) {
-        HttpManage.application = application;
+        QSHttpManage.application = application;
     }
 
 
@@ -34,8 +34,8 @@ public class HttpManage {
      * @param sslHost          设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
      */
     public static void setSSL(SSLSocketFactory sslSocketFactory, String... sslHost) {
-        HttpManage.sslSocketFactory = sslSocketFactory;
-        HttpManage.sslHost = sslHost;
+        QSHttpManage.sslSocketFactory = sslSocketFactory;
+        QSHttpManage.sslHost = sslHost;
     }
 
     static SSLSocketFactory sslSocketFactory;

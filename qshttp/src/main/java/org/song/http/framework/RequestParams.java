@@ -5,6 +5,7 @@ import com.alibaba.fastjson.JSONObject;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ public class RequestParams {
     private Map<String, Object> params;//键值对参数
     private RequestBody requestBody;//自定义post/put内容
     private Map<String, RequestBody> multipartBody;//上传内容参数
+    private String multipartType;
 
     private Object tag;//标记
 
@@ -67,6 +69,10 @@ public class RequestParams {
 
     public Map<String, RequestBody> multipartBody() {
         return multipartBody;
+    }
+
+    public String multipartType() {
+        return multipartType;
     }
 
     public Map<String, String> headers() {
@@ -147,6 +153,7 @@ public class RequestParams {
         builder.pathParams = pathParams;
         builder.params = params;
         builder.multipartBody = multipartBody;
+        builder.multipartType = multipartType;
         builder.headers = headers;
         builder.tag = tag;
 
@@ -175,6 +182,7 @@ public class RequestParams {
         private Map<String, Object> params;
         private List<String> pathParams;
         private Map<String, RequestBody> multipartBody;
+        private String multipartType;
 
         private Object tag;//标记
 
@@ -191,6 +199,7 @@ public class RequestParams {
         private int timeOut;// 超时ms
 
         private boolean toJsonBodyFlag;
+        private boolean toMultiBodyFlag;
 
         public Builder(String url) {
             this.url = url;
@@ -199,6 +208,8 @@ public class RequestParams {
         public RequestParams build() {
             if (toJsonBodyFlag) {
                 jsonBody(params);
+            } else if (toMultiBodyFlag) {
+                multipartBody(params);
             }
             RequestParams requestParams = new RequestParams();
             requestParams.url = url;
@@ -206,6 +217,7 @@ public class RequestParams {
             requestParams.requestBody = requestBody;
             requestParams.params = params;
             requestParams.multipartBody = multipartBody;
+            requestParams.multipartType = multipartType;
             requestParams.headers = headers;
             requestParams.tag = tag;
             requestParams.timeOut = timeOut;
@@ -329,7 +341,7 @@ public class RequestParams {
         }
 
         /**
-         * get/post请求键值对参数
+         * 请求键值对参数(string file byte[])
          */
         public RequestParams.Builder param(String key, Object value) {
             if (params == null)
@@ -342,12 +354,12 @@ public class RequestParams {
         }
 
         /**
-         * get/post请求键值对参数
+         * 请求键值对参数
          */
         public RequestParams.Builder param(Object object) {
             if (object != null) {
-                if (object.getClass().isArray())
-                    throw new IllegalArgumentException("can not array");
+                if (object.getClass().isArray() || object instanceof Collection)
+                    throw new IllegalArgumentException("param can not array");
                 JSONObject jsonObject = (JSONObject) JSON.toJSON(object);
                 for (String key : jsonObject.keySet())
                     param(key, jsonObject.get(key));
@@ -356,7 +368,7 @@ public class RequestParams {
         }
 
         /**
-         * get/post请求键值对参数
+         * 请求键值对参数
          */
         public RequestParams.Builder param(Map<String, ?> params) {
             if (params != null) {
@@ -368,18 +380,18 @@ public class RequestParams {
 
 
         /**
-         * post/put 一个json参数
-         */
-        public RequestParams.Builder jsonBody(Object postJson) {
-            requestBody(HttpEnum.CONTENT_TYPE_JSON, JSON.toJSONString(postJson));
-            return this;
-        }
-
-        /**
          * 把 params 转为一个json参数
          */
         public RequestParams.Builder toJsonBody() {
             toJsonBodyFlag = true;
+            return this;
+        }
+
+        /**
+         * post/put 一个json参数
+         */
+        public RequestParams.Builder jsonBody(Object postJson) {
+            requestBody(HttpEnum.CONTENT_TYPE_JSON, JSON.toJSONString(postJson));
             return this;
         }
 
@@ -392,31 +404,55 @@ public class RequestParams {
             return this;
         }
 
-        /**
-         * 上传文件参数
-         */
-        public RequestParams.Builder uploadFile(String key, File value) {
-            return multipartBody(HttpEnum.CONTENT_TYPE_DATA, key, value.getName(), value);
-        }
 
         /**
-         * 上传字节参数
+         * 把 params 转为multipartBody参数
          */
-        public RequestParams.Builder uploadByte(String key, byte[] value) {
-            return multipartBody(HttpEnum.CONTENT_TYPE_DATA, key, "bytes", value);
+        public RequestParams.Builder toMultiBody() {
+            return toMultiBody(HttpEnum.CONTENT_TYPE_FORM);
         }
 
+
+        /**
+         * 把 params 转为multipartBody参数
+         */
+        public RequestParams.Builder toMultiBody(String multipartType) {
+            if (toMultiBodyFlag)
+                return this;
+            toMultiBodyFlag = true;
+            this.multipartType = multipartType;
+            if (multipartBody == null)
+                multipartBody = new HashMap<>();
+            return this;
+        }
 
         /**
          * 上传
          */
-        public RequestParams.Builder multipartBody(String contentType, String key, String filename, Object value) {
-            if (multipartBody == null)
-                multipartBody = new HashMap<>();
+        public RequestParams.Builder multipartBody(String key, String contentType, String filename, Object value) {
+            toMultiBody();
             multipartBody.put(key, new RequestBody(contentType, filename, value));
             return this;
         }
 
+        /**
+         * 上传
+         */
+        private RequestParams.Builder multipartBody(Map<String, ?> params) {
+            if (params != null) {
+                for (String key : params.keySet()) {
+                    Object value = params.get(key);
+                    if (value instanceof File) {
+                        multipartBody(key, HttpEnum.CONTENT_TYPE_FORM, ((File) value).getName(), value);
+                    } else if (value instanceof byte[]) {
+                        multipartBody(key, HttpEnum.CONTENT_TYPE_FORM, "bytes", value);
+                    } else if (value != null) {
+                        multipartBody(key, HttpEnum.CONTENT_TYPE_TEXT, null, value.toString());
+                    }
+                }
+            }
+            return this;
+        }
 
         /**
          * 下载路径 请求时有这个参数则写入文件
@@ -530,6 +566,6 @@ public class RequestParams {
 
     //
     public int execute(HttpCallback cb) {
-        return HttpManage.getHttpClient().execute(this, cb);
+        return QSHttpManage.getHttpClient().execute(this, cb);
     }
 }

@@ -87,18 +87,18 @@ public class Utils {
     //检查访问需要设置自签名ssl不
     public static SSLSocketFactory checkSSL(String host) {
         if (host != null)
-            if (HttpManage.sslSocketFactory != null) {
-                if (HttpManage.sslHost == null)
-                    return HttpManage.sslSocketFactory;
-                for (String s : HttpManage.sslHost)
+            if (QSHttpManage.sslSocketFactory != null) {
+                if (QSHttpManage.sslHost == null)
+                    return QSHttpManage.sslSocketFactory;
+                for (String s : QSHttpManage.sslHost)
                     if (host.contains(s))
-                        return HttpManage.sslSocketFactory;
+                        return QSHttpManage.sslSocketFactory;
             }
         return null;
     }
 
     public static void Log(RequestParams params, ResponseParams response) {
-        if (!HttpManage.DEBUG)
+        if (!QSHttpManage.DEBUG)
             return;
         if (response.isSuccess())
             switch (response.resultType()) {
@@ -193,16 +193,16 @@ public class Utils {
      * 检查网络
      */
     public static boolean checkNet() {
-        if (HttpManage.application == null)
+        if (QSHttpManage.application == null)
             return true;
-        ConnectivityManager connectivityManager = (ConnectivityManager) HttpManage.application.getSystemService(Context.CONNECTIVITY_SERVICE);
+        ConnectivityManager connectivityManager = (ConnectivityManager) QSHttpManage.application.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isAvailable();
     }
 
     public static void showToast(String str) {
-        if (HttpManage.application != null)
-            Toast.makeText(HttpManage.application, str, Toast.LENGTH_LONG).show();
+        if (QSHttpManage.application != null)
+            Toast.makeText(QSHttpManage.application, str, Toast.LENGTH_LONG).show();
     }
 
 
@@ -239,7 +239,7 @@ public class Utils {
      */
     public static String getDiskCacheDir() {
         File file;
-        Context context = HttpManage.application;
+        Context context = QSHttpManage.application;
         if (context == null)
             file = new File(Environment.getExternalStorageDirectory().getPath() + "/qshttp_cache");
         else if ((Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())

@@ -72,7 +72,7 @@ public class ReadHelp {
         if (len > 0)
             readCount += len;
         if (hp != null)
-            hp.onProgress(readCount, len < 0 ? readCount : allCount, "");
+            hp.onProgress(readCount, len < 0 ? readCount : allCount, "download");
         return len;
     }
 

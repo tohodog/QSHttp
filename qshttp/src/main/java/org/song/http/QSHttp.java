@@ -19,7 +19,11 @@ public class QSHttp {
     }
 
     public static RequestParams.Builder postJSON(String url) {
-        return build(url, HttpEnum.RequestMethod.POST).toJsonBody();
+        return post(url).toJsonBody();
+    }
+
+    public static RequestParams.Builder postMulti(String url) {
+        return post(url).toMultiBody();
     }
 
     public static RequestParams.Builder put(String url) {
@@ -27,7 +31,11 @@ public class QSHttp {
     }
 
     public static RequestParams.Builder putJSON(String url) {
-        return build(url, HttpEnum.RequestMethod.PUT).toJsonBody();
+        return put(url).toJsonBody();
+    }
+
+    public static RequestParams.Builder putMulti(String url) {
+        return put(url).toMultiBody();
     }
 
     public static RequestParams.Builder head(String url) {

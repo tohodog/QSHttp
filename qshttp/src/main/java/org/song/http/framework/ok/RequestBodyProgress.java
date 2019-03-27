@@ -34,13 +34,13 @@ public class RequestBodyProgress extends RequestBody {
             mark = ((File) content).getName();
         } else if (content instanceof byte[]) {
             requestBody = RequestBody.create(mediaType, (byte[]) content);
-            mark = "up byte[]";
+            mark = "byte[]";
         } else if (content != null) {
             requestBody = RequestBody.create(mediaType, content.toString());
-            mark = "up string";
+            mark = "string";
         } else {
             requestBody = RequestBody.create((MediaType) null, new byte[0]);
-            mark = "up null";
+            mark = "null";
         }
     }
 
@@ -49,7 +49,7 @@ public class RequestBodyProgress extends RequestBody {
             throw new IllegalArgumentException("IHttpProgress can not null");
         this.requestBody = requestBody;
         this.iHttpProgress = iHttpProgress;
-        this.mark = "default";
+        this.mark = "upload";
     }
 
     @Override

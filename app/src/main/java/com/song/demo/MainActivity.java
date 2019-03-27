@@ -1,14 +1,17 @@
 package com.song.demo;
 
+import android.Manifest;
+import android.os.Build;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import org.json.JSONObject;
 import org.song.http.QSHttp;
 import org.song.http.framework.HttpCallback;
-import org.song.http.framework.HttpManage;
+import org.song.http.framework.QSHttpManage;
 import org.song.http.framework.HttpException;
 import org.song.http.framework.Interceptor;
 import org.song.http.framework.Parser;
@@ -28,21 +31,25 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
+        }
+
 
         //初始化框架 调用一次即可
-        HttpManage.init(getApplication());
+        QSHttpManage.init(getApplication());
         //配置需要自签名的网站 读取assets/cers文件夹里的证书
         //设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
-        HttpManage.setSSL(Utils.getAssetsSocketFactory(this, "cers"), "kyfw.12306.cn", "...");
-        //HttpManage.xx_http = HttpEnum.XX_Http.JAVA_HTTP;
+        QSHttpManage.setSSL(Utils.getAssetsSocketFactory(this, "cers"), "kyfw.12306.cn", "...");
+        //QSHttpManage.xx_http = HttpEnum.XX_Http.JAVA_HTTP;
         //...
 
 
         //拦截器 添加头参数 鉴权
-        HttpManage.setInterceptor(new Interceptor() {
+        QSHttpManage.setInterceptor(new Interceptor() {
             @Override
             public ResponseParams intercept(Chain chain) throws HttpException {
-                RequestParams r = chain.request().newBuild().header("username", "23333").build();
+                RequestParams r = chain.request().newBuild().header("Interceptor", "Interceptor").build();
                 return chain.proceed(r);
             }
         });
@@ -50,8 +57,16 @@ public class MainActivity extends AppCompatActivity {
         tv = (TextView) findViewById(R.id.textview);
         imageView = (ImageView) findViewById(R.id.imageView);
         httpsTest("https://www.baidu.com/s");
-        httpsTest("https://kyfw.12306.cn/otn/");
         getImg();
+
+
+        String url = "https://api.reol.top/api_test";
+        normalGET(url);
+        normalPost(url);
+        jsonPost(url);
+        downGET(url);
+        upLoad(url);
+
     }
 
 
@@ -77,9 +92,8 @@ public class MainActivity extends AppCompatActivity {
 
 
     //普通带参数 get
-    public void normalGET() {
+    public void normalGET(String url) {
 
-        String url = "https://www.baidu.com/s";
         QSHttp.get(url)
                 .param("wd", "安卓http")
                 .param("ie", "UTF-8")//自动构建url--https://www.baidu.com/s?ie=UTF-8&wd=安卓http
@@ -87,7 +101,7 @@ public class MainActivity extends AppCompatActivity {
                 .buildAndExecute(new HttpCallback() {
                     @Override
                     public void onSuccess(ResponseParams response) {
-                        tv.setText(response.string());
+                        tv.append(response.requestParams().url() + "成功\n");
                     }
 
                     @Override
@@ -98,15 +112,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
     //普通键值对 post
-    public void normalPost() {
-        String url = "http://api.kpie.com.cn/comments/play";
+    public void normalPost(String url) {
         QSHttp.post(url)
                 .param("userid", 10086)
                 .param("password", "qwe123456对")
                 .buildAndExecute(new HttpCallback() {
                     @Override
                     public void onSuccess(ResponseParams response) {
-                        tv.setText(response.string());
+                        tv.append(response.requestParams().url() + "成功\n");
                     }
 
                     @Override
@@ -118,8 +131,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     //post一个json给服务器 并自动解析服务器返回信息
-    public void jsonPost() {
-        String url = "https://www.baidu.com";
+    public void jsonPost(String url) {
         QSHttp.postJSON(url)
                 .param("userid", 10086)
                 .param("password", "qwe123456")
@@ -128,7 +140,7 @@ public class MainActivity extends AppCompatActivity {
                 .buildAndExecute(new HttpCallback() {
                     @Override
                     public void onSuccess(ResponseParams response) {
-                        tv.setText(response.string());
+                        tv.append(response.requestParams().url() + "成功\n");
                         Bean b = response.parserObject();
                         b.getUserid();
                     }
@@ -142,19 +154,18 @@ public class MainActivity extends AppCompatActivity {
 
 
     //文件下载
-    public void downGET() {
-        String url = "https://www.baidu.com";
+    public void downGET(String url) {
         QSHttp.get(url)
-                .downloadPath(".../xxx.txt")
+                .downloadPath(getExternalCacheDir().getPath() + "/http.txt")
                 .buildAndExecute(new ProgressCallback() {
                     @Override
                     public void onProgress(long var1, long var2, String var3) {
-                        tv.append(var1 * 100 / var2 + "%\n");
+                        Log.d("downGET:", var1 * 100 / var2 + "%\n");
                     }
 
                     @Override
                     public void onSuccess(ResponseParams response) {
-                        tv.setText(response.headers().toString());//获取响应求头
+                        tv.append(response.requestParams().url() + "成功\n");
                     }
 
                     @Override
@@ -166,24 +177,24 @@ public class MainActivity extends AppCompatActivity {
 
 
     //文件上传
-    public void upLoad() {
-        String url = "https://www.baidu.com";
-        QSHttp.post(url)
+    public void upLoad(String url) {
+        QSHttp.postMulti(url)
                 .param("userid", 10086)
                 .param("password", "qwe123456")
 
-                .uploadByte("bytes", new byte[1024])//multipart方式上传一个字节数组
-                .uploadFile("file", new File("xx.jpg"))//multipart方式上传一个文件
+                .param("bytes", new byte[1024])//multipart方式上传一个字节数组
+                .param("file", new File(getExternalCacheDir(), "http.txt"))//multipart方式上传一个文件
+                .multipartBody("img", "imgage/*", "x.jpg", new byte[1024])
 
                 .buildAndExecute(new ProgressCallback() {
                     @Override
                     public void onProgress(long var1, long var2, String var3) {
-                        tv.append(var1 * 100 / var2 + "%\n");
+                        Log.d("upLoad:", var1 * 100 / var2 + "%" + var3 + "\n");
                     }
 
                     @Override
                     public void onSuccess(ResponseParams response) {
-                        tv.setText(response.headers().toString());//获取响应求头
+                        tv.append(response.requestParams().url() + "成功\n");
                     }
 
                     @Override
@@ -223,10 +234,12 @@ public class MainActivity extends AppCompatActivity {
         QSHttp.post(url)//选择请求的类型
                 .param("userid", 123456)//键值对参数,get post postjson multipartBody(multipart)支持此参数
                 .path("video", 2333)//构建成这样的url https://www.baidu.com/s/video/233
+                .param("bytes", new byte[1024])//multipart方式上传一个字节数组
+                .param("file", new File("xx.jpg"))//multipart方式上传一个文件
+
+
                 .jsonBody(new Bean())//传入一个对象 会自动转化为json上传
                 .header("User-Agent", "QsHttp/Android")//添加请求头
-                .uploadByte("bytes", new byte[1024])//multipart方式上传一个字节数组
-                .uploadFile("file", new File("xx.jpg"))//multipart方式上传一个文件
 
                 .parser(parser)//自定义解析,由自己写解析逻辑
                 .jsonModel(Bean.class)//使用FastJson自动解析json,传一个实体类即可

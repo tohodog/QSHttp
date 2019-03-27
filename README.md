@@ -63,10 +63,10 @@ QSHttp.get("http://xxx").buildAndExecute();
 ###  post一个json给服务器 并自动解析服务器返回信息
 ```
         String url = "https://www.baidu.com";
-        QSHttp.postCustom(url)
+        QSHttp.postJSON(url)
                 .param("userid", 10086)
                 .param("password", "qwe123456")
-                //.postJson(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
+                //.jsonBody(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
                 .jsonModel(Bean.class)
                 .buildAndExecute(new HttpCallback() {
                     @Override
@@ -87,7 +87,8 @@ QSHttp.get("http://xxx").buildAndExecute();
 ###  文件下载
 ```
         String url = "https://www.baidu.com";
-        QSHttp.download(url,".../xxx.txt")
+        QSHttp.get(url)
+                .downloadPath("/xxx/xxx.txt")
                 .buildAndExecute(new ProgressCallback() {
                     @Override
                     public void onProgress(long var1, long var2, String var3) {
@@ -111,7 +112,7 @@ QSHttp.get("http://xxx").buildAndExecute();
 ###  文件上传
 ```
         String url = "https://www.baidu.com";
-        QSHttp.upload(url)
+        QSHttp.post(url)
                 .param("userid", 10086)
                 .param("password", "qwe123456")
 

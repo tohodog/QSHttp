@@ -1,6 +1,6 @@
 package org.song.http.framework.java;
 
-import org.song.http.framework.HttpManage;
+import org.song.http.framework.QSHttpManage;
 import org.song.http.framework.HttpEnum;
 import org.song.http.framework.HttpException;
 import org.song.http.framework.IHttpProgress;
@@ -50,61 +50,61 @@ public class HttpURLConnectionTask implements IHttpTask {
 
     @Override
     public ResponseParams GET(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlEncode(), "GET", params.headers(), params.timeOut());
+        HttpURLConnection conn = getHttpURLConnection(params.urlEncode(), HttpEnum.RequestMethod.GET.name(), params.headers(), params.timeOut());
         return getResponse(conn, params, hp);
     }
 
     @Override
     public ResponseParams POST_FORM(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), "POST_FORM", params.headers(), params.timeOut());
+        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), HttpEnum.RequestMethod.POST.name(), params.headers(), params.timeOut());
         writeFromBody(conn, params.params());
         return getResponse(conn, params, hp);
     }
 
     @Override
     public ResponseParams POST_CUSTOM(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), "POST_FORM", params.headers(), params.timeOut());
+        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), HttpEnum.RequestMethod.POST.name(), params.headers(), params.timeOut());
         writeMediaBody(conn, params.requestBody().getContentType(), params.requestBody().getContent(), hp);
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams POST_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), "POST_FORM", params.headers(), params.timeOut());
-        writeMultipartBody(conn, params.params(), params.multipartBody(), hp);
+        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), HttpEnum.RequestMethod.POST.name(), params.headers(), params.timeOut());
+        writeMultipartBody(conn, params.multipartType(), params.multipartBody(), hp);
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams PUT_FORM(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), "PUT_FORM", params.headers(), params.timeOut());
+        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), HttpEnum.RequestMethod.PUT.name(), params.headers(), params.timeOut());
         writeFromBody(conn, params.params());
         return getResponse(conn, params, hp);
     }
 
     @Override
     public ResponseParams PUT_CUSTOM(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), "PUT_FORM", params.headers(), params.timeOut());
+        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), HttpEnum.RequestMethod.PUT.name(), params.headers(), params.timeOut());
         writeMediaBody(conn, params.requestBody().getContentType(), params.requestBody().getContent(), hp);
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams PUT_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), "PUT_FORM", params.headers(), params.timeOut());
-        writeMultipartBody(conn, params.params(), params.multipartBody(), hp);
+        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), HttpEnum.RequestMethod.PUT.name(), params.headers(), params.timeOut());
+        writeMultipartBody(conn, params.multipartType(), params.multipartBody(), hp);
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams HEAD(RequestParams params) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlEncode(), "HEAD", params.headers(), params.timeOut());
+        HttpURLConnection conn = getHttpURLConnection(params.urlEncode(), HttpEnum.RequestMethod.HEAD.name(), params.headers(), params.timeOut());
         return getResponse(conn, params, null);
     }
 
     @Override
     public ResponseParams DELETE(RequestParams params) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlEncode(), "DELETE", params.headers(), params.timeOut());
+        HttpURLConnection conn = getHttpURLConnection(params.urlEncode(), HttpEnum.RequestMethod.DELETE.name(), params.headers(), params.timeOut());
         return getResponse(conn, params, null);
     }
 
@@ -120,8 +120,8 @@ public class HttpURLConnectionTask implements IHttpTask {
                     ((HttpsURLConnection) conn).setSSLSocketFactory(sslSocketFactory);
             }
 
-            conn.setConnectTimeout(timeOut > 0 ? timeOut : HttpManage.TIMEOUT_CONNECTION);
-            conn.setReadTimeout(timeOut > 0 ? timeOut : HttpManage.TIMEOUT_SOCKET_READ);
+            conn.setConnectTimeout(timeOut > 0 ? timeOut : QSHttpManage.TIMEOUT_CONNECTION);
+            conn.setReadTimeout(timeOut > 0 ? timeOut : QSHttpManage.TIMEOUT_SOCKET_READ);
             conn.setDoInput(true);// 允许输入
             //conn.setDoOutput(true);// 允许输出 设置了强制POST
             conn.setUseCaches(false);
@@ -130,16 +130,16 @@ public class HttpURLConnectionTask implements IHttpTask {
             if (head == null)
                 head = new HashMap<>();
             if (!head.containsKey("User-Agent"))
-                head.put("User-Agent", "Android/JavaHttpClient/Song");
+                head.put("User-Agent", "Android/JavaHttpClient/QSHttp");
             for (Map.Entry<String, String> entry : head.entrySet())
                 conn.setRequestProperty(entry.getKey(), entry.getValue());
 
             conn.setRequestMethod(method); // get/Post..方式
             return conn;
         } catch (MalformedURLException e) {
-            throw HttpException.Custom("url 格式不对");
+            throw HttpException.Custom("Url wrong format");
         } catch (ProtocolException e) {
-            throw HttpException.Custom("Method 格式不对");
+            throw HttpException.Custom("Method wrong");
         } catch (SocketTimeoutException e) {
             throw HttpException.HttpTimeOut(e);
         } catch (IOException e) {
@@ -218,10 +218,10 @@ public class HttpURLConnectionTask implements IHttpTask {
     /**
      * Multipart方式的body 上传多文件/参数
      */
-    private void writeMultipartBody(HttpURLConnection conn, Map<String, Object> params, Map<String, RequestParams.RequestBody> content, IHttpProgress hp) throws HttpException {
+    private void writeMultipartBody(HttpURLConnection conn, String multipartType, Map<String, RequestParams.RequestBody> content, IHttpProgress hp) throws HttpException {
         try {
             conn.setDoOutput(true);// 允许输出
-            new MultipartHelp(conn, params, content, hp).writeBody();
+            new MultipartHelp(conn, multipartType, content, hp).writeBody();
         } catch (SocketTimeoutException e) {
             conn.disconnect();
             throw HttpException.HttpTimeOut(e);

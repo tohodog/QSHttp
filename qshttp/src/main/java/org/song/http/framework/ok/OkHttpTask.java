@@ -1,6 +1,6 @@
 package org.song.http.framework.ok;
 
-import org.song.http.framework.HttpManage;
+import org.song.http.framework.QSHttpManage;
 import org.song.http.framework.HttpEnum;
 import org.song.http.framework.HttpException;
 import org.song.http.framework.IHttpProgress;
@@ -67,17 +67,17 @@ public class OkHttpTask implements IHttpTask {
 
     private OkHttpClient buildOkHttpClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .connectTimeout(HttpManage.TIMEOUT_CONNECTION, TimeUnit.MILLISECONDS)
-                .readTimeout(HttpManage.TIMEOUT_SOCKET_READ, TimeUnit.MILLISECONDS)
-                .writeTimeout(HttpManage.TIMEOUT_SOCKET_WRITE, TimeUnit.MILLISECONDS)
-                .cookieJar(new CookieManage(HttpManage.application));
+                .connectTimeout(QSHttpManage.TIMEOUT_CONNECTION, TimeUnit.MILLISECONDS)
+                .readTimeout(QSHttpManage.TIMEOUT_SOCKET_READ, TimeUnit.MILLISECONDS)
+                .writeTimeout(QSHttpManage.TIMEOUT_SOCKET_WRITE, TimeUnit.MILLISECONDS)
+                .cookieJar(new CookieManage(QSHttpManage.application));
         //https
-//        SSLSocketFactory sslSocketFactory = HttpManage.sslSocketFactory;
+//        SSLSocketFactory sslSocketFactory = QSHttpManage.sslSocketFactory;
 //        if (sslSocketFactory != null)
 //            builder.sslSocketFactory(sslSocketFactory);
         //缓存 需服务器支持(头多个Cache-Control就可以了) 或自己拦截响应请求加上缓存标记 不推荐
-        if (HttpManage.application != null)
-            builder.cache(new Cache(new File(Utils.getDiskCacheDir()), HttpManage.DEFAULT_CACHE_SIZE));
+        if (QSHttpManage.application != null)
+            builder.cache(new Cache(new File(Utils.getDiskCacheDir()), QSHttpManage.DEFAULT_CACHE_SIZE));
         return builder.build();
 
     }
@@ -110,7 +110,7 @@ public class OkHttpTask implements IHttpTask {
 
     @Override
     public ResponseParams POST_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        MultipartBody multipartBody = buildMultipartBody(params.params(), params.multipartBody(), hp);
+        MultipartBody multipartBody = buildMultipartBody(params.multipartType(), params.multipartBody(), hp);
         Request request = getRequest(params, multipartBody);
         Response response = getResponse(editOkHttpClient(params, null), request);
         return dealResponse(params, response);
@@ -136,7 +136,7 @@ public class OkHttpTask implements IHttpTask {
 
     @Override
     public ResponseParams PUT_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        MultipartBody multipartBody = buildMultipartBody(params.params(), params.multipartBody(), hp);
+        MultipartBody multipartBody = buildMultipartBody(params.multipartType(), params.multipartBody(), hp);
         Request request = getRequest(params, multipartBody);
         Response response = getResponse(editOkHttpClient(params, null), request);
         return dealResponse(params, response);
@@ -279,7 +279,7 @@ public class OkHttpTask implements IHttpTask {
         if (headers == null)
             headers = new HashMap<>();
         if (!headers.containsKey("User-Agent"))
-            headers.put("User-Agent", "Android/OkHttpClient/Song");
+            headers.put("User-Agent", "Android/OkHttpClient/QSHttp");
         return Headers.of(headers);
     }
 
@@ -325,19 +325,21 @@ public class OkHttpTask implements IHttpTask {
      * 多文件/文件参数混合 post的表单 上传文件带进度监听
      * Content-Type:multipart/form-data
      *
-     * @param params  参数
-     * @param content 上传文内容参数
-     * @param hp      进度回调
+     * @param multipartType 参数
+     * @param content       上传文内容参数
+     * @param hp            进度回调
      * @return MultipartBody
      */
-    private MultipartBody buildMultipartBody(Map<String, Object> params, Map<String, RequestParams.RequestBody> content, IHttpProgress hp) {
+    private MultipartBody buildMultipartBody(String multipartType, Map<String, RequestParams.RequestBody> content, IHttpProgress hp) {
         MultipartBody.Builder builder = new MultipartBody.Builder();
-        builder.setType(MultipartBody.FORM);
-        if (params != null) {//
-            for (Map.Entry<String, ?> entry : params.entrySet()) {
-                builder.addFormDataPart(entry.getKey(), String.valueOf(entry.getValue()));
-            }
-        }
+        MediaType m = MediaType.parse(multipartType);
+        if (m == null) m = MultipartBody.FORM;
+        builder.setType(m);
+//        if (params != null) {//
+//            for (Map.Entry<String, ?> entry : params.entrySet()) {
+//                builder.addFormDataPart(entry.getKey(), String.valueOf(entry.getValue()));
+//            }
+//        }
         if (content != null) {
             for (Map.Entry<String, RequestParams.RequestBody> entry : content.entrySet()) {
                 RequestBody requestBody;

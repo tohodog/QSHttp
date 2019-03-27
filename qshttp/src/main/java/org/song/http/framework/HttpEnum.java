@@ -12,9 +12,11 @@ public class HttpEnum {
     final static public int HTTP_PROGRESS = 0X202;//进度
 
     public static final String CHARSET = "utf-8";
-    public static final String CONTENT_TYPE_DATA = "multipart/form-data";
+    public static final String CONTENT_TYPE_FORM = "multipart/form-data";
     public static final String CONTENT_TYPE_JSON = "application/json; charset=" + CHARSET;
     public static final String CONTENT_TYPE_URL = "application/x-www-form-urlencoded; charset=" + CHARSET;
+    public static final String CONTENT_TYPE_TEXT = "text/plain; charset=" + CHARSET;
+
     public static final String HEAD_KEY_CT = "Content-Type";
     public static final String HEAD_KEY_CR = "Content-Range";
     public static final String HEAD_KEY_UA = "User-Agent";
@@ -28,13 +30,6 @@ public class HttpEnum {
         DELETE
     }
 
-    //发送数据类型
-    public enum BodyType {
-        FORM,
-        MULTIPART,
-        JSON,
-        CUSTOM,
-    }
 
     //返回数据类型
     public enum ResultType {

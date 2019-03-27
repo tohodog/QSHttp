@@ -16,23 +16,23 @@ import java.util.Map;
  */
 
 public class MultipartHelp {
-    private HttpURLConnection conn;
-    private Map<String, Object> params;
-    private Map<String, RequestParams.RequestBody> upContent;
-    private IHttpProgress hp;
+
+    private final HttpURLConnection conn;
+    private final String multipartType;
+    private final Map<String, RequestParams.RequestBody> upContent;
+    private final IHttpProgress hp;
 
     private final String charset = "utf-8";
     private final String BOUNDARY = java.util.UUID.randomUUID().toString();
     private final String PREFIX = "--", LINEND = "\r\n";
-    private final String MULTIPART_FROM_DATA = HttpEnum.CONTENT_TYPE_DATA;
 
 
     MultipartHelp(HttpURLConnection conn,
-                  Map<String, Object> params,
+                  String multipartType,
                   Map<String, RequestParams.RequestBody> upContent,
                   IHttpProgress hp) {
         this.conn = conn;
-        this.params = params;
+        this.multipartType = multipartType;
         this.upContent = upContent;
         this.hp = hp;
 
@@ -41,30 +41,30 @@ public class MultipartHelp {
     public void writeBody() throws IOException {
 
         conn.setRequestProperty("Charset", charset);
-        conn.setRequestProperty(HttpEnum.HEAD_KEY_CT, MULTIPART_FROM_DATA
+        conn.setRequestProperty(HttpEnum.HEAD_KEY_CT, multipartType
                 + ";boundary=" + BOUNDARY);
         OutputStream os = conn.getOutputStream();
 
-        WriteHelp wh = new WriteHelp(os);
+//        WriteHelp wh = new WriteHelp(os);
 
         // 首先组拼文本类型的参数
-        StringBuilder sb = new StringBuilder();
-        if (params != null) {
-            for (Map.Entry<String, Object> entry : params.entrySet()) {
-                sb.append(PREFIX);
-                sb.append(BOUNDARY);
-                sb.append(LINEND);
-                sb.append("Content-Disposition: form-data; name=\""
-                        + entry.getKey() + "\"" + LINEND);
-                sb.append("Content-Type: text/plain; charset=" + charset
-                        + LINEND);
-                sb.append("Content-Transfer-Encoding: 8bit" + LINEND);
-                sb.append(LINEND);
-                sb.append(entry.getValue());
-                sb.append(LINEND);
-            }
-            wh.writeBytes(sb.toString().getBytes(charset));
-        }
+//        StringBuilder sb = new StringBuilder();
+//        if (params != null) {
+//            for (Map.Entry<String, Object> entry : params.entrySet()) {
+//                sb.append(PREFIX);
+//                sb.append(BOUNDARY);
+//                sb.append(LINEND);
+//                sb.append("Content-Disposition: form-data; name=\""
+//                        + entry.getKey() + "\"" + LINEND);
+//                sb.append("Content-Type: text/plain; charset=" + charset
+//                        + LINEND);
+//                sb.append("Content-Transfer-Encoding: 8bit" + LINEND);
+//                sb.append(LINEND);
+//                sb.append(entry.getValue());
+//                sb.append(LINEND);
+//            }
+//            wh.writeBytes(sb.toString().getBytes(charset));
+//        }
 
         if (upContent != null)
             for (Map.Entry<String, RequestParams.RequestBody> content : upContent.entrySet()) {
@@ -73,10 +73,12 @@ public class MultipartHelp {
                 sb1.append(PREFIX);
                 sb1.append(BOUNDARY);
                 sb1.append(LINEND);
-                sb1.append("Content-Disposition: form-data; name=\"" + content.getKey() + "\"; filename=\""
-                        + body.getFilename() + "\"" + LINEND);
-                sb1.append("Content-Type: " + body.getContentType() + "; charset="
-                        + charset + LINEND);
+                sb1.append("Content-Disposition: form-data; name=\"" + content.getKey() + "\"");
+                if (body.getFilename() != null) {
+                    sb1.append("; filename=\"" + body.getFilename() + "\"");
+                }
+                sb1.append(LINEND);
+                sb1.append("Content-Type: " + body.getContentType() + LINEND);
                 sb1.append(LINEND);
                 os.write(sb1.toString().getBytes(charset));
                 //写入上传内容

@@ -24,7 +24,7 @@ public abstract class AbsHttpClient {
     }
 
     static {
-        executorService = Executors.newFixedThreadPool(HttpManage.DEFAULT_THREAD_POOL_SIZE);
+        executorService = Executors.newFixedThreadPool(QSHttpManage.DEFAULT_THREAD_POOL_SIZE);
         // 几个new的方法
         // single单线程用
         // single schedule 单线程延时执行用 schedule 多线程延时执行 当执行时间大于执行间隔用到多线程
@@ -149,7 +149,7 @@ public abstract class AbsHttpClient {
                 public void run() {
                     ThreadHandler.Progress(var1, var2, var3, mThreadWhat);
                 }
-            }, 0, HttpManage.PROGRESS_SPACE);
+            }, 0, QSHttpManage.PROGRESS_SPACE);
         }
 
         public void destroy() {
