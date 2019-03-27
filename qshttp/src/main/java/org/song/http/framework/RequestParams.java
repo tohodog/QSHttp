@@ -454,14 +454,6 @@ public class RequestParams {
             return this;
         }
 
-        /**
-         * 下载路径 请求时有这个参数则写入文件
-         */
-        public RequestParams.Builder downloadPath(String downloadPath) {
-            this.downloadPath = downloadPath;
-            resultType(HttpEnum.ResultType.FILE);
-            return this;
-        }
 
         /**
          * 自动解析模型

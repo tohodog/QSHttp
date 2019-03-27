@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity {
     //文件下载
     public void downGET(String url) {
         QSHttp.get(url)
-                .downloadPath(getExternalCacheDir().getPath() + "/http.txt")
+                .resultByFile(getExternalCacheDir().getPath() + "/http.txt")
                 .buildAndExecute(new ProgressCallback() {
                     @Override
                     public void onProgress(long var1, long var2, String var3) {
@@ -184,7 +184,7 @@ public class MainActivity extends AppCompatActivity {
 
                 .param("bytes", new byte[1024])//multipart方式上传一个字节数组
                 .param("file", new File(getExternalCacheDir(), "http.txt"))//multipart方式上传一个文件
-                .multipartBody("img", "imgage/*", "x.jpg", new byte[1024])
+                .multipartBody("img", "image/*", "x.jpg", new byte[1024])
 
                 .buildAndExecute(new ProgressCallback() {
                     @Override
@@ -232,14 +232,23 @@ public class MainActivity extends AppCompatActivity {
     public void allAPI() {
         String url = "https://www.baidu.com/s";
         QSHttp.post(url)//选择请求的类型
-                .param("userid", 123456)//键值对参数,get post postjson multipartBody(multipart)支持此参数
-                .path("video", 2333)//构建成这样的url https://www.baidu.com/s/video/233
-                .param("bytes", new byte[1024])//multipart方式上传一个字节数组
-                .param("file", new File("xx.jpg"))//multipart方式上传一个文件
-
-
-                .jsonBody(new Bean())//传入一个对象 会自动转化为json上传
                 .header("User-Agent", "QsHttp/Android")//添加请求头
+
+                .path(2333, "video")//构建成这样的url https://www.baidu.com/s/2233/video
+
+                .param("userid", 123456)//键值对参数
+                .param("password", "asdfgh")//键值对参数
+                .param(new Bean())//键值对参数
+
+                .toJsonBody()//把 params 转为json;application/json
+                .jsonBody(new Bean())//传入一个对象,会自动转化为json上传;application/json
+
+                .requestBody("image/jpeg", new File("xx.jpg"))//直接上传自定义的内容 自定义contentType (postjson内部是调用这个实现)
+
+                .param("bytes", new byte[1024])//传一个字节数组,multipart支持此参数
+                .param("file", new File("xx.jpg"))//传一个文件,multipart支持此参数
+                .toMultiBody()//把 params 转为multipartBody参数;multipart/form-data
+
 
                 .parser(parser)//自定义解析,由自己写解析逻辑
                 .jsonModel(Bean.class)//使用FastJson自动解析json,传一个实体类即可
@@ -247,9 +256,9 @@ public class MainActivity extends AppCompatActivity {
                 .resultByBytes()//请求结果返回一个字节组 默认是返回字符
                 .resultByFile(".../1.txt")//本地路径 有此参数 请求的内容将被写入文件
 
-                .requestBody("image/jpeg", new File("xx.jpg"))//直接上传自定义的内容 自定义contentType (postjson内部是调用这个实现)
                 .errCache()//开启这个 [联网失败]会使用缓存,如果有的话
-
+                .clientCache(24 * 3600)//开启缓存,有效时间一天
+                .timeOut(10 * 1000)
                 .openServerCache()//开启服务器缓存规则 基于okhttp支持
                 //构建好参数和配置后调用执行联网
                 .buildAndExecute(new ProgressCallback() {

@@ -47,6 +47,14 @@ public class QSHttp {
     }
 
 
+    public static RequestParams.Builder download(String url, String path) {
+        return get(url).resultByFile(path);
+    }
+
+    public static RequestParams.Builder upload(String url) {
+        return postMulti(url);
+    }
+
     //这里可以添加公共参数鉴权
     private static RequestParams.Builder build(String url, HttpEnum.RequestMethod requestMethod) {
         return RequestParams.Build(url)
