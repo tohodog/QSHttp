@@ -3,10 +3,10 @@ QSHttp
   * 一句代码联网,参数控制方便,自动json解析,使用简单
   * 支持http/自签名https(get post put head...) 文件上传、下载、进度监听、自动解析,基于Okhttp的支持cookie自动管理,缓存控制
   * 支持自定义有效时间缓存,错误缓存(联网失败时使用)
-  * 模块化设计,联网模块可更换,目前提供OkHttp和java原生两种实现
   * 详细的请求信息回调、错误类型(网络链接失败,超时,断网,解析失败,404...)
   * 详细的访问日记打印,非常方便调试
-  * 提供拦截器,可添加一些鉴权参数...
+  * 提供拦截器,可添加一些公共鉴权参数...
+  * 模块化设计,联网模块可更换,目前提供OkHttp和java原生两种实现
 
 ### Gradle
 ```
@@ -146,6 +146,8 @@ QSHttp.get("http://xxx").buildAndExecute();
 ``` 
         //使用前进行初始化,才可支持缓存
         QSHttpManage.init(getApplication());
+        //日记
+        QSHttpManage.DEBUG = true;
 
         //配置自签名 读取assets/cers文件夹里的证书
         //第二个参数设置需要自签名的主机地址,不设置则只能访问证书里的https网站
@@ -159,6 +161,7 @@ QSHttp.get("http://xxx").buildAndExecute();
                         return chain.proceed(r);
                     }
                 });
+        //还有线程池,缓存大小等等设置
 
         String url = "https://www.baidu.com/s";
                 QSHttp.post(url)//选择请求的类型

@@ -35,15 +35,14 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
         }
 
-
+        QSHttpManage.DEBUG = true;
         //初始化框架 调用一次即可
         QSHttpManage.init(getApplication());
         //配置需要自签名的网站 读取assets/cers文件夹里的证书
         //设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
         QSHttpManage.setSSL(Utils.getAssetsSocketFactory(this, "cers"), "kyfw.12306.cn", "...");
         //QSHttpManage.xx_http = HttpEnum.XX_Http.JAVA_HTTP;
-        //...
-
+        //...还有线程池,缓存大小等等设置
 
         //拦截器 添加头参数 鉴权
         QSHttpManage.setInterceptor(new Interceptor() {
