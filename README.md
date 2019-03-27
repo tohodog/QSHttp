@@ -23,11 +23,11 @@ QSHttp.get("http://xxx").buildAndExecute();
 
 ### 普通带参数get请求
 ```
-        String url = "https://www.baidu.com/s";
+        String url = "https://api.reol.top/api_test";
         QSHttp.get(url)
                 .param("wd", "安卓http")
-                .param("ie", "UTF-8")//自动构建url--https://www.baidu.com/s?ie=UTF-8&wd=安卓http
-                //.path(123,11) 这个参数会构建这样的url--https://www.baidu.com/s/123/11
+                .param("ie", "UTF-8")//自动构建url--https://api.reol.top/api_test?ie=UTF-8&wd=安卓http
+                //.path(123,11) 这个参数会构建这样的url--https://api.reol.top/api_test/123/11
                 .buildAndExecute(new HttpCallback() {
                     @Override
                     public void onSuccess(ResponseParams response) {
@@ -44,7 +44,7 @@ QSHttp.get("http://xxx").buildAndExecute();
 
 ### 普通键值对post请求
 ```
-        String url = "https://www.baidu.com";
+        String url = "https://api.reol.top/api_test";
         QSHttp.post(url)
                 .param("userid", 10086)
                 .param("password", "qwe123456")
@@ -63,7 +63,7 @@ QSHttp.get("http://xxx").buildAndExecute();
 
 ###  post一个json给服务器 并自动解析服务器返回信息
 ```
-        String url = "https://www.baidu.com";
+        String url = "https://api.reol.top/api_test";
         QSHttp.postJSON(url)
                 .param("userid", 10086)
                 .param("password", "qwe123456")
@@ -87,7 +87,7 @@ QSHttp.get("http://xxx").buildAndExecute();
 
 ###  文件下载
 ```
-        String url = "https://www.baidu.com";
+        String url = "https://api.reol.top/api_test";
         QSHttp.download(url,"/xxx/xxx.txt")
                 .buildAndExecute(new ProgressCallback() {
                     @Override
@@ -111,7 +111,7 @@ QSHttp.get("http://xxx").buildAndExecute();
 
 ###  文件上传
 ```
-        String url = "https://www.baidu.com";
+        String url = "https://api.reol.top/api_test";
         QSHttp.upload(url)
                 .param("userid", 10086)
                 .param("password", "qwe123456")
@@ -163,11 +163,11 @@ QSHttp.get("http://xxx").buildAndExecute();
                 });
         //还有线程池,缓存大小等等设置
 
-        String url = "https://www.baidu.com/s";
+        String url = "https://api.reol.top/api_test";
                 QSHttp.post(url)//选择请求的类型
                         .header("User-Agent", "QsHttp/Android")//添加请求头
 
-                        .path(2333, "video")//构建成这样的url https://www.baidu.com/s/2233/video
+                        .path(2333, "video")//构建成这样的url https://api.reol.top/api_test/2233/video
 
                         .param("userid", 123456)//键值对参数
                         .param("password", "asdfgh")//键值对参数
