@@ -145,14 +145,14 @@ QSHttp.get("http://xxx").buildAndExecute();
 
 ``` 
         //使用前进行初始化,才可支持缓存
-        HttpConfing.init(getApplication());
+        QSHttpManage.init(getApplication());
 
         //配置自签名 读取assets/cers文件夹里的证书
         //第二个参数设置需要自签名的主机地址,不设置则只能访问证书里的https网站
-        HttpManage.setSSL(Utils.getAssetsSocketFactory(this, "cers"), "kyfw.12306.cn","...");
+        QSHttpManage.setSSL(Utils.getAssetsSocketFactory(this, "cers"), "kyfw.12306.cn","...");
 
         //拦截器 统一添加参数 鉴权
-                HttpManage.setInterceptor(new Interceptor() {
+        QSHttpManage.setInterceptor(new Interceptor() {
                     @Override
                     public ResponseParams intercept(Chain chain) throws HttpException {
                         RequestParams r = chain.request().newBuild().header("keytoken", "23333").build();
