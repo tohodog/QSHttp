@@ -18,8 +18,6 @@ dependencies {
 ### 最简单的使用例子
 ```
 QSHttp.get("http://xxx").buildAndExecute();
-http调试地址,可接受任何请求,该接口返回用户请求信息
-https://api.reol.top/api_test
 ```
 ### HTTP调试地址
 https://api.reol.top/api_test
