@@ -21,6 +21,7 @@ public class QSHttpConfig {
     private SSLSocketFactory sslSocketFactory;
     private String[] sslHost;
 
+    private int poolSize;
     private int cacheSize;
     private int connectTimeout;
     private int readTimeout;
@@ -49,6 +50,10 @@ public class QSHttpConfig {
 
     public int cacheSize() {
         return cacheSize;
+    }
+
+    public int poolSize() {
+        return poolSize;
     }
 
     public int connectTimeout() {
@@ -81,6 +86,7 @@ public class QSHttpConfig {
         private SSLSocketFactory sslSocketFactory;
         private String[] sslHost;
 
+        private int poolSize = 8;
         private int cacheSize = 128 * 1024 * 1024;
         private int connectTimeout = 12_000;
         private int readTimeout = 12_000;
@@ -96,6 +102,7 @@ public class QSHttpConfig {
             qsHttpConfig.debug = debug;
             qsHttpConfig.application = application;
             qsHttpConfig.xxHttp = xxHttp;
+            qsHttpConfig.poolSize = poolSize;
             qsHttpConfig.sslSocketFactory = sslSocketFactory;
             qsHttpConfig.sslHost = sslHost;
             qsHttpConfig.cacheSize = cacheSize;
@@ -130,6 +137,11 @@ public class QSHttpConfig {
         public Builder ssl(SSLSocketFactory sslSocketFactory, String... sslHost) {
             this.sslSocketFactory = sslSocketFactory;
             this.sslHost = sslHost;
+            return this;
+        }
+
+        public Builder poolSize(int poolSize) {
+            this.poolSize = poolSize;
             return this;
         }
 

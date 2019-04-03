@@ -30,7 +30,10 @@ public class MainActivity extends AppCompatActivity {
         QSHttp.setInterceptor(new Interceptor() {
             @Override
             public ResponseParams intercept(Chain chain) throws HttpException {
-                RequestParams r = chain.request().newBuild().header("Interceptor", "Interceptor").build();
+                RequestParams r = chain.request()
+                        .newBuild()
+                        .header("Interceptor", "Interceptor")
+                        .build();
                 return chain.proceed(r);
             }
         });
@@ -55,7 +58,8 @@ public class MainActivity extends AppCompatActivity {
                 .ssl(Utils.getAssetsSocketFactory(this, "cers", null, null)
                         , "12306.cn", "...")//设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
                 .cacheSize(128 * 1024 * 1024)
-
+                .connectTimeout(18 * 1000)
+                .debug(true)
                 .build());
 
 

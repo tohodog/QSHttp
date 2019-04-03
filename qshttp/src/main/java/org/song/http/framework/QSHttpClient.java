@@ -14,7 +14,7 @@ import java.util.concurrent.Executors;
  */
 public class QSHttpClient {
 
-    private static ExecutorService executorService = Executors.newFixedThreadPool(16);
+    private ExecutorService executorService = Executors.newFixedThreadPool(QSHttpManage.getQsHttpConfig().poolSize());
 
     private IHttpTask iHttpTask;
 
