@@ -11,7 +11,7 @@ QSHttp
 ### Gradle
 ```
 dependencies {
-    compile 'com.github.tohodog:QSHttp:1.2.0'
+    implementation 'com.github.tohodog:QSHttp:1.2.0'
 }
 ```
 
@@ -19,6 +19,10 @@ dependencies {
 ```
 QSHttp.get("http://xxx").buildAndExecute();
 ```
+### HTTP调试地址
+https://api.reol.top/api_test
+<br/>
+可接受任何请求,该接口返回用户请求信息
 
 
 ### 普通带参数get请求
