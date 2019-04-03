@@ -587,6 +587,6 @@ public class RequestParams {
 
     //
     public int execute(HttpCallback cb) {
-        return QSHttpManage.getHttpClient().execute(this, cb);
+        return QSHttpManage.getQSHttpClient().execute(this, cb);
     }
 }

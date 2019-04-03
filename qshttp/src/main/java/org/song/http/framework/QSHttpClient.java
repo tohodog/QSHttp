@@ -12,27 +12,20 @@ import java.util.concurrent.Executors;
  * 需要子类提供具体联网实现
  * 联网模块可更换
  */
-public abstract class AbsHttpClient {
+public class QSHttpClient {
 
-    private static ExecutorService executorService;
+    private static ExecutorService executorService = Executors.newFixedThreadPool(16);
+
     private IHttpTask iHttpTask;
+
+    public QSHttpClient(IHttpTask iHttpTask) {
+        this.iHttpTask = iHttpTask;
+    }
+
     private Interceptor interceptor;
 
-    public AbsHttpClient interceptor(Interceptor interceptor) {
+    public void setInterceptor(Interceptor interceptor) {
         this.interceptor = interceptor;
-        return this;
-    }
-
-    static {
-        executorService = Executors.newFixedThreadPool(QSHttpManage.DEFAULT_THREAD_POOL_SIZE);
-        // 几个new的方法
-        // single单线程用
-        // single schedule 单线程延时执行用 schedule 多线程延时执行 当执行时间大于执行间隔用到多线程
-        // scheduleAtFixedRate固定时间点执行 scheduleWithFixedDelay固定执行间隔
-    }
-
-    public AbsHttpClient(IHttpTask iHttpTask) {
-        this.iHttpTask = iHttpTask;
     }
 
     /**
@@ -149,7 +142,7 @@ public abstract class AbsHttpClient {
                 public void run() {
                     ThreadHandler.Progress(var1, var2, var3, mThreadWhat);
                 }
-            }, 0, QSHttpManage.PROGRESS_SPACE);
+            }, 0, QSHttpManage.getQsHttpConfig().progressCallbackSpace());
         }
 
         public void destroy() {

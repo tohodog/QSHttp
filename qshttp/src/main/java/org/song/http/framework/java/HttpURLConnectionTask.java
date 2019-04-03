@@ -1,5 +1,6 @@
 package org.song.http.framework.java;
 
+import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.QSHttpManage;
 import org.song.http.framework.HttpEnum;
 import org.song.http.framework.HttpException;
@@ -36,17 +37,6 @@ import javax.net.ssl.SSLSocketFactory;
  */
 
 public class HttpURLConnectionTask implements IHttpTask {
-
-    private static HttpURLConnectionTask instance;
-
-    public static HttpURLConnectionTask getInstance() {
-        if (instance == null)
-            instance = new HttpURLConnectionTask();
-        return instance;
-    }
-
-    private HttpURLConnectionTask() {
-    }
 
     @Override
     public ResponseParams GET(RequestParams params, IHttpProgress hp) throws HttpException {
@@ -120,8 +110,8 @@ public class HttpURLConnectionTask implements IHttpTask {
                     ((HttpsURLConnection) conn).setSSLSocketFactory(sslSocketFactory);
             }
 
-            conn.setConnectTimeout(timeOut > 0 ? timeOut : QSHttpManage.TIMEOUT_CONNECTION);
-            conn.setReadTimeout(timeOut > 0 ? timeOut : QSHttpManage.TIMEOUT_SOCKET_READ);
+            conn.setConnectTimeout(timeOut > 0 ? timeOut : QSHttpManage.getQsHttpConfig().connectTimeout());
+            conn.setReadTimeout(timeOut > 0 ? timeOut : QSHttpManage.getQsHttpConfig().readTimeout());
             conn.setDoInput(true);// 允许输入
             //conn.setDoOutput(true);// 允许输出 设置了强制POST
             conn.setUseCaches(false);

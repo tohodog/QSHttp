@@ -2,13 +2,31 @@ package org.song.http;
 
 
 import org.song.http.framework.HttpEnum;
+import org.song.http.framework.Interceptor;
+import org.song.http.framework.QSHttpConfig;
+import org.song.http.framework.QSHttpManage;
 import org.song.http.framework.RequestParams;
 
 /*
  * Created by song on 2016/9/26.
- * 辅助构建类 简化调用代码
+ * 辅助构建类,简化调用代码
  */
 public class QSHttp {
+
+    /**
+     * 使用前进行初始化
+     * 才能支持缓存 cookie ssl证书 网络状态判断
+     */
+    public static void init(QSHttpConfig qsHttpConfig) {
+        QSHttpManage.init(qsHttpConfig);
+    }
+
+    /**
+     * 拦截器,可用来添加全局请求参数
+     */
+    public static void setInterceptor(Interceptor interceptor) {
+        QSHttpManage.setInterceptor(interceptor);
+    }
 
     public static RequestParams.Builder get(String url) {
         return build(url, HttpEnum.RequestMethod.GET);

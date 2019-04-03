@@ -4,6 +4,8 @@ package org.song.http.framework;
  * Created by song on 2016/9/14.
  */
 public interface IHttpTask {
+
+
     /**
      * 普通get
      * application/x-www-form-urlencoded
@@ -45,5 +47,6 @@ public interface IHttpTask {
     ResponseParams HEAD(RequestParams params) throws HttpException;
 
     ResponseParams DELETE(RequestParams params) throws HttpException;
+
 
 }

@@ -147,18 +147,20 @@ https://api.reol.top/api_test
 
 ### 基本所有API一览
 
-``` 
-        //使用前进行初始化,才可支持缓存
-        QSHttpManage.init(getApplication());
-        //日记
-        QSHttpManage.DEBUG = true;
+```
+        //初始化框架 调用一次即可
+        QSHttp.init(QSHttpConfig.Build(getApplication())
 
-        //配置自签名 读取assets/cers文件夹里的证书
-        //第二个参数设置需要自签名的主机地址,不设置则只能访问证书里的https网站
-        QSHttpManage.setSSL(Utils.getAssetsSocketFactory(this, "cers"), "kyfw.12306.cn","...");
+                //配置需要签名的网站 读取assets/cers文件夹里的证书
+                //支持双向认证,放入xxx.bks
+                .ssl(Utils.getAssetsSocketFactory(this, "cers", "bks密码",  "bks密码")
+                        , "12306.cn", "...")//设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
+                .cacheSize(128 * 1024 * 1024)
+                        //...
+                .build());
 
         //拦截器 统一添加参数 鉴权
-        QSHttpManage.setInterceptor(new Interceptor() {
+        QSHttp.setInterceptor(new Interceptor() {
                     @Override
                     public ResponseParams intercept(Chain chain) throws HttpException {
                         RequestParams r = chain.request().newBuild().header("keytoken", "23333").build();

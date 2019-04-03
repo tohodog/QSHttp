@@ -1,5 +1,6 @@
 package org.song.http.framework.ok;
 
+import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.QSHttpManage;
 import org.song.http.framework.HttpEnum;
 import org.song.http.framework.HttpException;
@@ -46,21 +47,11 @@ import okio.Okio;
  */
 public class OkHttpTask implements IHttpTask {
 
-    private static OkHttpTask instance;
-
-    public static OkHttpTask getInstance() {
-        if (instance == null)
-            instance = new OkHttpTask();
-        return instance;
-    }
 
     private OkHttpClient mOkHttpClient;
-    //private SparseArray<Call> sparseArray;
 
-
-    private OkHttpTask() {
+    public OkHttpTask() {
         mOkHttpClient = buildOkHttpClient();
-        //sparseArray=new SparseArray<>();
     }
 
     public OkHttpClient getOkHttpClient() {
@@ -69,21 +60,17 @@ public class OkHttpTask implements IHttpTask {
 
     private OkHttpClient buildOkHttpClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .connectTimeout(QSHttpManage.TIMEOUT_CONNECTION, TimeUnit.MILLISECONDS)
-                .readTimeout(QSHttpManage.TIMEOUT_SOCKET_READ, TimeUnit.MILLISECONDS)
-                .writeTimeout(QSHttpManage.TIMEOUT_SOCKET_WRITE, TimeUnit.MILLISECONDS)
-                .cookieJar(new CookieManage(QSHttpManage.application));
-        //https
-//        SSLSocketFactory sslSocketFactory = QSHttpManage.sslSocketFactory;
-//        if (sslSocketFactory != null)
-//            builder.sslSocketFactory(sslSocketFactory);
-        //缓存 需服务器支持(头多个Cache-Control就可以了) 或自己拦截响应请求加上缓存标记 不推荐
-        if (QSHttpManage.application != null)
-            builder.cache(new Cache(new File(Utils.getDiskCacheDir()), QSHttpManage.DEFAULT_CACHE_SIZE));
+                .connectTimeout(QSHttpManage.getQsHttpConfig().connectTimeout(), TimeUnit.MILLISECONDS)
+                .readTimeout(QSHttpManage.getQsHttpConfig().readTimeout(), TimeUnit.MILLISECONDS)
+                .writeTimeout(QSHttpManage.getQsHttpConfig().writeTimeout(), TimeUnit.MILLISECONDS)
+                .cookieJar(new CookieManage(QSHttpManage.application))
+
+                //缓存 需服务器支持(头多个Cache-Control就可以了) 或自己拦截响应请求加上缓存标记 不推荐
+                .cache(new Cache(new File(Utils.getDiskCacheDir()),
+                        QSHttpManage.getQsHttpConfig().cacheSize()));
         return builder.build();
 
     }
-
 
     @Override
     public ResponseParams GET(RequestParams params, IHttpProgress hp) throws HttpException {
@@ -157,6 +144,7 @@ public class OkHttpTask implements IHttpTask {
         Response response = getResponse(editOkHttpClient(params, null), request);
         return dealResponse(params, response);
     }
+
 
     private Request getRequest(RequestParams params, RequestBody requestBody) {
         Request.Builder builder = new Request.Builder();

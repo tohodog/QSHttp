@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManagerFactory;
@@ -39,31 +40,37 @@ public class Utils {
     /**
      * 读取assets/path文件夹里的证书
      */
-    public static SSLSocketFactory getAssetsSocketFactory(Context context, String path) {
+    public static SSLSocketFactory getAssetsSocketFactory(Context context, String path, String bks_keyPassword, String bks_cerPassword) {
         if (path == null)
             return null;
-        List<InputStream> certificates = new ArrayList<>();
-        // 添加https证书
+
+        InputStream bksIS = null;
+        // 添加信任(服务器)证书
+        List<InputStream> trustIS = new ArrayList<>();
         try {
             String[] certFiles = context.getAssets().list(path);
             if (certFiles != null) {
-                for (String cert : certFiles) {
-                    InputStream is = context.getAssets().open(path + "/" + cert);
-                    certificates.add(is);
+                for (String certName : certFiles) {
+                    InputStream is = context.getAssets().open(path + "/" + certName);
+                    if (certName.toLowerCase().contains("bks")) {
+                        bksIS = is;
+                        continue;
+                    }
+                    trustIS.add(is);
                 }
             }
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
-        if (certificates.size() == 0)
+        if (trustIS.size() == 0)
             return null;
         try {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null);
             try {
-                for (int i = 0, size = certificates.size(); i < size; ) {
-                    InputStream certificate = certificates.get(i);
+                for (int i = 0, size = trustIS.size(); i < size; ) {
+                    InputStream certificate = trustIS.get(i);
                     String certificateAlias = Integer.toString(i++);
                     keyStore.setCertificateEntry(certificateAlias, certificateFactory.generateCertificate(certificate));
                     if (certificate != null)
@@ -72,12 +79,25 @@ public class Utils {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            SSLContext sslContext = SSLContext.getInstance("TLS");
+            //信任证书(服务器)构建
             TrustManagerFactory trustManagerFactory =
                     TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
             trustManagerFactory.init(keyStore);
-            sslContext.init
-                    (null, trustManagerFactory.getTrustManagers(), new SecureRandom());
+
+
+            //构建客户端的证书,双向认证
+            KeyManagerFactory keyManagerFactory = null;
+            if (bksIS != null) {
+                KeyStore clientKeyStore = KeyStore.getInstance("BKS");
+                clientKeyStore.load(bksIS, bks_keyPassword == null ? null : bks_keyPassword.toCharArray());
+                keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+                keyManagerFactory.init(clientKeyStore, bks_cerPassword == null ? null : bks_cerPassword.toCharArray());
+            }
+
+            //生成SSLContext
+            SSLContext sslContext = SSLContext.getInstance("TLS");
+            sslContext.init(keyManagerFactory == null ? null : keyManagerFactory.getKeyManagers(),
+                    trustManagerFactory.getTrustManagers(), new SecureRandom());
             return sslContext.getSocketFactory();
         } catch (Exception e) {
             e.printStackTrace();
@@ -87,19 +107,22 @@ public class Utils {
 
     //检查访问需要设置自签名ssl不
     public static SSLSocketFactory checkSSL(String host) {
-        if (host != null)
-            if (QSHttpManage.sslSocketFactory != null) {
-                if (QSHttpManage.sslHost == null)
-                    return QSHttpManage.sslSocketFactory;
-                for (String s : QSHttpManage.sslHost)
+        if (host != null) {
+            SSLSocketFactory sslSocketFactory = QSHttpManage.getQsHttpConfig().sslSocketFactory();
+            String[] sslHost = QSHttpManage.getQsHttpConfig().sslHost();
+            if (sslSocketFactory != null) {
+                if (sslHost == null)
+                    return sslSocketFactory;
+                for (String s : sslHost)
                     if (host.contains(s))
-                        return QSHttpManage.sslSocketFactory;
+                        return sslSocketFactory;
             }
+        }
         return null;
     }
 
     public static void Log(RequestParams params, ResponseParams response) {
-        if (!QSHttpManage.DEBUG)
+        if (!QSHttpManage.getQsHttpConfig().debug())
             return;
         if (response.isSuccess())
             switch (response.resultType()) {
@@ -243,8 +266,8 @@ public class Utils {
      * 获取外部存储上私有数据的路径
      */
     public static String getDiskCacheDir() {
-        File file;
         Context context = QSHttpManage.application;
+        File file;
         if (context == null)
             file = new File(Environment.getExternalStorageDirectory().getPath() + "/qshttp_cache");
         else if ((Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())

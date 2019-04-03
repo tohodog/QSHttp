@@ -1,75 +1,61 @@
 package org.song.http.framework;
 
 import android.app.Application;
+import android.content.Context;
 
 import org.song.http.framework.java.JavaHttpClient;
 import org.song.http.framework.ok.OkHttpClient;
 
-import javax.net.ssl.SSLSocketFactory;
-
 /**
  * Created by song on 2016/9/18.
- * http框架的一些配置、常量
+ * http框架全局配置
  */
 public class QSHttpManage {
 
-    public static boolean DEBUG = true;
 
     public static Application application;
-    public static HttpEnum.XX_Http xx_http = HttpEnum.XX_Http.OK_HTTP;//
 
-    /**
-     * 使用前进行初始化
-     * 才能支持缓存 cookie ssl证书 网络状态判断
-     */
-    public static void init(Application application) {
-        QSHttpManage.application = application;
-    }
+    private static QSHttpConfig qsHttpConfig;
 
+    private static QSHttpClient qsHttpClient;
 
-    /**
-     * 配置自签名ssl
-     *
-     * @param sslSocketFactory Utils里有提供方法使用
-     * @param sslHost          设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
-     */
-    public static void setSSL(SSLSocketFactory sslSocketFactory, String... sslHost) {
-        QSHttpManage.sslSocketFactory = sslSocketFactory;
-        QSHttpManage.sslHost = sslHost;
-    }
+    public static void init(QSHttpConfig qsHttpConfig) {
+        QSHttpManage.qsHttpConfig = qsHttpConfig;
+        application = qsHttpConfig.application();
 
-    static SSLSocketFactory sslSocketFactory;
-    static String[] sslHost;
-
-    public static void setInterceptor(Interceptor interceptor) {
-        getHttpClient().interceptor(interceptor);
-    }
-
-    static AbsHttpClient getHttpClient() {
-        switch (xx_http) {
+        switch (qsHttpConfig.xxHttp()) {
             case OK_HTTP:
-                return OkHttpClient.getInstance();
+                qsHttpClient = new OkHttpClient();
+                break;
             case JAVA_HTTP:
             default:
-                return JavaHttpClient.getInstance();
+                qsHttpClient = new JavaHttpClient();
         }
+        setInterceptor(interceptor);
+    }
+
+    private static Interceptor interceptor;
+
+    public static void setInterceptor(Interceptor interceptor) {
+        QSHttpManage.interceptor = interceptor;
+        getQSHttpClient().setInterceptor(interceptor);
+    }
+
+    public static QSHttpConfig getQsHttpConfig() {
+        if (qsHttpConfig == null)
+            qsHttpConfig = QSHttpConfig.Build(null).build();
+        return qsHttpConfig;
+    }
+
+    public static QSHttpClient getQSHttpClient() {
+        if (qsHttpClient == null)
+            qsHttpClient = new OkHttpClient();
+        return qsHttpClient;
     }
 
     public static void cleanCache() {
         Utils.cleanCache();
     }
-
-    public static int DEFAULT_THREAD_POOL_SIZE = 10;
-    //缓存大小
-    public static int DEFAULT_CACHE_SIZE = 110 * 1024 * 1024;
-
-    //超时
-    public static int TIMEOUT_CONNECTION = 12000;
-    public static int TIMEOUT_SOCKET_READ = 18000;
-    public static int TIMEOUT_SOCKET_WRITE = 18000;
-    //进度回调的频率 毫秒
-    public static int PROGRESS_SPACE = 500;
-
 
 
 }
