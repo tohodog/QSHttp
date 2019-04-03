@@ -27,7 +27,7 @@ public interface IHttpTask {
      *
      * @param hp 上传的进度
      */
-    ResponseParams POST_CUSTOM(RequestParams params, IHttpProgress hp) throws HttpException;
+    ResponseParams POST_BODY(RequestParams params, IHttpProgress hp) throws HttpException;
 
     /**
      * multipart/form-data 方式的post
@@ -38,7 +38,7 @@ public interface IHttpTask {
 
     ResponseParams PUT_FORM(RequestParams params, IHttpProgress hp) throws HttpException;
 
-    ResponseParams PUT_CUSTOM(RequestParams params, IHttpProgress hp) throws HttpException;
+    ResponseParams PUT_BODY(RequestParams params, IHttpProgress hp) throws HttpException;
 
     ResponseParams PUT_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException;
 

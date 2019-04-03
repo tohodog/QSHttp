@@ -57,12 +57,12 @@ public class HttpURLConnectionTask implements IHttpTask {
     @Override
     public ResponseParams POST_FORM(RequestParams params, IHttpProgress hp) throws HttpException {
         HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), HttpEnum.RequestMethod.POST.name(), params.headers(), params.timeOut());
-        writeFromBody(conn, params.params());
+        writeFromBody(conn, params.params(), params.charset());
         return getResponse(conn, params, hp);
     }
 
     @Override
-    public ResponseParams POST_CUSTOM(RequestParams params, IHttpProgress hp) throws HttpException {
+    public ResponseParams POST_BODY(RequestParams params, IHttpProgress hp) throws HttpException {
         HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), HttpEnum.RequestMethod.POST.name(), params.headers(), params.timeOut());
         writeMediaBody(conn, params.requestBody().getContentType(), params.requestBody().getContent(), hp);
         return getResponse(conn, params, null);
@@ -78,12 +78,12 @@ public class HttpURLConnectionTask implements IHttpTask {
     @Override
     public ResponseParams PUT_FORM(RequestParams params, IHttpProgress hp) throws HttpException {
         HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), HttpEnum.RequestMethod.PUT.name(), params.headers(), params.timeOut());
-        writeFromBody(conn, params.params());
+        writeFromBody(conn, params.params(), params.charset());
         return getResponse(conn, params, hp);
     }
 
     @Override
-    public ResponseParams PUT_CUSTOM(RequestParams params, IHttpProgress hp) throws HttpException {
+    public ResponseParams PUT_BODY(RequestParams params, IHttpProgress hp) throws HttpException {
         HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), HttpEnum.RequestMethod.PUT.name(), params.headers(), params.timeOut());
         writeMediaBody(conn, params.requestBody().getContentType(), params.requestBody().getContent(), hp);
         return getResponse(conn, params, null);
@@ -150,17 +150,17 @@ public class HttpURLConnectionTask implements IHttpTask {
     /**
      * 键值对表单body
      */
-    private void writeFromBody(HttpURLConnection conn, Map<String, Object> params) throws HttpException {
+    private void writeFromBody(HttpURLConnection conn, Map<String, Object> params, String charset) throws HttpException {
         conn.setDoOutput(true);// 允许输出
-        conn.setRequestProperty(HttpEnum.HEAD_KEY_CT, HttpEnum.CONTENT_TYPE_URL);
-        Charset charset = Utils.charset(HttpEnum.CONTENT_TYPE_URL);
+
+        conn.setRequestProperty(HttpEnum.HEAD_KEY_CT, HttpEnum.CONTENT_TYPE_URL_ + charset);
 
         if (params == null || params.size() == 0)
             return;
         StringBuilder sb = new StringBuilder();
         for (String name : params.keySet()) {
             String value = String.valueOf(params.get(name));
-            value = Utils.URLEncoder(value);
+            value = Utils.URLEncoder(value, charset);
             sb.append(name).append("=").append(value).append("&");
         }
         sb.deleteCharAt(sb.length() - 1);
@@ -168,7 +168,7 @@ public class HttpURLConnectionTask implements IHttpTask {
         try {
             OutputStream os = conn.getOutputStream();
             WriteHelp wh = new WriteHelp(os);
-            wh.writeBytes(sb.toString().getBytes(charset));
+            wh.writeBytes(sb.toString().getBytes());
         } catch (SocketTimeoutException e) {
             conn.disconnect();
             throw HttpException.HttpTimeOut(e);
@@ -218,7 +218,8 @@ public class HttpURLConnectionTask implements IHttpTask {
     /**
      * Multipart方式的body 上传多文件/参数
      */
-    private void writeMultipartBody(HttpURLConnection conn, String multipartType, Map<String, RequestParams.RequestBody> content, IHttpProgress hp) throws HttpException {
+    private void writeMultipartBody(HttpURLConnection conn, String multipartType,
+                                    Map<String, RequestParams.RequestBody> content, IHttpProgress hp) throws HttpException {
         try {
             conn.setDoOutput(true);// 允许输出
             new MultipartHelp(conn, multipartType, content, hp).writeBody();

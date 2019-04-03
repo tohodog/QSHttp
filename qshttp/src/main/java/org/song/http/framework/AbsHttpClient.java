@@ -113,7 +113,7 @@ public abstract class AbsHttpClient {
                     if (request.multipartBody() != null)
                         response = iHttpTask.POST_MULTIPART(request, hp);
                     else if (request.requestBody() != null)
-                        response = iHttpTask.POST_CUSTOM(request, hp);
+                        response = iHttpTask.POST_BODY(request, hp);
                     else
                         response = iHttpTask.POST_FORM(request, hp);
                     break;
@@ -121,7 +121,7 @@ public abstract class AbsHttpClient {
                     if (request.multipartBody() != null)
                         response = iHttpTask.PUT_MULTIPART(request, hp);
                     else if (request.requestBody() != null)
-                        response = iHttpTask.PUT_CUSTOM(request, hp);
+                        response = iHttpTask.PUT_BODY(request, hp);
                     else
                         response = iHttpTask.PUT_FORM(request, hp);
                     break;

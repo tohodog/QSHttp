@@ -17,6 +17,7 @@ import java.net.ConnectException;
 import java.net.SocketException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +29,7 @@ import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Call;
 import okhttp3.FormBody;
+import okhttp3.FormBody2;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
 import okhttp3.MediaType;
@@ -92,14 +94,14 @@ public class OkHttpTask implements IHttpTask {
 
     @Override
     public ResponseParams POST_FORM(RequestParams params, IHttpProgress hp) throws HttpException {
-        FormBody requestBody = buildFormBody(params.params());
+        RequestBody requestBody = buildFormBody(params.params(), params.charset());
         Request request = getRequest(params, requestBody);
         Response response = getResponse(editOkHttpClient(params, hp), request);
         return dealResponse(params, response);
     }
 
     @Override
-    public ResponseParams POST_CUSTOM(RequestParams params, IHttpProgress hp) throws HttpException {
+    public ResponseParams POST_BODY(RequestParams params, IHttpProgress hp) throws HttpException {
         RequestBody requestBody = buildRequestBody(params.requestBody().getContentType(), params.requestBody().getContent());
         if (hp != null)
             requestBody = new RequestBodyProgress(requestBody, hp);
@@ -110,7 +112,7 @@ public class OkHttpTask implements IHttpTask {
 
     @Override
     public ResponseParams POST_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        MultipartBody multipartBody = buildMultipartBody(params.multipartType(), params.multipartBody(), hp);
+        RequestBody multipartBody = buildMultipartBody(params.multipartType(), params.multipartBody(), hp);
         Request request = getRequest(params, multipartBody);
         Response response = getResponse(editOkHttpClient(params, null), request);
         return dealResponse(params, response);
@@ -118,14 +120,14 @@ public class OkHttpTask implements IHttpTask {
 
     @Override
     public ResponseParams PUT_FORM(RequestParams params, IHttpProgress hp) throws HttpException {
-        FormBody requestBody = buildFormBody(params.params());
+        RequestBody requestBody = buildFormBody(params.params(), params.charset());
         Request request = getRequest(params, requestBody);
         Response response = getResponse(editOkHttpClient(params, hp), request);
         return dealResponse(params, response);
     }
 
     @Override
-    public ResponseParams PUT_CUSTOM(RequestParams params, IHttpProgress hp) throws HttpException {
+    public ResponseParams PUT_BODY(RequestParams params, IHttpProgress hp) throws HttpException {
         RequestBody requestBody = buildRequestBody(params.requestBody().getContentType(), params.requestBody().getContent());
         if (hp != null)
             requestBody = new RequestBodyProgress(requestBody, hp);
@@ -136,7 +138,7 @@ public class OkHttpTask implements IHttpTask {
 
     @Override
     public ResponseParams PUT_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        MultipartBody multipartBody = buildMultipartBody(params.multipartType(), params.multipartBody(), hp);
+        RequestBody multipartBody = buildMultipartBody(params.multipartType(), params.multipartBody(), hp);
         Request request = getRequest(params, multipartBody);
         Response response = getResponse(editOkHttpClient(params, null), request);
         return dealResponse(params, response);
@@ -310,8 +312,8 @@ public class OkHttpTask implements IHttpTask {
      * @param values 参数
      * @return FormBody
      */
-    private FormBody buildFormBody(Map<String, Object> values) {
-        FormBody.Builder builder = new FormBody.Builder();
+    private FormBody2 buildFormBody(Map<String, Object> values, String charset) {
+        FormBody2.Builder builder = new FormBody2.Builder(Charset.forName(charset));
         if (values != null) {
             for (Map.Entry<String, ?> entry : values.entrySet()) {
                 builder.add(entry.getKey(), String.valueOf(entry.getValue()));

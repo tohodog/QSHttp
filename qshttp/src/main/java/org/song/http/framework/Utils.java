@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Environment;
+import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -162,9 +163,10 @@ public class Utils {
 
     }
 
-    public static String URLEncoder(String value) {
+    public static String URLEncoder(String value, String charset) {
         try {
-            value = URLEncoder.encode(value, HttpEnum.CHARSET);// 中文转化为网址格式（%xx%xx
+            if (TextUtils.isEmpty(charset)) charset = HttpEnum.CHARSET_UTF8;
+            value = URLEncoder.encode(value, charset);// 中文转化为网址格式（%xx%xx
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }
@@ -172,8 +174,12 @@ public class Utils {
     }
 
     public static Charset charset(String contentType) {
+        return Charset.forName(charsetName(contentType));
+    }
+
+    public static String charsetName(String contentType) {
+        String charset = HttpEnum.CHARSET_UTF8;
         try {
-            String charset = "utf-8";
             if (contentType != null) {
                 contentType = contentType.toLowerCase();
                 String[] arr = contentType.split(";");
@@ -182,11 +188,10 @@ public class Utils {
                         charset = s.substring(s.indexOf("=") + 1, s.length()).trim();
                 }
             }
-            return Charset.forName(charset);
         } catch (Exception e) {
             e.printStackTrace();
-            return Charset.forName("utf-8");
         }
+        return charset;
     }
 
     /**

@@ -1,9 +1,12 @@
 package org.song.http.framework;
 
+import android.util.Log;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import java.io.File;
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -15,6 +18,8 @@ import java.util.Map;
  * http请求配置及参数类
  */
 public class RequestParams {
+
+    private String charset;
 
     private String url;
     private List<String> pathParams;//path参数
@@ -42,6 +47,9 @@ public class RequestParams {
     private RequestParams() {
     }
 
+    public String charset() {
+        return charset;
+    }
 
     public String url() {
         return url;
@@ -116,13 +124,13 @@ public class RequestParams {
         sbUrl.append(urlAndPath());
 
         if (params != null) {
-            sbUrl.append("?");
+            sbUrl.append('?');
             for (String name : params.keySet()) {
                 String value = String.valueOf(params.get(name));
-                sbUrl.append(Utils.URLEncoder(name))
-                        .append("=")
-                        .append(Utils.URLEncoder(value))
-                        .append("&");
+                sbUrl.append(Utils.URLEncoder(name, charset))
+                        .append('=')
+                        .append(Utils.URLEncoder(value, charset))
+                        .append('&');
             }
             sbUrl.deleteCharAt(sbUrl.length() - 1);
         }
@@ -138,7 +146,7 @@ public class RequestParams {
 
         if (pathParams != null) {
             for (String value : pathParams) {
-                value = Utils.URLEncoder(value);
+                value = Utils.URLEncoder(value, charset);
                 sbUrl.append("/").append(value);
             }
         }
@@ -148,6 +156,7 @@ public class RequestParams {
 
     public Builder newBuild() {
         Builder builder = new Builder(url);
+        builder.charset = charset;
         builder.url = url;
         builder.requestBody = requestBody;
         builder.pathParams = pathParams;
@@ -176,6 +185,9 @@ public class RequestParams {
     }
 
     public static final class Builder {
+
+        private String charset = HttpEnum.CHARSET_UTF8;
+
         private String url;
         private RequestBody requestBody;
         private Map<String, String> headers;
@@ -212,6 +224,7 @@ public class RequestParams {
                 multipartBody(params);
             }
             RequestParams requestParams = new RequestParams();
+            requestParams.charset = charset;
             requestParams.url = url;
             requestParams.pathParams = pathParams;
             requestParams.requestBody = requestBody;
@@ -235,6 +248,17 @@ public class RequestParams {
             return requestParams;
         }
 
+        /**
+         * 设置编码
+         * 需第一个调用
+         */
+        public RequestParams.Builder charset(String charset) {
+            if (Charset.isSupported(charset))
+                this.charset = charset;
+            else
+                Log.e("RequestParams.Builder", charset + "is not support");
+            return this;
+        }
 
         /**
          * 请求方式
@@ -391,7 +415,7 @@ public class RequestParams {
          * post/put 一个json参数
          */
         public RequestParams.Builder jsonBody(Object postJson) {
-            requestBody(HttpEnum.CONTENT_TYPE_JSON, JSON.toJSONString(postJson));
+            requestBody(HttpEnum.CONTENT_TYPE_JSON_ + charset, JSON.toJSONString(postJson));
             return this;
         }
 
@@ -447,7 +471,7 @@ public class RequestParams {
                     } else if (value instanceof byte[]) {
                         multipartBody(key, HttpEnum.CONTENT_TYPE_FORM, "bytes", value);
                     } else if (value != null) {
-                        multipartBody(key, HttpEnum.CONTENT_TYPE_TEXT, null, value.toString());
+                        multipartBody(key, HttpEnum.CONTENT_TYPE_TEXT_ + charset, null, value.toString());
                     }
                 }
             }
@@ -549,6 +573,11 @@ public class RequestParams {
         public void setFilename(String filename) {
             this.filename = filename;
         }
+
+        public String getCharset() {
+            return Utils.charsetName(contentType);
+        }
+
 
         @Override
         public String toString() {

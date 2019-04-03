@@ -3,6 +3,7 @@ package org.song.http.framework.java;
 import org.song.http.framework.HttpEnum;
 import org.song.http.framework.IHttpProgress;
 import org.song.http.framework.RequestParams;
+import org.song.http.framework.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,7 +23,7 @@ public class MultipartHelp {
     private final Map<String, RequestParams.RequestBody> upContent;
     private final IHttpProgress hp;
 
-    private final String charset = "utf-8";
+    private final String charset;
     private final String BOUNDARY = java.util.UUID.randomUUID().toString();
     private final String PREFIX = "--", LINEND = "\r\n";
 
@@ -32,6 +33,7 @@ public class MultipartHelp {
                   Map<String, RequestParams.RequestBody> upContent,
                   IHttpProgress hp) {
         this.conn = conn;
+        this.charset = Utils.charsetName(multipartType);
         this.multipartType = multipartType;
         this.upContent = upContent;
         this.hp = hp;
@@ -82,7 +84,7 @@ public class MultipartHelp {
                 sb1.append(LINEND);
                 os.write(sb1.toString().getBytes(charset));
                 //写入上传内容
-                writeObject(os, body.getContent());
+                writeObject(os, body.getContent(), body.getCharset());
                 //结束
                 os.write(LINEND.getBytes(charset));
             }
@@ -94,7 +96,7 @@ public class MultipartHelp {
     }
 
 
-    private void writeObject(OutputStream os, Object content) throws IOException {
+    private void writeObject(OutputStream os, Object content, String charset) throws IOException {
         int len = 0;
         byte[] bytes = null;
         File file = null;

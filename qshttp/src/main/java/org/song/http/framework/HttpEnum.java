@@ -11,11 +11,11 @@ public class HttpEnum {
     final static public int HTTP_FAILURE = 0X201;// 访问出错
     final static public int HTTP_PROGRESS = 0X202;//进度
 
-    public static final String CHARSET = "utf-8";
+    public static final String CHARSET_UTF8 = "utf-8";
     public static final String CONTENT_TYPE_FORM = "multipart/form-data";
-    public static final String CONTENT_TYPE_JSON = "application/json; charset=" + CHARSET;
-    public static final String CONTENT_TYPE_URL = "application/x-www-form-urlencoded; charset=" + CHARSET;
-    public static final String CONTENT_TYPE_TEXT = "text/plain; charset=" + CHARSET;
+    public static final String CONTENT_TYPE_JSON_ = "application/json; charset=";
+    public static final String CONTENT_TYPE_URL_ = "application/x-www-form-urlencoded; charset=";
+    public static final String CONTENT_TYPE_TEXT_ = "text/plain; charset=";
 
     public static final String HEAD_KEY_CT = "Content-Type";
     public static final String HEAD_KEY_CR = "Content-Range";
