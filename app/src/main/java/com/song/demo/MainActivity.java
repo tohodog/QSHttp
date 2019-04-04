@@ -300,6 +300,16 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
+        //配置多个client
+        QSHttp.addClient("server2", QSHttpConfig.Build(getApplication())
+                .hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//证书信任规则
+                .cacheSize(128 * 1024 * 1024)
+                .connectTimeout(18 * 1000)
+                .debug(true)
+                //拦截器 添加头参数 鉴权
+                .interceptor(interceptor)
+                .build());
+        QSHttp.get("url").qsClient("server2").buildAndExecute();
 
     }
 
