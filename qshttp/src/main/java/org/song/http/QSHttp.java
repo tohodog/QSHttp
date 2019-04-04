@@ -1,6 +1,8 @@
 package org.song.http;
 
 
+import android.app.Application;
+
 import org.song.http.framework.HttpEnum;
 import org.song.http.framework.Interceptor;
 import org.song.http.framework.QSHttpConfig;
@@ -13,19 +15,28 @@ import org.song.http.framework.RequestParams;
  */
 public class QSHttp {
 
+
     /**
      * 使用前进行初始化
-     * 才能支持缓存 cookie ssl证书 网络状态判断
+     * 才能支持缓存 cookie 网络状态判断
+     */
+    public static void init(Application application) {
+        QSHttpManage.init(QSHttpConfig.Build(application).build());
+    }
+
+    /**
+     * 使用全局配置进行初始化
      */
     public static void init(QSHttpConfig qsHttpConfig) {
         QSHttpManage.init(qsHttpConfig);
     }
 
     /**
-     * 拦截器,可用来添加全局请求参数
+     * 初始化多个客户端,使用不同配置
+     * 使用.qsClient("key")进行选择
      */
-    public static void setInterceptor(Interceptor interceptor) {
-        QSHttpManage.setInterceptor(interceptor);
+    public static void addClient(String key, QSHttpConfig qsHttpConfig) {
+        QSHttpManage.addClient(key, qsHttpConfig);
     }
 
     public static RequestParams.Builder get(String url) {

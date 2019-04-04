@@ -1,5 +1,7 @@
 package org.song.http.framework.ok;
 
+import android.util.Log;
+
 import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.QSHttpManage;
 import org.song.http.framework.HttpEnum;
@@ -47,10 +49,11 @@ import okio.Okio;
  */
 public class OkHttpTask implements IHttpTask {
 
-
+    private QSHttpConfig qsHttpConfig;
     private OkHttpClient mOkHttpClient;
 
-    public OkHttpTask() {
+    public OkHttpTask(QSHttpConfig qsHttpConfig) {
+        this.qsHttpConfig = qsHttpConfig;
         mOkHttpClient = buildOkHttpClient();
     }
 
@@ -60,14 +63,15 @@ public class OkHttpTask implements IHttpTask {
 
     private OkHttpClient buildOkHttpClient() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
-                .connectTimeout(QSHttpManage.getQsHttpConfig().connectTimeout(), TimeUnit.MILLISECONDS)
-                .readTimeout(QSHttpManage.getQsHttpConfig().readTimeout(), TimeUnit.MILLISECONDS)
-                .writeTimeout(QSHttpManage.getQsHttpConfig().writeTimeout(), TimeUnit.MILLISECONDS)
+                .connectTimeout(qsHttpConfig.connectTimeout(), TimeUnit.MILLISECONDS)
+                .readTimeout(qsHttpConfig.readTimeout(), TimeUnit.MILLISECONDS)
+                .writeTimeout(qsHttpConfig.writeTimeout(), TimeUnit.MILLISECONDS)
                 .cookieJar(new CookieManage(QSHttpManage.application))
-
                 //缓存 需服务器支持(头多个Cache-Control就可以了) 或自己拦截响应请求加上缓存标记 不推荐
                 .cache(new Cache(new File(Utils.getDiskCacheDir()),
-                        QSHttpManage.getQsHttpConfig().cacheSize()));
+                        qsHttpConfig.cacheSize()));
+        if (qsHttpConfig.hostnameVerifier() != null)
+            builder.hostnameVerifier(qsHttpConfig.hostnameVerifier());
         return builder.build();
 
     }
@@ -348,13 +352,16 @@ public class OkHttpTask implements IHttpTask {
      * 根据访问需求 改变mOkHttpClient
      */
     private OkHttpClient editOkHttpClient(RequestParams params, final IHttpProgress iHttpProgress) {
-        SSLSocketFactory ssl = Utils.checkSSL(params.url());
+        SSLSocketFactory ssl = Utils.checkSSL(params.url(), qsHttpConfig);
         if (iHttpProgress == null & ssl == null & params.timeOut() <= 0)
             return mOkHttpClient;
         OkHttpClient.Builder ob = mOkHttpClient.newBuilder();
         //添加https规则
         if (ssl != null) {
             ob.sslSocketFactory(ssl);
+            if (qsHttpConfig.debug()) {
+                Log.e(this.getClass().getName(), params.url() + "-使用ssl配置" + ssl.toString());
+            }
         }
         //超时
         if (params.timeOut() > 0) {

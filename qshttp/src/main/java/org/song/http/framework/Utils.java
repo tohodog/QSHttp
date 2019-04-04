@@ -40,7 +40,7 @@ public class Utils {
     /**
      * 读取assets/path文件夹里的证书
      */
-    public static SSLSocketFactory getAssetsSocketFactory(Context context, String path, String bks_keyPassword, String bks_cerPassword) {
+    public static SSLSocketFactory getAssetsSocketFactory(Context context, String path, String bks_storepass) {
         if (path == null)
             return null;
 
@@ -87,11 +87,21 @@ public class Utils {
 
             //构建客户端的证书,双向认证
             KeyManagerFactory keyManagerFactory = null;
+            KeyStore clientKeyStore = KeyStore.getInstance("BKS");
             if (bksIS != null) {
-                KeyStore clientKeyStore = KeyStore.getInstance("BKS");
-                clientKeyStore.load(bksIS, bks_keyPassword == null ? null : bks_keyPassword.toCharArray());
+                try {
+                    clientKeyStore.load(bksIS, bks_storepass == null ? null : bks_storepass.toCharArray());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                } finally {
+                    try {
+                        bksIS.close();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
                 keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
-                keyManagerFactory.init(clientKeyStore, bks_cerPassword == null ? null : bks_cerPassword.toCharArray());
+                keyManagerFactory.init(clientKeyStore, bks_storepass == null ? null : bks_storepass.toCharArray());
             }
 
             //生成SSLContext
@@ -106,12 +116,12 @@ public class Utils {
     }
 
     //检查访问需要设置自签名ssl不
-    public static SSLSocketFactory checkSSL(String host) {
+    public static SSLSocketFactory checkSSL(String host, QSHttpConfig qsHttpConfig) {
         if (host != null) {
-            SSLSocketFactory sslSocketFactory = QSHttpManage.getQsHttpConfig().sslSocketFactory();
-            String[] sslHost = QSHttpManage.getQsHttpConfig().sslHost();
+            SSLSocketFactory sslSocketFactory = qsHttpConfig.sslSocketFactory();
+            String[] sslHost = qsHttpConfig.sslHost();
             if (sslSocketFactory != null) {
-                if (sslHost == null)
+                if (sslHost == null || sslHost.length == 0)
                     return sslSocketFactory;
                 for (String s : sslHost)
                     if (host.contains(s))
@@ -122,8 +132,6 @@ public class Utils {
     }
 
     public static void Log(RequestParams params, ResponseParams response) {
-        if (!QSHttpManage.getQsHttpConfig().debug())
-            return;
         if (response.isSuccess())
             switch (response.resultType()) {
                 case STRING:

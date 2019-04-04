@@ -2,9 +2,7 @@ package org.song.http.framework;
 
 import android.app.Application;
 
-import org.song.http.framework.java.JavaHttpClient;
-import org.song.http.framework.ok.OkHttpClient;
-
+import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 
 /**
@@ -18,8 +16,11 @@ public class QSHttpConfig {
     private Application application;
     private HttpEnum.XX_Http xxHttp;
 
+    private Interceptor interceptor;
+
     private SSLSocketFactory sslSocketFactory;
     private String[] sslHost;
+    private HostnameVerifier hostnameVerifier;
 
     private int poolSize;
     private int cacheSize;
@@ -36,16 +37,24 @@ public class QSHttpConfig {
         return application;
     }
 
-    public HttpEnum.XX_Http xxHttp() {
-        return xxHttp;
-    }
-
     public SSLSocketFactory sslSocketFactory() {
         return sslSocketFactory;
     }
 
+    public HttpEnum.XX_Http xxHttp() {
+        return xxHttp;
+    }
+
+    public Interceptor interceptor() {
+        return interceptor;
+    }
+
     public String[] sslHost() {
         return sslHost;
+    }
+
+    public HostnameVerifier hostnameVerifier() {
+        return hostnameVerifier;
     }
 
     public int cacheSize() {
@@ -83,8 +92,11 @@ public class QSHttpConfig {
         private Application application;
         private HttpEnum.XX_Http xxHttp = HttpEnum.XX_Http.OK_HTTP;//
 
+        private Interceptor interceptor;
+
         private SSLSocketFactory sslSocketFactory;
         private String[] sslHost;
+        private HostnameVerifier hostnameVerifier;
 
         private int poolSize = 8;
         private int cacheSize = 128 * 1024 * 1024;
@@ -100,11 +112,13 @@ public class QSHttpConfig {
         public QSHttpConfig build() {
             QSHttpConfig qsHttpConfig = new QSHttpConfig();
             qsHttpConfig.debug = debug;
+            qsHttpConfig.interceptor = interceptor;
             qsHttpConfig.application = application;
             qsHttpConfig.xxHttp = xxHttp;
             qsHttpConfig.poolSize = poolSize;
             qsHttpConfig.sslSocketFactory = sslSocketFactory;
             qsHttpConfig.sslHost = sslHost;
+            qsHttpConfig.hostnameVerifier = hostnameVerifier;
             qsHttpConfig.cacheSize = cacheSize;
             qsHttpConfig.connectTimeout = connectTimeout;
             qsHttpConfig.readTimeout = readTimeout;
@@ -128,6 +142,11 @@ public class QSHttpConfig {
             return this;
         }
 
+        public Builder interceptor(Interceptor interceptor) {
+            this.interceptor = interceptor;
+            return this;
+        }
+
         /**
          * 配置自签名ssl
          *
@@ -137,6 +156,11 @@ public class QSHttpConfig {
         public Builder ssl(SSLSocketFactory sslSocketFactory, String... sslHost) {
             this.sslSocketFactory = sslSocketFactory;
             this.sslHost = sslHost;
+            return this;
+        }
+
+        public Builder hostnameVerifier(HostnameVerifier hostnameVerifier) {
+            this.hostnameVerifier = hostnameVerifier;
             return this;
         }
 

@@ -38,6 +38,12 @@ import javax.net.ssl.SSLSocketFactory;
 
 public class HttpURLConnectionTask implements IHttpTask {
 
+    private QSHttpConfig qsHttpConfig;
+
+    public HttpURLConnectionTask(QSHttpConfig qsHttpConfig) {
+        this.qsHttpConfig = qsHttpConfig;
+    }
+
     @Override
     public ResponseParams GET(RequestParams params, IHttpProgress hp) throws HttpException {
         HttpURLConnection conn = getHttpURLConnection(params.urlEncode(), HttpEnum.RequestMethod.GET.name(), params.headers(), params.timeOut());
@@ -105,13 +111,15 @@ public class HttpURLConnectionTask implements IHttpTask {
             URL uri = new URL(url);
             conn = (HttpURLConnection) uri.openConnection();//这里可能预请求了一次了
             if (conn instanceof HttpsURLConnection) {//支持自签名https
-                SSLSocketFactory sslSocketFactory = Utils.checkSSL(url);//获取本地的自签名证书
-                if (sslSocketFactory != null)//设置了自己的证书之后访问其他信任的https网址 会访问失败 所以check一下
+                SSLSocketFactory sslSocketFactory = Utils.checkSSL(url, qsHttpConfig);//获取本地的自签名证书
+                if (sslSocketFactory != null) {//设置了自己的证书之后访问其他信任的https网址 会访问失败 所以check一下
                     ((HttpsURLConnection) conn).setSSLSocketFactory(sslSocketFactory);
+                    ((HttpsURLConnection) conn).setHostnameVerifier(qsHttpConfig.hostnameVerifier());
+                }
             }
 
-            conn.setConnectTimeout(timeOut > 0 ? timeOut : QSHttpManage.getQsHttpConfig().connectTimeout());
-            conn.setReadTimeout(timeOut > 0 ? timeOut : QSHttpManage.getQsHttpConfig().readTimeout());
+            conn.setConnectTimeout(timeOut > 0 ? timeOut : qsHttpConfig.connectTimeout());
+            conn.setReadTimeout(timeOut > 0 ? timeOut : qsHttpConfig.readTimeout());
             conn.setDoInput(true);// 允许输入
             //conn.setDoOutput(true);// 允许输出 设置了强制POST
             conn.setUseCaches(false);

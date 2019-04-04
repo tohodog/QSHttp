@@ -1,6 +1,8 @@
 package org.song.http.framework;
 
 
+import android.util.Log;
+
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
@@ -14,18 +16,19 @@ import java.util.concurrent.Executors;
  */
 public class QSHttpClient {
 
-    private ExecutorService executorService = Executors.newFixedThreadPool(QSHttpManage.getQsHttpConfig().poolSize());
-
     private IHttpTask iHttpTask;
 
-    public QSHttpClient(IHttpTask iHttpTask) {
-        this.iHttpTask = iHttpTask;
-    }
+    private QSHttpConfig qsHttpConfig;
+
+    private ExecutorService executorService;
 
     private Interceptor interceptor;
 
-    public void setInterceptor(Interceptor interceptor) {
-        this.interceptor = interceptor;
+    public QSHttpClient(IHttpTask iHttpTask, QSHttpConfig qsHttpConfig) {
+        this.iHttpTask = iHttpTask;
+        this.qsHttpConfig = qsHttpConfig;
+        interceptor = qsHttpConfig.interceptor();
+        executorService = Executors.newFixedThreadPool(qsHttpConfig.poolSize());
     }
 
     /**
@@ -61,6 +64,9 @@ public class QSHttpClient {
                                 return access(request, hp);
                             }
                         });
+                        if (response == null) {
+                            throw HttpException.Custom("interceptor return is null " + interceptor);
+                        }
                     } else
                         response = access(_request, hp);
                     response.setSuccess(true);
@@ -76,7 +82,8 @@ public class QSHttpClient {
 
                 if (hp != null)
                     hp.destroy();
-                Utils.Log(_request, response);
+                if (qsHttpConfig.debug())
+                    Utils.Log(_request, response);
                 //返回数据后续处理 如缓存、解析等
                 new HttpResultHandler(response).onComplete();
 
@@ -129,7 +136,7 @@ public class QSHttpClient {
         return response;
     }
 
-    private static class HttpProgress implements IHttpProgress {
+    private class HttpProgress implements IHttpProgress {
         private final int mThreadWhat;
         private long var1, var2 = -1;
         private String var3;
@@ -142,10 +149,10 @@ public class QSHttpClient {
                 public void run() {
                     ThreadHandler.Progress(var1, var2, var3, mThreadWhat);
                 }
-            }, 0, QSHttpManage.getQsHttpConfig().progressCallbackSpace());
+            }, 0, qsHttpConfig.progressCallbackSpace());
         }
 
-        public void destroy() {
+        void destroy() {
             timer.cancel();
             ThreadHandler.Progress(var1, var2, var3, mThreadWhat);
         }

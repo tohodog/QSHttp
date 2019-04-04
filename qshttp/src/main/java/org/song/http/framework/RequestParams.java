@@ -31,6 +31,7 @@ public class RequestParams {
     private String multipartType;
 
     private Object tag;//标记
+    private String qsClient;
 
     private HttpEnum.RequestMethod requestMethod;//请求模式 GET/POST_FORM/...
     private HttpEnum.ResultType resultType;//返回数据类型
@@ -165,6 +166,7 @@ public class RequestParams {
         builder.multipartType = multipartType;
         builder.headers = headers;
         builder.tag = tag;
+        builder.qsClient = qsClient;
 
         builder.requestMethod = requestMethod;
         builder.resultType = resultType;
@@ -206,6 +208,7 @@ public class RequestParams {
         private Class<?> _class;//自动解析需要的模型
         private Parser parser;
         private String downloadPath;
+        private String qsClient;
 
         private int cacheTime;//手动缓存 设置有效时间 [非服务器给的缓存配置 功能待定
         private int timeOut;// 超时ms
@@ -499,6 +502,15 @@ public class RequestParams {
         }
 
         /**
+         * 选择其他自定义客户端
+         * QSHttpManage.addClient()
+         */
+        public RequestParams.Builder qsClient(String qsClient) {
+            this.qsClient = qsClient;
+            return this;
+        }
+
+        /**
          * 标记此次请求
          */
         public RequestParams.Builder tag(Object tag) {
@@ -587,6 +599,9 @@ public class RequestParams {
 
     //
     public int execute(HttpCallback cb) {
-        return QSHttpManage.getQSHttpClient().execute(this, cb);
+        if (qsClient == null)
+            return QSHttpManage.getQSHttpClient().execute(this, cb);
+        else
+            return QSHttpManage.getQSHttpClient(qsClient).execute(this, cb);
     }
 }

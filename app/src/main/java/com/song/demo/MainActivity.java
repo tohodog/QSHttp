@@ -18,26 +18,25 @@ import org.song.http.framework.Parser;
 import org.song.http.framework.ProgressCallback;
 import org.song.http.framework.RequestParams;
 import org.song.http.framework.ResponseParams;
+import org.song.http.framework.TrustAllCerts;
 import org.song.http.framework.Utils;
 
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
-    //TODO 拦截器需放到静态代码块里 或者 在Application里调用,否则外部类将会内存泄露
-    static {
-        //拦截器 添加头参数 鉴权
-        QSHttp.setInterceptor(new Interceptor() {
-            @Override
-            public ResponseParams intercept(Chain chain) throws HttpException {
-                RequestParams r = chain.request()
-                        .newBuild()
-                        .header("Interceptor", "Interceptor")
-                        .build();
-                return chain.proceed(r);
-            }
-        });
-    }
+    //TODO 拦截器需放到在 Application/静态代码块里/静态变量 里调用,否则外部类将会内存泄露
+    static Interceptor interceptor = new Interceptor() {
+        @Override
+        public ResponseParams intercept(Chain chain) throws HttpException {
+            RequestParams r = chain.request()
+                    .newBuild()
+                    .header("Interceptor", "Interceptor")
+                    //继续添加修改其他
+                    .build();
+            return chain.proceed(r);//请求结果参数如有需要也可以进行修改
+        }
+    };
 
     TextView tv;
     ImageView imageView;
@@ -52,22 +51,24 @@ public class MainActivity extends AppCompatActivity {
 
         //初始化框架 调用一次即可
         QSHttp.init(QSHttpConfig.Build(getApplication())
-
                 //配置需要签名的网站 读取assets/cers文件夹里的证书
                 //支持双向认证 放入xxx.bks
-                .ssl(Utils.getAssetsSocketFactory(this, "cers", null, null)
-                        , "12306.cn", "...")//设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
+                .ssl(Utils.getAssetsSocketFactory(this, "cers", "2923584")
+                        , "192.168.1.168")//设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
+                //.hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//证书信任规则
                 .cacheSize(128 * 1024 * 1024)
                 .connectTimeout(18 * 1000)
                 .debug(true)
+                //拦截器 添加头参数 鉴权
+                .interceptor(interceptor)
                 .build());
-
 
         tv = (TextView) findViewById(R.id.textview);
         imageView = (ImageView) findViewById(R.id.imageView);
-        httpsTest("https://www.baidu.com/s");
-        getImg();
+//        httpsTest("https://www.12306.cn");
+        httpsTest("https://192.168.1.168:8888/api_test");
 
+        getImg();
 
         String url = "https://api.reol.top/api_test";
         normalGET(url);
@@ -80,23 +81,22 @@ public class MainActivity extends AppCompatActivity {
 
 
     //自签名https网址测试 证书放在 assets里
-    public void httpsTest(String url) {
-
-        tv.append("请求 " + url + "\n");
+    public void httpsTest(final String url) {
         QSHttp.get(url)
                 .param("wd", "安卓http")
-                .param("ie", "UTF-8").buildAndExecute(new HttpCallback() {
-            @Override
-            public void onSuccess(ResponseParams response) {
-                tv.append(response.requestParams().url() + "成功\n");
-            }
+                .param("ie", "UTF-8")
+                .buildAndExecute(new HttpCallback() {
+                    @Override
+                    public void onSuccess(ResponseParams response) {
+                        tv.append(response.requestParams().url() + "成功\n");
+                    }
 
-            @Override
-            public void onFailure(HttpException e) {
-                e.show();
-                tv.append(e.getPrompt() + "\n");
-            }
-        });
+                    @Override
+                    public void onFailure(HttpException e) {
+
+                        tv.append("请求 " + url + "-" + e.getPrompt() + '\n');
+                    }
+                });
     }
 
 
@@ -110,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 .buildAndExecute(new HttpCallback() {
                     @Override
                     public void onSuccess(ResponseParams response) {
-                        tv.append(response.requestParams().url() + "成功\n");
+                        tv.append(response.requestParams().url() + "成功get\n");
                     }
 
                     @Override
@@ -128,7 +128,7 @@ public class MainActivity extends AppCompatActivity {
                 .buildAndExecute(new HttpCallback() {
                     @Override
                     public void onSuccess(ResponseParams response) {
-                        tv.append(response.requestParams().url() + "成功\n");
+                        tv.append(response.requestParams().url() + "成功post\n");
                     }
 
                     @Override
@@ -145,13 +145,13 @@ public class MainActivity extends AppCompatActivity {
                 .param("userid", 10086)
                 .param("password", "qwe123456")
                 //.jsonBody(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
-                .jsonModel(Bean.class)
+                //.jsonModel(Bean.class)
                 .buildAndExecute(new HttpCallback() {
                     @Override
                     public void onSuccess(ResponseParams response) {
-                        tv.append(response.requestParams().url() + "成功\n");
-                        Bean b = response.parserObject();
-                        b.getUserid();
+                        tv.append(response.requestParams().url() + "成功postJSON\n");
+//                        Bean b = response.parserObject();
+//                        b.getUserid();
                     }
 
                     @Override
@@ -174,7 +174,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onSuccess(ResponseParams response) {
-                        tv.append(response.requestParams().url() + "成功\n");
+                        tv.append(response.requestParams().url() + "成功down\n");
                     }
 
                     @Override
@@ -203,7 +203,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onSuccess(ResponseParams response) {
-                        tv.append(response.requestParams().url() + "成功\n");
+                        tv.append(response.requestParams().url() + "成功upload\n");
                     }
 
                     @Override
