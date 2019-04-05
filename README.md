@@ -46,7 +46,7 @@ https://api.reol.top/api_test
                 .build());
 
         //拦截器
-        //TODO 拦截器需放到在 Application/静态代码块里/静态变量 里调用,否则外部类将会内存泄露
+        //TODO 拦截器需放到在 Application/静态变量/非内部类 里,否则外部类将会内存泄露
         static Interceptor interceptor = new Interceptor() {
                 @Override
                 public ResponseParams intercept(Chain chain) throws HttpException {
