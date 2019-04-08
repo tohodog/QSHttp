@@ -39,7 +39,7 @@ public final class FormBody2 extends RequestBody {
     private final List<String> encodedNames;
     private final List<String> encodedValues;
 
-    FormBody2(List<String> encodedNames, List<String> encodedValues, String charset) {
+    private FormBody2(List<String> encodedNames, List<String> encodedValues, String charset) {
         this.encodedNames = Util.immutableList(encodedNames);
         this.encodedValues = Util.immutableList(encodedValues);
         this.CONTENT_TYPE = MediaType.parse(HttpEnum.CONTENT_TYPE_URL_ + charset);

@@ -68,16 +68,19 @@ public class Utils {
             CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
             KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
             keyStore.load(null);
-            try {
-                for (int i = 0, size = trustIS.size(); i < size; ) {
+
+            for (int i = 0, size = trustIS.size(); i < size; ) {
+                try {
                     InputStream certificate = trustIS.get(i);
                     String certificateAlias = Integer.toString(i++);
                     keyStore.setCertificateEntry(certificateAlias, certificateFactory.generateCertificate(certificate));
                     if (certificate != null)
                         certificate.close();
+                    Log.i(TAG, "add certificate " + certificateAlias);
+
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
             }
             //信任证书(服务器)构建
             TrustManagerFactory trustManagerFactory =
@@ -91,7 +94,7 @@ public class Utils {
             if (bksIS != null) {
                 try {
                     clientKeyStore.load(bksIS, bks_storepass == null ? null : bks_storepass.toCharArray());
-                } catch (IOException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
                     try {

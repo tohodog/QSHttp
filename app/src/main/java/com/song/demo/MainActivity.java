@@ -22,10 +22,11 @@ import org.song.http.framework.TrustAllCerts;
 import org.song.http.framework.Utils;
 
 import java.io.File;
+import java.util.Locale;
 
 public class MainActivity extends AppCompatActivity {
 
-    //TODO 拦截器需放到在 Application/静态代码块里/静态变量 里调用,否则外部类将会内存泄露
+    //TODO 拦截器需放到在 Application/非内部类/静态变量 里调用,否则外部类将会内存泄露
     static Interceptor interceptor = new Interceptor() {
         @Override
         public ResponseParams intercept(Chain chain) throws HttpException {
@@ -54,8 +55,8 @@ public class MainActivity extends AppCompatActivity {
                 //配置需要签名的网站 读取assets/cers文件夹里的证书
                 //支持双向认证 放入xxx.bks
                 .ssl(Utils.getAssetsSocketFactory(this, "cers", "2923584")
-                        , "192.168.1.168")//设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
-                //.hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//证书信任规则
+                        , "inner.reol.top")//设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
+                .hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//主机信任规则(全信任)
                 .cacheSize(128 * 1024 * 1024)
                 .connectTimeout(18 * 1000)
                 .debug(true)
@@ -66,7 +67,7 @@ public class MainActivity extends AppCompatActivity {
         tv = (TextView) findViewById(R.id.textview);
         imageView = (ImageView) findViewById(R.id.imageView);
 //        httpsTest("https://www.12306.cn");
-        httpsTest("https://192.168.1.168:8888/api_test");
+        httpsTest("https://inner.reol.top:8888/api_test");
 
         getImg();
 
@@ -80,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //自签名https网址测试 证书放在 assets里
+    //双向认证测试,证书放在 assets里
     public void httpsTest(final String url) {
         QSHttp.get(url)
                 .param("wd", "安卓http")

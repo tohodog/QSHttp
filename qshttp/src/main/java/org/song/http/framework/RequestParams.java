@@ -221,7 +221,7 @@ public class RequestParams {
         }
 
         public RequestParams build() {
-            if (toJsonBodyFlag) {
+            if (toJsonBodyFlag & requestBody == null) {
                 jsonBody(params);
             } else if (toMultiBodyFlag) {
                 multipartBody(params);
@@ -236,7 +236,7 @@ public class RequestParams {
             requestParams.multipartType = multipartType;
             requestParams.headers = headers;
             requestParams.tag = tag;
-            requestParams.timeOut = timeOut;
+            requestParams.qsClient = qsClient;
 
             requestParams.requestMethod = requestMethod;
             requestParams.resultType = resultType;
@@ -247,6 +247,7 @@ public class RequestParams {
             requestParams.parser = parser;
             requestParams.cacheTime = cacheTime;
             requestParams.downloadPath = downloadPath;
+            requestParams.timeOut = timeOut;
 
             return requestParams;
         }
@@ -387,6 +388,9 @@ public class RequestParams {
             if (object != null) {
                 if (object.getClass().isArray() || object instanceof Collection)
                     throw new IllegalArgumentException("param can not array");
+                if (object instanceof org.json.JSONObject) {
+                    object = object.toString();
+                }
                 JSONObject jsonObject = (JSONObject) JSON.toJSON(object);
                 for (String key : jsonObject.keySet())
                     param(key, jsonObject.get(key));
@@ -415,10 +419,13 @@ public class RequestParams {
         }
 
         /**
-         * post/put 一个json参数
+         * post/put 一个json body
          */
-        public RequestParams.Builder jsonBody(Object postJson) {
-            requestBody(HttpEnum.CONTENT_TYPE_JSON_ + charset, JSON.toJSONString(postJson));
+        public RequestParams.Builder jsonBody(Object object) {
+            if (object instanceof org.json.JSONObject) {
+                object = object.toString();
+            }
+            requestBody(HttpEnum.CONTENT_TYPE_JSON_ + charset, JSON.toJSONString(object));
             return this;
         }
 

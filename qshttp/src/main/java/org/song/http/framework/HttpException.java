@@ -1,6 +1,6 @@
 package org.song.http.framework;
 
-import android.widget.Toast;
+import java.util.Locale;
 
 /**
  * Created by song on 2016/9/18.
@@ -17,7 +17,7 @@ public class HttpException extends Exception {
     public final static int TYPE_PARSER = 0x05;//解析异常
 
     public final static int TYPE_IO = 0x06;//第三方联网的其他异常 【可以继续细分
-    public final static int TYPE_RUN = 0x07;//本框架内部运行异常【没捕捉到的错误
+    public final static int TYPE_RUN = 0x07;//本框架内部运行异常【没明确捕捉到的错误
 
     public final static int TYPE_CUSTOM = 0x08;//自定义异常内容
 
@@ -71,26 +71,49 @@ public class HttpException extends Exception {
     }
 
     public String getPrompt() {
-        switch (type) {
-            case TYPE_NETWORK:
-                if (Utils.checkNet())
-                    return "无法连接服务器!";
-                else
-                    return "网络连接失败,请检查网络设置!";
-            case TYPE_HTTP_STATUS_CODE:
-                return "网络异常,错误码:" + httpStatusCode;
-            case TYPE_HTTP_TIMEOUT:
-                return "请求超时,请重试!";
-            case TYPE_PARSER:
-                return "数据解析异常";
-            case TYPE_CUSTOM:
-                return customErr;
-            case TYPE_IO:
-                return "IO异常";
-            case TYPE_RUN:
-                return "未知异常/传了空、错误参数?";
+
+        if ("zh".equals(Locale.getDefault().getLanguage())) {
+            switch (type) {
+                case TYPE_NETWORK:
+                    if (Utils.checkNet())
+                        return "无法连接服务器!";
+                    else
+                        return "网络连接失败,请检查网络设置!";
+                case TYPE_HTTP_STATUS_CODE:
+                    return "连接异常,错误码:" + httpStatusCode;
+                case TYPE_HTTP_TIMEOUT:
+                    return "请求超时,请重试!";
+                case TYPE_PARSER:
+                    return "数据解析异常";
+                case TYPE_CUSTOM:
+                    return customErr;
+                case TYPE_IO:
+                    return "IO异常";
+                case TYPE_RUN:
+                    return "未知异常/传了空、错误参数?";
+            }
+        } else {
+            switch (type) {
+                case TYPE_NETWORK:
+                    if (Utils.checkNet())
+                        return "Can not connect to the server!";
+                    else
+                        return "Connection failed, please check network settings!";
+                case TYPE_HTTP_STATUS_CODE:
+                    return "Connection exception, error code:" + httpStatusCode;
+                case TYPE_HTTP_TIMEOUT:
+                    return "Request timed out, please try again!";
+                case TYPE_PARSER:
+                    return "Data parsing exception";
+                case TYPE_CUSTOM:
+                    return customErr;
+                case TYPE_IO:
+                    return "IO exception";
+                case TYPE_RUN:
+                    return "Unkown error";
+            }
         }
-        return "看到这个提示表示有毒";
+        return "Power by github.com/tohodog";
     }
 
     public ResponseParams responseParams() {

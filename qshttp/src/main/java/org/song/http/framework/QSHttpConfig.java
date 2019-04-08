@@ -165,7 +165,8 @@ public class QSHttpConfig {
         }
 
         public Builder poolSize(int poolSize) {
-            this.poolSize = poolSize;
+            if (poolSize > 0)
+                this.poolSize = poolSize;
             return this;
         }
 
