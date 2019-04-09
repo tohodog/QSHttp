@@ -62,31 +62,32 @@ public class Utils {
         } catch (IOException ioe) {
             ioe.printStackTrace();
         }
-        if (trustIS.size() == 0)
-            return null;
+
         try {
-            CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
-            KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-            keyStore.load(null);
+            //单独的cer证书构建
+            TrustManagerFactory trustManagerFactory = null;
+            if (trustIS.size() > 0) {
+                CertificateFactory certificateFactory = CertificateFactory.getInstance("X.509");
+                KeyStore keyStore = KeyStore.getInstance(KeyStore.getDefaultType());
+                keyStore.load(null);
 
-            for (int i = 0, size = trustIS.size(); i < size; ) {
-                try {
-                    InputStream certificate = trustIS.get(i);
-                    String certificateAlias = Integer.toString(i++);
-                    keyStore.setCertificateEntry(certificateAlias, certificateFactory.generateCertificate(certificate));
-                    if (certificate != null)
-                        certificate.close();
-                    Log.i(TAG, "add certificate " + certificateAlias);
+                for (int i = 0, size = trustIS.size(); i < size; ) {
+                    try {
+                        InputStream certificate = trustIS.get(i);
+                        String certificateAlias = Integer.toString(i++);
+                        keyStore.setCertificateEntry(certificateAlias, certificateFactory.generateCertificate(certificate));
+                        if (certificate != null)
+                            certificate.close();
+                        Log.i(TAG, "add certificate " + certificateAlias);
 
-                } catch (Exception e) {
-                    e.printStackTrace();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
+                //信任证书(服务器)构建
+                trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                trustManagerFactory.init(keyStore);
             }
-            //信任证书(服务器)构建
-            TrustManagerFactory trustManagerFactory =
-                    TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
-            trustManagerFactory.init(keyStore);
-
 
             //构建客户端的证书,双向认证
             KeyManagerFactory keyManagerFactory = null;
@@ -105,12 +106,19 @@ public class Utils {
                 }
                 keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
                 keyManagerFactory.init(clientKeyStore, bks_storepass == null ? null : bks_storepass.toCharArray());
+
+                //如果没有cer,从bks里拿信任证书
+                if (trustManagerFactory == null) {
+                    trustManagerFactory = TrustManagerFactory.getInstance(TrustManagerFactory.getDefaultAlgorithm());
+                    trustManagerFactory.init(clientKeyStore);
+                }
             }
 
             //生成SSLContext
             SSLContext sslContext = SSLContext.getInstance("TLS");
             sslContext.init(keyManagerFactory == null ? null : keyManagerFactory.getKeyManagers(),
-                    trustManagerFactory.getTrustManagers(), new SecureRandom());
+                    trustManagerFactory == null ? null : trustManagerFactory.getTrustManagers(),
+                    new SecureRandom());
             return sslContext.getSocketFactory();
         } catch (Exception e) {
             e.printStackTrace();
