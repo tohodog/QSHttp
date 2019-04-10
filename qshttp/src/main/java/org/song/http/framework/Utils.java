@@ -1,9 +1,13 @@
 package org.song.http.framework;
 
+import android.Manifest;
 import android.content.Context;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Environment;
+import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -44,8 +48,8 @@ public class Utils {
         if (path == null)
             return null;
 
+        //拿出证书流
         InputStream bksIS = null;
-        // 添加信任(服务器)证书
         List<InputStream> trustIS = new ArrayList<>();
         try {
             String[] certFiles = context.getAssets().list(path);
@@ -97,13 +101,8 @@ public class Utils {
                     clientKeyStore.load(bksIS, bks_storepass == null ? null : bks_storepass.toCharArray());
                 } catch (Exception e) {
                     e.printStackTrace();
-                } finally {
-                    try {
-                        bksIS.close();
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
                 }
+
                 keyManagerFactory = KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm());
                 keyManagerFactory.init(clientKeyStore, bks_storepass == null ? null : bks_storepass.toCharArray());
 
@@ -243,7 +242,7 @@ public class Utils {
         if (QSHttpManage.application == null)
             return true;
         ConnectivityManager connectivityManager = (ConnectivityManager) QSHttpManage.application.getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        NetworkInfo networkInfo = connectivityManager == null ? null : connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isAvailable();
     }
 
@@ -288,9 +287,10 @@ public class Utils {
         Context context = QSHttpManage.application;
         File file;
         if (context == null)
-            file = new File(Environment.getExternalStorageDirectory().getPath() + "/qshttp_cache");
+            file = new File(Environment.getExternalStorageDirectory(), "qshttp_cache");
         else if ((Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
-                || !Environment.isExternalStorageRemovable())) {
+                || !Environment.isExternalStorageRemovable())
+                && checkPer(context, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)) {
             file = new File(context.getExternalCacheDir(), "qshttp_cache");
         } else {
             file = new File(context.getCacheDir(), "qshttp_cache");
@@ -299,6 +299,25 @@ public class Utils {
             file.mkdirs();
         return file.getAbsolutePath();
     }
+
+    public static boolean checkPer(Context context, String... permissions) {
+        if (Build.VERSION.SDK_INT < 23) {
+            return true;
+        } else {
+            int var3 = permissions.length;
+
+            for (int i = 0; i < var3; ++i) {
+                String permission = permissions[i];
+                boolean hasPermission = context.checkPermission
+                        (permission, android.os.Process.myPid(), Process.myUid()) == PackageManager.PERMISSION_GRANTED;
+                if (!hasPermission) {
+                    return false;
+                }
+            }
+            return true;
+        }
+    }
+
 
     /**
      * 写入字符串文件
@@ -328,6 +347,7 @@ public class Utils {
                 if (fos != null)
                     fos.close();
             } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
@@ -366,16 +386,13 @@ public class Utils {
                 if (fos != null)
                     fos.close();
             } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }
 
     /**
      * 文件拷贝
-     *
-     * @param from
-     * @param to
-     * @return
      */
     public static boolean fileCopy(String from, String to) {
         boolean result = false;

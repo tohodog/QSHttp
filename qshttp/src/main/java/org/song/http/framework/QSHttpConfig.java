@@ -21,6 +21,7 @@ public class QSHttpConfig {
     private SSLSocketFactory sslSocketFactory;
     private String[] sslHost;
     private HostnameVerifier hostnameVerifier;
+    private String cachePath;
 
     private int poolSize;
     private int cacheSize;
@@ -61,6 +62,10 @@ public class QSHttpConfig {
         return cacheSize;
     }
 
+    public String cachePath() {
+        return cachePath;
+    }
+
     public int poolSize() {
         return poolSize;
     }
@@ -91,6 +96,7 @@ public class QSHttpConfig {
 
         private Application application;
         private HttpEnum.XX_Http xxHttp = HttpEnum.XX_Http.OK_HTTP;//
+        private String cachePath;
 
         private Interceptor interceptor;
 
@@ -120,6 +126,7 @@ public class QSHttpConfig {
             qsHttpConfig.sslHost = sslHost;
             qsHttpConfig.hostnameVerifier = hostnameVerifier;
             qsHttpConfig.cacheSize = cacheSize;
+            qsHttpConfig.cachePath = cachePath;
             qsHttpConfig.connectTimeout = connectTimeout;
             qsHttpConfig.readTimeout = readTimeout;
             qsHttpConfig.writeTimeout = writeTimeout;
@@ -174,6 +181,11 @@ public class QSHttpConfig {
             this.cacheSize = cacheSize;
             return this;
         }
+
+//        public Builder cachePath(String cachePath) {
+//            this.cachePath = cachePath;
+//            return this;
+//        }
 
         public Builder connectTimeout(int connectTimeout) {
             this.connectTimeout = connectTimeout;

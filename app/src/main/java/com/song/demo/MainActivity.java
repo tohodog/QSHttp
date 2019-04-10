@@ -55,7 +55,8 @@ public class MainActivity extends AppCompatActivity {
                 //配置需要签名的网站 读取assets/cers文件夹里的证书
                 //支持双向认证 放入xxx.bks
                 .ssl(Utils.getAssetsSocketFactory(this, "cers", "2923584")
-                        , "inner.reol.top")//设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
+                        , "inner.reol.top")
+                //设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
                 .hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//主机信任规则(全信任)
                 .cacheSize(128 * 1024 * 1024)
                 .connectTimeout(18 * 1000)
@@ -121,7 +122,7 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    //普通键值对 post
+    //普通键值对 post, application/x-www-form-urlencoded
     public void normalPost(String url) {
         QSHttp.post(url)
                 .param("userid", 10086)
@@ -140,7 +141,7 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //post一个json给服务器 并自动解析服务器返回信息
+    //post一个json给服务器,并自动解析服务器返回信息,application/json
     public void jsonPost(String url) {
         QSHttp.postJSON(url)
                 .param("userid", 10086)
@@ -186,9 +187,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    //文件上传
+    //文件上传,multipart/form-data
     public void upLoad(String url) {
-        QSHttp.postMulti(url)
+        QSHttp.upload(url)
                 .param("userid", 10086)
                 .param("password", "qwe123456")
 
@@ -270,6 +271,7 @@ public class MainActivity extends AppCompatActivity {
                 .clientCache(24 * 3600)//开启缓存,有效时间一天
                 .timeOut(10 * 1000)
                 .openServerCache()//开启服务器缓存规则 基于okhttp支持
+
                 //构建好参数和配置后调用执行联网
                 .buildAndExecute(new ProgressCallback() {
 

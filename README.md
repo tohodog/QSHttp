@@ -37,7 +37,7 @@ https://api.reol.top/api_test
                 //支持双向认证 放入xxx.bks
                 .ssl(Utils.getAssetsSocketFactory(this, "cers", "2923584")
                         , "192.168.1.168")//设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
-                //.hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//证书信任规则
+                .hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//证书信任规则(全信任)
                 .cacheSize(128 * 1024 * 1024)
                 .connectTimeout(18 * 1000)
                 .debug(true)
@@ -81,7 +81,7 @@ https://api.reol.top/api_test
 ```
 
 
-### 普通键值对post请求
+### 普通键值对post请求(application/x-www-form-urlencoded)
 ```
         String url = "https://api.reol.top/api_test";
         QSHttp.post(url)
@@ -100,7 +100,7 @@ https://api.reol.top/api_test
                 });
 ```
 
-###  post一个json给服务器 并自动解析服务器返回信息
+###  post一个json,并自动解析返回信息(application/json)
 ```
         String url = "https://api.reol.top/api_test";
         QSHttp.postJSON(url)
@@ -148,7 +148,7 @@ https://api.reol.top/api_test
 ```
 
 
-###  文件上传
+###  文件上传(multipart/form-data)
 ```
         String url = "https://api.reol.top/api_test";
         QSHttp.upload(url)
@@ -178,6 +178,16 @@ https://api.reol.top/api_test
                 });
 ```
 
+###  配置多个client
+```
+        QSHttp.addClient("server2", QSHttpConfig.Build(getApplication())
+                .hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//证书信任规则
+                .cacheSize(128 * 1024 * 1024)
+                .connectTimeout(10 * 1000)
+                .debug(true)
+                .build());
+        QSHttp.get("url").qsClient("server2").buildAndExecute();
+```
 
 
 ### 基本所有API一览

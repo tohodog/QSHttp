@@ -43,9 +43,8 @@ public class QSHttpManage {
         mapQSHttpClient.put(key, qsHttpClient);
     }
 
-    //兼容下不初始化
     public static QSHttpClient getQSHttpClient() {
-        if (application == null)
+        if (getQSHttpClient(null) == null)//兼容下不初始化
             init(QSHttpConfig.Build(null).build());
         return getQSHttpClient(null);
     }
