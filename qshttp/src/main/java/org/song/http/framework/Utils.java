@@ -297,6 +297,7 @@ public class Utils {
         }
         if (!file.exists())
             file.mkdirs();
+        Log.i(TAG, "getDiskCacheDir:" + file.getAbsolutePath());
         return file.getAbsolutePath();
     }
 

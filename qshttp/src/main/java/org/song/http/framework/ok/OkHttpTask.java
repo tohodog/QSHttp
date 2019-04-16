@@ -360,7 +360,7 @@ public class OkHttpTask implements IHttpTask {
         if (ssl != null) {
             ob.sslSocketFactory(ssl);
             if (qsHttpConfig.debug()) {
-                Log.e(this.getClass().getName(), params.url() + "-使用ssl配置" + ssl.toString());
+                Log.i(this.getClass().getName(), params.url() + "-使用ssl配置" + ssl.toString());
             }
         }
         //超时

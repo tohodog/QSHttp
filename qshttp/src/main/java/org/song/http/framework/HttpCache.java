@@ -25,11 +25,11 @@ public class HttpCache {
     public static HttpCache instance() {
         if (instance == null)
             instance = new HttpCache();
+        instance.path = Utils.getDiskCacheDir();
         return instance;
     }
 
     private HttpCache() {
-        path = Utils.getDiskCacheDir();
     }
 
     //检测使用缓存-联网前

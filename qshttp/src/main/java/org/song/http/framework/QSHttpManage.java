@@ -1,7 +1,9 @@
 package org.song.http.framework;
 
 import android.app.Application;
+import android.app.KeyguardManager;
 import android.content.Context;
+import android.util.Log;
 
 import org.song.http.framework.java.JavaHttpClient;
 import org.song.http.framework.ok.OkHttpClient;
@@ -28,6 +30,7 @@ public class QSHttpManage {
      * 使用.qsClient("key")进行选择
      */
     public static void addClient(String key, QSHttpConfig qsHttpConfig) {
+        Log.i(Utils.TAG, "addClient:" + key + "," + qsHttpConfig);
         application = qsHttpConfig.application();
 
         QSHttpClient qsHttpClient;
