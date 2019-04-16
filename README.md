@@ -11,7 +11,7 @@ QSHttp
 ### Gradle
 ```
 dependencies {
-    implementation 'com.github.tohodog:QSHttp:1.3.2'
+    implementation 'com.github.tohodog:QSHttp:1.3.3'
 }
 ```
 
@@ -265,6 +265,8 @@ https://api.reol.top/api_test
                         });
 ```
 ## Log
+### v1.3.1(2019-04-16)
+  * 增加泛型回调,支持外部类是activity,fragment销毁时不回调
 ### v1.3.1(2019-04-04)
   * 可单独配置多个client
   * 双向ssl优化
