@@ -86,6 +86,10 @@ public class QSHttpConfig {
         return progressCallbackSpace;
     }
 
+    private QSHttpConfig() {
+
+    }
+
     public static Builder Build(Application application) {
         return new Builder(application);
     }
