@@ -121,6 +121,16 @@ https://api.reol.top/api_test
                         e.show();
                     }
                 });
+        //使用QSHttpCallback,支持外部类是activity,fragment时销毁不回调
+        QSHttp.postJSON(url)
+                .param("userid", 10086)
+                .param("password", "qwe123456")
+                .buildAndExecute(new QSHttpCallback<Bean>() {
+                    @Override
+                    public void onComplete(Bean dataBean) {
+
+                    }
+                });
 ```
 
 

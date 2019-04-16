@@ -156,6 +156,10 @@ public class RequestParams {
     }
 
     public Builder newBuild() {
+        return newBuild(url);
+    }
+
+    public Builder newBuild(String url) {
         Builder builder = new Builder(url);
         builder.charset = charset;
         builder.url = url;

@@ -2,27 +2,29 @@ package com.song.demo;
 
 import android.Manifest;
 import android.os.Build;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import org.json.JSONObject;
+import com.alibaba.fastjson.JSONObject;
+
 import org.song.http.QSHttp;
 import org.song.http.framework.HttpCallback;
-import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.HttpException;
 import org.song.http.framework.Interceptor;
 import org.song.http.framework.Parser;
 import org.song.http.framework.ProgressCallback;
+import org.song.http.framework.QSHttpCallback;
+import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.RequestParams;
 import org.song.http.framework.ResponseParams;
 import org.song.http.framework.TrustAllCerts;
 import org.song.http.framework.Utils;
 
 import java.io.File;
-import java.util.Locale;
+import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -99,6 +101,15 @@ public class MainActivity extends AppCompatActivity {
                         tv.append("请求 " + url + "-" + e.getPrompt() + '\n');
                     }
                 });
+
+        QSHttp.get("http://192.168.1.168:8888/helloworld/xxxx")
+                .param("userid", "jmog3k25bqyu")
+                .buildAndExecute(new QSHttpCallback<List<Bean>>() {
+                    @Override
+                    public void onComplete(List<Bean> dataBean) {
+
+                    }
+                });
     }
 
 
@@ -161,6 +172,16 @@ public class MainActivity extends AppCompatActivity {
                         e.show();
                     }
                 });
+
+//        QSHttp.postJSON(url)
+//                .param("userid", 10086)
+//                .param("password", "qwe123456")
+//                .buildAndExecute(new QSHttpCallback<Bean>() {
+//                    @Override
+//                    public void onComplete(Bean dataBean) {
+//
+//                    }
+//                });
     }
 
 
@@ -319,7 +340,6 @@ public class MainActivity extends AppCompatActivity {
     Parser parser = new Parser<Bean>() {
         @Override
         public Bean parser(String result) throws Exception {
-            JSONObject j = new JSONObject(result);
 
             return null;
         }

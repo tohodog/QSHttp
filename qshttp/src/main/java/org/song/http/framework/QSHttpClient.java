@@ -80,13 +80,15 @@ public class QSHttpClient {
                 response.setResultType(_request.resultType());
                 response.setRequestParams(_request);
 
-                if (hp != null)
-                    hp.destroy();
-                if (qsHttpConfig.debug())
-                    Utils.Log(_request, response);
-                //返回数据后续处理 如缓存、解析等
-                new HttpResultHandler(response).onComplete();
-
+                try {
+                    if (hp != null)
+                        hp.destroy();
+                    if (qsHttpConfig.debug())
+                        Utils.Log(_request, response);
+                } finally {
+                    //返回数据后续处理 如缓存、解析等
+                    new HttpResultHandler(response).onComplete();
+                }
             }
         });
         return mThreadWhat;
