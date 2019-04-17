@@ -101,15 +101,6 @@ public class MainActivity extends AppCompatActivity {
                         tv.append("请求 " + url + "-" + e.getPrompt() + '\n');
                     }
                 });
-
-        QSHttp.get("http://192.168.1.168:8888/helloworld/xxxx")
-                .param("userid", "jmog3k25bqyu")
-                .buildAndExecute(new QSHttpCallback<List<Bean>>() {
-                    @Override
-                    public void onComplete(List<Bean> dataBean) {
-
-                    }
-                });
     }
 
 
@@ -158,12 +149,12 @@ public class MainActivity extends AppCompatActivity {
                 .param("userid", 10086)
                 .param("password", "qwe123456")
                 //.jsonBody(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
-                //.jsonModel(Bean.class)
+                //.jsonModel(Bean.class)//解析模型
                 .buildAndExecute(new HttpCallback() {
                     @Override
                     public void onSuccess(ResponseParams response) {
                         tv.append(response.requestParams().url() + "成功postJSON\n");
-//                        Bean b = response.parserObject();
+//                        Bean b = response.parserObject();//解析好的模型
 //                        b.getUserid();
                     }
 
@@ -333,7 +324,7 @@ public class MainActivity extends AppCompatActivity {
                 //拦截器 添加头参数 鉴权
                 .interceptor(interceptor)
                 .build());
-        QSHttp.get("url").qsClient("server2").buildAndExecute();
+        QSHttp.get("url").qsClient("server2").buildAndExecute();//将使用上述的配置
 
     }
 

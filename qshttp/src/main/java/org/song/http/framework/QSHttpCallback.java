@@ -3,13 +3,11 @@ package org.song.http.framework;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Build;
-import android.util.Log;
 
 import com.alibaba.fastjson.JSON;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
-import java.util.List;
 
 /**
  * Created by song
