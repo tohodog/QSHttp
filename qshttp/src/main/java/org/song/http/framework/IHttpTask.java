@@ -16,37 +16,33 @@ public interface IHttpTask {
     ResponseParams GET(RequestParams params, IHttpProgress hp) throws HttpException;
 
     /**
-     * 普通post
+     * 普通post/put/patch
      * application/x-www-form-urlencoded
      *
      * @param hp 下载的进度
      */
-    ResponseParams POST_FORM(RequestParams params, IHttpProgress hp) throws HttpException;
+    ResponseParams P_FORM(RequestParams params, IHttpProgress hp) throws HttpException;
 
     /**
-     * 自定义body的post
+     * 自定义body的post/put/patch
      * contentType自主决定
      *
      * @param hp 上传的进度
      */
-    ResponseParams POST_BODY(RequestParams params, IHttpProgress hp) throws HttpException;
+    ResponseParams P_BODY(RequestParams params, IHttpProgress hp) throws HttpException;
 
     /**
-     * multipart/form-data 方式的post
+     * multipart/form-data 方式的post/put/patch
      *
      * @param hp 上传的进度
      */
-    ResponseParams POST_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException;
-
-    ResponseParams PUT_FORM(RequestParams params, IHttpProgress hp) throws HttpException;
-
-    ResponseParams PUT_BODY(RequestParams params, IHttpProgress hp) throws HttpException;
-
-    ResponseParams PUT_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException;
+    ResponseParams P_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException;
 
     ResponseParams HEAD(RequestParams params) throws HttpException;
 
     ResponseParams DELETE(RequestParams params) throws HttpException;
+
+    ResponseParams OPTIONS(RequestParams params) throws HttpException;
 
 
 }

@@ -80,7 +80,7 @@ public class HttpException extends Exception {
                     else
                         return "网络连接失败,请检查网络设置!";
                 case TYPE_HTTP_STATUS_CODE:
-                    return "连接异常,错误码:" + httpStatusCode;
+                    return "请求异常,错误码:" + httpStatusCode;
                 case TYPE_HTTP_TIMEOUT:
                     return "请求超时,请重试!";
                 case TYPE_PARSER:
@@ -90,7 +90,7 @@ public class HttpException extends Exception {
                 case TYPE_IO:
                     return "IO异常";
                 case TYPE_RUN:
-                    return "未知异常/传了空、错误参数?";
+                    return "Http运行异常";
             }
         } else {
             switch (type) {
@@ -110,7 +110,7 @@ public class HttpException extends Exception {
                 case TYPE_IO:
                     return "IO exception";
                 case TYPE_RUN:
-                    return "Unkown error";
+                    return "Unkown http error";
             }
         }
         return "Power by github.com/tohodog";

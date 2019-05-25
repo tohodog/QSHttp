@@ -3,7 +3,7 @@ package com.song.demo;
 
 import android.app.Activity;
 import android.app.Fragment;
-import android.os.Build;
+import android.view.View;
 
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
@@ -43,6 +43,7 @@ public abstract class MyHttpCallback<T> implements HttpCallbackEx {
             return;
         }
 
+        //拿到泛型，解析json
         T dataBean = null;
         Exception exception = null;
         try {
@@ -50,12 +51,15 @@ public abstract class MyHttpCallback<T> implements HttpCallbackEx {
             //T=List<xxx>
             if (parameterizedType.getActualTypeArguments()[0] instanceof ParameterizedType) {
                 ParameterizedType parameterizedType1 = (ParameterizedType) parameterizedType.getActualTypeArguments()[0];
-                //parameterizedType1.getRawType() instanceof List
-                Class<?> clazz = (Class<?>) parameterizedType1.getActualTypeArguments()[0];
-                dataBean = (T) JSON.toJavaObject(jsonObject.getJSONArray("data"), clazz);
+//                if (List.class.getName().equals(parameterizedType1.getRawType().getTypeName())) {
+//                    dataBean = (T) JSON.toJavaObject(jsonObject.getJSONArray("data"), (Class<Object>) parameterizedType1.getRawType());
+//                } else {
+//                    dataBean = (T) JSON.toJavaObject(jsonObject.getJSONObject("data"), (Class<Object>) parameterizedType1.getRawType());
+//                }
+                dataBean = (T) JSON.toJavaObject((JSON) jsonObject.get("data"), (Class<Object>) parameterizedType1.getRawType());
             } else {
                 Class<T> clazz = (Class<T>) parameterizedType.getActualTypeArguments()[0];
-                dataBean = JSON.toJavaObject(jsonObject.getJSONObject("data"), clazz);
+                dataBean = jsonObject.getJSONObject("data").toJavaObject(clazz);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -85,20 +89,39 @@ public abstract class MyHttpCallback<T> implements HttpCallbackEx {
 
     @Override
     public boolean isDestroy() {
+
+        return activity != null && activity.isFinishing();
+    }
+
+    protected Activity activity;
+
+    public MyHttpCallback() {
+        this.activity = findActivity();
+    }
+
+    public MyHttpCallback(Activity activity) {
+        this.activity = activity;
+    }
+
+    private Activity findActivity() {
         //获取外部类
         Object ext = field(this, "this$0");
         if (ext != null) {
             if (ext instanceof Activity) {
-                return ((Activity) ext).isFinishing();
-            } else if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR2) {
-                if (ext instanceof Fragment && ((Fragment) ext).getActivity() != null) {
-                    return ((Fragment) ext).getActivity().isFinishing();
+                return ((Activity) ext);
+            } else if (ext instanceof Fragment && ((Fragment) ext).getActivity() != null) {
+                return ((Fragment) ext).getActivity();
+            } else if (ext instanceof android.support.v4.app.Fragment && ((android.support.v4.app.Fragment) ext).getActivity() != null) {
+                return ((android.support.v4.app.Fragment) ext).getActivity();
+            } else if (ext instanceof View) {
+                View view = (View) ext;
+                if ((view.getContext() instanceof Activity)) {
+                    return ((Activity) view.getContext());
                 }
             }
         }
-        return false;
+        return null;
     }
-
 
     private static Object field(Object base, String fieldName) {
         try {

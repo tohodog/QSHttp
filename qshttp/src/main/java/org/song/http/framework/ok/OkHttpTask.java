@@ -2,12 +2,12 @@ package org.song.http.framework.ok;
 
 import android.util.Log;
 
-import org.song.http.framework.QSHttpConfig;
-import org.song.http.framework.QSHttpManage;
 import org.song.http.framework.HttpEnum;
 import org.song.http.framework.HttpException;
 import org.song.http.framework.IHttpProgress;
 import org.song.http.framework.IHttpTask;
+import org.song.http.framework.QSHttpConfig;
+import org.song.http.framework.QSHttpManage;
 import org.song.http.framework.RequestParams;
 import org.song.http.framework.ResponseParams;
 import org.song.http.framework.Utils;
@@ -31,7 +31,6 @@ import javax.net.ssl.SSLSocketFactory;
 import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Call;
-import okhttp3.FormBody;
 import okhttp3.FormBody2;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
@@ -41,6 +40,7 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
+import okhttp3.internal.Util;
 import okio.Okio;
 
 /**
@@ -84,7 +84,7 @@ public class OkHttpTask implements IHttpTask {
     }
 
     @Override
-    public ResponseParams POST_FORM(RequestParams params, IHttpProgress hp) throws HttpException {
+    public ResponseParams P_FORM(RequestParams params, IHttpProgress hp) throws HttpException {
         RequestBody requestBody = buildFormBody(params.params(), params.charset());
         Request request = getRequest(params, requestBody);
         Response response = getResponse(editOkHttpClient(params, hp), request);
@@ -92,7 +92,7 @@ public class OkHttpTask implements IHttpTask {
     }
 
     @Override
-    public ResponseParams POST_BODY(RequestParams params, IHttpProgress hp) throws HttpException {
+    public ResponseParams P_BODY(RequestParams params, IHttpProgress hp) throws HttpException {
         RequestBody requestBody = buildRequestBody(params.requestBody().getContentType(), params.requestBody().getContent());
         if (hp != null)
             requestBody = new RequestBodyProgress(requestBody, hp);
@@ -102,33 +102,7 @@ public class OkHttpTask implements IHttpTask {
     }
 
     @Override
-    public ResponseParams POST_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        RequestBody multipartBody = buildMultipartBody(params.multipartType(), params.multipartBody(), hp);
-        Request request = getRequest(params, multipartBody);
-        Response response = getResponse(editOkHttpClient(params, null), request);
-        return dealResponse(params, response);
-    }
-
-    @Override
-    public ResponseParams PUT_FORM(RequestParams params, IHttpProgress hp) throws HttpException {
-        RequestBody requestBody = buildFormBody(params.params(), params.charset());
-        Request request = getRequest(params, requestBody);
-        Response response = getResponse(editOkHttpClient(params, hp), request);
-        return dealResponse(params, response);
-    }
-
-    @Override
-    public ResponseParams PUT_BODY(RequestParams params, IHttpProgress hp) throws HttpException {
-        RequestBody requestBody = buildRequestBody(params.requestBody().getContentType(), params.requestBody().getContent());
-        if (hp != null)
-            requestBody = new RequestBodyProgress(requestBody, hp);
-        Request request = getRequest(params, requestBody);
-        Response response = getResponse(editOkHttpClient(params, null), request);
-        return dealResponse(params, response);
-    }
-
-    @Override
-    public ResponseParams PUT_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
+    public ResponseParams P_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
         RequestBody multipartBody = buildMultipartBody(params.multipartType(), params.multipartBody(), hp);
         Request request = getRequest(params, multipartBody);
         Response response = getResponse(editOkHttpClient(params, null), request);
@@ -149,10 +123,15 @@ public class OkHttpTask implements IHttpTask {
         return dealResponse(params, response);
     }
 
+    @Override
+    public ResponseParams OPTIONS(RequestParams params) throws HttpException {
+        Request request = getRequest(params, null);
+        Response response = getResponse(editOkHttpClient(params, null), request);
+        return dealResponse(params, response);
+    }
 
     private Request getRequest(RequestParams params, RequestBody requestBody) {
         Request.Builder builder = new Request.Builder();
-
 
         switch (params.requestMethod()) {
             case GET:
@@ -167,6 +146,10 @@ public class OkHttpTask implements IHttpTask {
                 builder.url(params.urlAndPath());
                 builder.put(requestBody);
                 break;
+            case PATCH:
+                builder.url(params.urlAndPath());
+                builder.patch(requestBody);
+                break;
             case HEAD:
                 builder.url(params.urlEncode());
                 builder.head();
@@ -174,6 +157,10 @@ public class OkHttpTask implements IHttpTask {
             case DELETE:
                 builder.url(params.urlEncode());
                 builder.delete();
+                break;
+            case OPTIONS:
+                builder.url(params.urlEncode());
+                builder.method("OPTIONS", Util.EMPTY_REQUEST);
                 break;
         }
         builder.headers(getHeaders(params.headers()));

@@ -2,12 +2,12 @@ package org.song.http.framework;
 
 import android.util.Log;
 
+import org.song.http.framework.HttpEnum.CacheMode;
+
 import java.io.File;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
-import org.song.http.framework.HttpEnum.CacheMode;
 
 /**
  * Created by song on 2016/9/18.

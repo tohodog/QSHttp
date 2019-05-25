@@ -3,7 +3,7 @@ package com.song.demo;
 
 import java.io.Serializable;
 
-public class ResultObject<T> implements Serializable {
+public class ResultModel<T> implements Serializable {
 
     private static final long serialVersionUID = 4845950831108359928L;
 

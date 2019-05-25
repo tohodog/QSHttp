@@ -8,38 +8,25 @@ import android.util.Log;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.JSON;
 
 import org.song.http.QSHttp;
 import org.song.http.framework.HttpCallback;
 import org.song.http.framework.HttpException;
-import org.song.http.framework.Interceptor;
 import org.song.http.framework.Parser;
 import org.song.http.framework.ProgressCallback;
 import org.song.http.framework.QSHttpCallback;
 import org.song.http.framework.QSHttpConfig;
-import org.song.http.framework.RequestParams;
 import org.song.http.framework.ResponseParams;
 import org.song.http.framework.TrustAllCerts;
 import org.song.http.framework.Utils;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
 
-    //TODO 拦截器需放到在 Application/非内部类/静态变量 里调用,否则外部类将会内存泄露
-    static Interceptor interceptor = new Interceptor() {
-        @Override
-        public ResponseParams intercept(Chain chain) throws HttpException {
-            RequestParams r = chain.request()
-                    .newBuild()
-                    .header("Interceptor", "Interceptor")
-                    //继续添加修改其他
-                    .build();
-            return chain.proceed(r);//请求结果参数如有需要也可以进行修改
-        }
-    };
 
     TextView tv;
     ImageView imageView;
@@ -57,30 +44,63 @@ public class MainActivity extends AppCompatActivity {
                 //配置需要签名的网站 读取assets/cers文件夹里的证书
                 //支持双向认证 放入xxx.bks
                 .ssl(Utils.getAssetsSocketFactory(this, "cers", "2923584")
-                        , "inner.reol.top")
-                //设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
+                        , "inner.reol.top")//设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
+
                 .hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//主机信任规则(全信任)
                 .cacheSize(128 * 1024 * 1024)
                 .connectTimeout(18 * 1000)
                 .debug(true)
                 //拦截器 添加头参数 鉴权
-                .interceptor(interceptor)
+                .interceptor(new QSInterceptor())
                 .build());
 
         tv = (TextView) findViewById(R.id.textview);
         imageView = (ImageView) findViewById(R.id.imageView);
 //        httpsTest("https://www.12306.cn");
-        httpsTest("https://inner.reol.top:8888/api_test");
+//        httpsTest("https://inner.reol.top:8888/api_test");
+//
+//        getImg();
+//
+//        String url = "https://api.reol.top/api_test";
+//        normalGET(url);
+//        normalPost(url);
+//        jsonPost(url);
+//        downGET(url);
+//        upLoad(url);
 
-        getImg();
 
-        String url = "https://api.reol.top/api_test";
-        normalGET(url);
-        normalPost(url);
-        jsonPost(url);
-        downGET(url);
-        upLoad(url);
+        QSHttp.postJSON("https://api.reol.top/test/json")
+                .param("userid", 10086)
+                .param("password", "qwe123456")
+                .buildAndExecute(new MyHttpCallback<Bean>() {
+                    @Override
+                    public void onComplete(Bean dataBean) {
+                        tv.append(response.requestParams().url() + JSON.toJSONString(dataBean) + "\n");
+                    }
+                });
 
+        Bean dataBean = new Bean();
+        Bean dataBean2 = new Bean();
+        dataBean.setPassword("setPassword");
+        dataBean2.setUserid("setUserid");
+        QSHttp.postJSON("https://api.reol.top/test/json")
+                .jsonBody(Arrays.asList(dataBean, dataBean2))
+                .buildAndExecute(new MyHttpCallback<List<Bean>>() {
+                    @Override
+                    public void onComplete(List<Bean> dataBean) {
+                        tv.append(response.requestParams().url() + JSON.toJSONString(dataBean) + "\n");
+                    }
+                });
+
+        QSHttp.postJSON("https://api.reol.top/test/json")
+                .header("list", "xx")
+                .jsonBody(Arrays.asList(dataBean, dataBean2))
+                .buildAndExecute(new QSHttpCallback<List<Bean>>() {
+                    @Override
+                    public void onComplete(List<Bean> dataBean) {
+                        tv.append(response.requestParams().url() + JSON.toJSONString(dataBean) + "\n");
+                    }
+                });
     }
 
 
@@ -154,6 +174,44 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess(ResponseParams response) {
                         tv.append(response.requestParams().url() + "成功postJSON\n");
+//                        Bean b = response.parserObject();//解析好的模型
+//                        b.getUserid();
+                    }
+
+                    @Override
+                    public void onFailure(HttpException e) {
+                        e.show();
+                    }
+                });
+
+        QSHttp.putJSON(url)
+                .param("userid", 10086)
+                .param("password", "qwe123456")
+                //.jsonBody(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
+                //.jsonModel(Bean.class)//解析模型
+                .buildAndExecute(new HttpCallback() {
+                    @Override
+                    public void onSuccess(ResponseParams response) {
+                        tv.append(response.requestParams().url() + "成功putJSON\n");
+//                        Bean b = response.parserObject();//解析好的模型
+//                        b.getUserid();
+                    }
+
+                    @Override
+                    public void onFailure(HttpException e) {
+                        e.show();
+                    }
+                });
+
+        QSHttp.patch(url)
+                .param("userid", 10086)
+                .param("password", "qwe123456")
+                //.jsonBody(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
+                //.jsonModel(Bean.class)//解析模型
+                .buildAndExecute(new HttpCallback() {
+                    @Override
+                    public void onSuccess(ResponseParams response) {
+                        tv.append(response.requestParams().url() + "成功patch\n");
 //                        Bean b = response.parserObject();//解析好的模型
 //                        b.getUserid();
                     }
@@ -322,7 +380,7 @@ public class MainActivity extends AppCompatActivity {
                 .connectTimeout(18 * 1000)
                 .debug(true)
                 //拦截器 添加头参数 鉴权
-                .interceptor(interceptor)
+                .interceptor(new QSInterceptor())
                 .build());
         QSHttp.get("url").qsClient("server2").buildAndExecute();//将使用上述的配置
 

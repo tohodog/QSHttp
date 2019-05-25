@@ -33,7 +33,7 @@ public class RequestParams {
     private Object tag;//标记
     private String qsClient;
 
-    private HttpEnum.RequestMethod requestMethod;//请求模式 GET/POST_FORM/...
+    private HttpEnum.RequestMethod requestMethod;//请求模式 GET/P_FORM/...
     private HttpEnum.ResultType resultType;//返回数据类型
     private HttpEnum.ParserMode parserMode;//解析模式 返回类型为string有效
     private HttpEnum.CacheMode cacheMode;//服务器设置了缓存时的控制
@@ -204,7 +204,7 @@ public class RequestParams {
 
         private Object tag;//标记
 
-        private HttpEnum.RequestMethod requestMethod = HttpEnum.RequestMethod.GET;//请求模式 GET/POST_FORM/...
+        private HttpEnum.RequestMethod requestMethod = HttpEnum.RequestMethod.GET;//请求模式 GET/P_FORM/...
         private HttpEnum.ResultType resultType = HttpEnum.ResultType.STRING;//返回类型
         private HttpEnum.ParserMode parserMode = HttpEnum.ParserMode.NOTHING;//解析模式
         private HttpEnum.CacheMode cacheMode = HttpEnum.CacheMode.NO_STORE;//缓存控制

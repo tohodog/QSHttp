@@ -26,8 +26,10 @@ public class HttpEnum {
         GET,
         POST,
         PUT,
+        PATCH,
         HEAD,
-        DELETE
+        DELETE,
+        OPTIONS
     }
 
 

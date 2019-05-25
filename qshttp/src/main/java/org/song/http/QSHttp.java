@@ -4,7 +4,6 @@ package org.song.http;
 import android.app.Application;
 
 import org.song.http.framework.HttpEnum;
-import org.song.http.framework.Interceptor;
 import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.QSHttpManage;
 import org.song.http.framework.RequestParams;
@@ -67,12 +66,28 @@ public class QSHttp {
         return put(url).toMultiBody();
     }
 
+    public static RequestParams.Builder patch(String url) {
+        return build(url, HttpEnum.RequestMethod.PATCH);
+    }
+
+    public static RequestParams.Builder patchJSON(String url) {
+        return patch(url).toJsonBody();
+    }
+
+    public static RequestParams.Builder patchMulti(String url) {
+        return patch(url).toMultiBody();
+    }
+
     public static RequestParams.Builder head(String url) {
         return build(url, HttpEnum.RequestMethod.HEAD);
     }
 
     public static RequestParams.Builder delete(String url) {
         return build(url, HttpEnum.RequestMethod.DELETE);
+    }
+
+    public static RequestParams.Builder options(String url) {
+        return build(url, HttpEnum.RequestMethod.OPTIONS);
     }
 
 

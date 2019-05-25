@@ -1,8 +1,6 @@
 package org.song.http.framework;
 
 import android.app.Application;
-import android.app.KeyguardManager;
-import android.content.Context;
 import android.util.Log;
 
 import org.song.http.framework.java.JavaHttpClient;

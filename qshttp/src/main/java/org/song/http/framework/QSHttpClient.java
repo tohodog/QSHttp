@@ -1,8 +1,6 @@
 package org.song.http.framework;
 
 
-import android.util.Log;
-
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
@@ -112,26 +110,23 @@ public class QSHttpClient {
                     response = iHttpTask.GET(request, hp);
                     break;
                 case POST:
-                    if (request.multipartBody() != null)
-                        response = iHttpTask.POST_MULTIPART(request, hp);
-                    else if (request.requestBody() != null)
-                        response = iHttpTask.POST_BODY(request, hp);
-                    else
-                        response = iHttpTask.POST_FORM(request, hp);
-                    break;
                 case PUT:
+                case PATCH:
                     if (request.multipartBody() != null)
-                        response = iHttpTask.PUT_MULTIPART(request, hp);
+                        response = iHttpTask.P_MULTIPART(request, hp);
                     else if (request.requestBody() != null)
-                        response = iHttpTask.PUT_BODY(request, hp);
+                        response = iHttpTask.P_BODY(request, hp);
                     else
-                        response = iHttpTask.PUT_FORM(request, hp);
+                        response = iHttpTask.P_FORM(request, hp);
                     break;
                 case HEAD:
                     response = iHttpTask.HEAD(request);
                     break;
                 case DELETE:
                     response = iHttpTask.DELETE(request);
+                    break;
+                case OPTIONS:
+                    response = iHttpTask.OPTIONS(request);
                     break;
             }
         }

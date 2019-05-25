@@ -1,11 +1,10 @@
 package org.song.http.framework.java;
 
-import org.song.http.framework.QSHttpConfig;
-import org.song.http.framework.QSHttpManage;
 import org.song.http.framework.HttpEnum;
 import org.song.http.framework.HttpException;
 import org.song.http.framework.IHttpProgress;
 import org.song.http.framework.IHttpTask;
+import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.RequestParams;
 import org.song.http.framework.ResponseParams;
 import org.song.http.framework.Utils;
@@ -51,46 +50,26 @@ public class HttpURLConnectionTask implements IHttpTask {
     }
 
     @Override
-    public ResponseParams POST_FORM(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), HttpEnum.RequestMethod.POST.name(), params.headers(), params.timeOut());
+    public ResponseParams P_FORM(RequestParams params, IHttpProgress hp) throws HttpException {
+        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), params.requestMethod().name(), params.headers(), params.timeOut());
         writeFromBody(conn, params.params(), params.charset());
         return getResponse(conn, params, hp);
     }
 
     @Override
-    public ResponseParams POST_BODY(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), HttpEnum.RequestMethod.POST.name(), params.headers(), params.timeOut());
+    public ResponseParams P_BODY(RequestParams params, IHttpProgress hp) throws HttpException {
+        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), params.requestMethod().name(), params.headers(), params.timeOut());
         writeMediaBody(conn, params.requestBody().getContentType(), params.requestBody().getContent(), hp);
         return getResponse(conn, params, null);
     }
 
     @Override
-    public ResponseParams POST_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), HttpEnum.RequestMethod.POST.name(), params.headers(), params.timeOut());
+    public ResponseParams P_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
+        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), params.requestMethod().name(), params.headers(), params.timeOut());
         writeMultipartBody(conn, params.multipartType(), params.multipartBody(), hp);
         return getResponse(conn, params, null);
     }
 
-    @Override
-    public ResponseParams PUT_FORM(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), HttpEnum.RequestMethod.PUT.name(), params.headers(), params.timeOut());
-        writeFromBody(conn, params.params(), params.charset());
-        return getResponse(conn, params, hp);
-    }
-
-    @Override
-    public ResponseParams PUT_BODY(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), HttpEnum.RequestMethod.PUT.name(), params.headers(), params.timeOut());
-        writeMediaBody(conn, params.requestBody().getContentType(), params.requestBody().getContent(), hp);
-        return getResponse(conn, params, null);
-    }
-
-    @Override
-    public ResponseParams PUT_MULTIPART(RequestParams params, IHttpProgress hp) throws HttpException {
-        HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), HttpEnum.RequestMethod.PUT.name(), params.headers(), params.timeOut());
-        writeMultipartBody(conn, params.multipartType(), params.multipartBody(), hp);
-        return getResponse(conn, params, null);
-    }
 
     @Override
     public ResponseParams HEAD(RequestParams params) throws HttpException {
@@ -104,6 +83,11 @@ public class HttpURLConnectionTask implements IHttpTask {
         return getResponse(conn, params, null);
     }
 
+    @Override
+    public ResponseParams OPTIONS(RequestParams params) throws HttpException {
+        HttpURLConnection conn = getHttpURLConnection(params.urlEncode(), HttpEnum.RequestMethod.OPTIONS.name(), params.headers(), params.timeOut());
+        return getResponse(conn, params, null);
+    }
 
     private HttpURLConnection getHttpURLConnection(String url, String method, Map<String, String> head, int timeOut) throws HttpException {
         try {
