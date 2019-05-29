@@ -356,6 +356,8 @@ public class RequestParams {
                 headers = new HashMap<>();
             if (value != null)
                 headers.put(key, value);
+            else
+                params.remove(key);
             return this;
         }
 
