@@ -51,12 +51,7 @@ public abstract class MyHttpCallback<T> implements HttpCallbackEx {
             //T=List<xxx>
             if (parameterizedType.getActualTypeArguments()[0] instanceof ParameterizedType) {
                 ParameterizedType parameterizedType1 = (ParameterizedType) parameterizedType.getActualTypeArguments()[0];
-//                if (List.class.getName().equals(parameterizedType1.getRawType().getTypeName())) {
-//                    dataBean = (T) JSON.toJavaObject(jsonObject.getJSONArray("data"), (Class<Object>) parameterizedType1.getRawType());
-//                } else {
-//                    dataBean = (T) JSON.toJavaObject(jsonObject.getJSONObject("data"), (Class<Object>) parameterizedType1.getRawType());
-//                }
-                dataBean = (T) JSON.toJavaObject((JSON) jsonObject.get("data"), (Class<Object>) parameterizedType1.getRawType());
+                dataBean = (T) ((JSON) jsonObject.get("data")).toJavaObject((Class<Object>) parameterizedType1.getRawType());
             } else {
                 Class<T> clazz = (Class<T>) parameterizedType.getActualTypeArguments()[0];
                 dataBean = jsonObject.getJSONObject("data").toJavaObject(clazz);
@@ -89,7 +84,6 @@ public abstract class MyHttpCallback<T> implements HttpCallbackEx {
 
     @Override
     public boolean isDestroy() {
-
         return activity != null && activity.isFinishing();
     }
 

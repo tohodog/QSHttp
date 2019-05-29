@@ -52,8 +52,7 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
 //                }
                 dataBean = JSON.parseObject(response.string(), parameterizedType1.getRawType());
             } else {
-                Class<T> clazz = (Class<T>) parameterizedType.getActualTypeArguments()[0];
-                dataBean = JSON.parseObject(response.string(), clazz);
+                dataBean = JSON.parseObject(response.string(), parameterizedType.getActualTypeArguments()[0]);
             }
         } catch (Exception e) {
             e.printStackTrace();

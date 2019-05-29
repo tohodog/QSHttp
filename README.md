@@ -127,7 +127,7 @@ https://api.reol.top/api_test
                 .param("password", "qwe123456")
                 .buildAndExecute(new QSHttpCallback<Bean>() {
                     @Override
-                    public void onComplete(Bean dataBean) {
+                    public void onComplete(Bean dataUser) {
 
                     }
                 });

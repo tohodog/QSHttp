@@ -6,7 +6,7 @@ import java.io.Serializable;
  * Created by song on 2017/2/16.
  */
 
-public class Bean implements Serializable {
+public class User implements Serializable {
     private String userid;
     private String password;
 

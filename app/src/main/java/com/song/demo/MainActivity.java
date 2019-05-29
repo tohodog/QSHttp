@@ -56,53 +56,20 @@ public class MainActivity extends AppCompatActivity {
 
         tv = (TextView) findViewById(R.id.textview);
         imageView = (ImageView) findViewById(R.id.imageView);
-//        httpsTest("https://www.12306.cn");
-//        httpsTest("https://inner.reol.top:8888/api_test");
-//
-//        getImg();
-//
-//        String url = "https://api.reol.top/api_test";
-//        normalGET(url);
-//        normalPost(url);
-//        jsonPost(url);
-//        downGET(url);
-//        upLoad(url);
+        httpsTest("https://www.12306.cn");
 
+        getImg();
 
-        QSHttp.postJSON("https://api.reol.top/test/json")
-                .param("userid", 10086)
-                .param("password", "qwe123456")
-                .buildAndExecute(new MyHttpCallback<Bean>() {
-                    @Override
-                    public void onComplete(Bean dataBean) {
-                        tv.append(response.requestParams().url() + JSON.toJSONString(dataBean) + "\n");
-                    }
-                });
+        String url = "https://api.reol.top/api_test";
+        normalGET(url);
+        normalPost(url);
+        jsonPost(url);
+        downGET(url);
+        upLoad(url);
 
-        Bean dataBean = new Bean();
-        Bean dataBean2 = new Bean();
-        dataBean.setPassword("setPassword");
-        dataBean2.setUserid("setUserid");
-        QSHttp.postJSON("https://api.reol.top/test/json")
-                .jsonBody(Arrays.asList(dataBean, dataBean2))
-                .buildAndExecute(new MyHttpCallback<List<Bean>>() {
-                    @Override
-                    public void onComplete(List<Bean> dataBean) {
-                        tv.append(response.requestParams().url() + JSON.toJSONString(dataBean) + "\n");
-                    }
-                });
+        parserJson();
 
-        QSHttp.postJSON("https://api.reol.top/test/json")
-                .header("list", "xx")
-                .jsonBody(Arrays.asList(dataBean, dataBean2))
-                .buildAndExecute(new QSHttpCallback<List<Bean>>() {
-                    @Override
-                    public void onComplete(List<Bean> dataBean) {
-                        tv.append(response.requestParams().url() + JSON.toJSONString(dataBean) + "\n");
-                    }
-                });
     }
-
 
     //双向认证测试,证书放在 assets里
     public void httpsTest(final String url) {
@@ -160,6 +127,8 @@ public class MainActivity extends AppCompatActivity {
                         e.show();
                     }
                 });
+
+
     }
 
 
@@ -169,12 +138,12 @@ public class MainActivity extends AppCompatActivity {
                 .param("userid", 10086)
                 .param("password", "qwe123456")
                 //.jsonBody(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
-                //.jsonModel(Bean.class)//解析模型
+                //.jsonModel(User.class)//解析模型
                 .buildAndExecute(new HttpCallback() {
                     @Override
                     public void onSuccess(ResponseParams response) {
                         tv.append(response.requestParams().url() + "成功postJSON\n");
-//                        Bean b = response.parserObject();//解析好的模型
+//                        User b = response.parserObject();//解析好的模型
 //                        b.getUserid();
                     }
 
@@ -188,12 +157,12 @@ public class MainActivity extends AppCompatActivity {
                 .param("userid", 10086)
                 .param("password", "qwe123456")
                 //.jsonBody(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
-                //.jsonModel(Bean.class)//解析模型
+                //.jsonModel(User.class)//解析模型
                 .buildAndExecute(new HttpCallback() {
                     @Override
                     public void onSuccess(ResponseParams response) {
                         tv.append(response.requestParams().url() + "成功putJSON\n");
-//                        Bean b = response.parserObject();//解析好的模型
+//                        User b = response.parserObject();//解析好的模型
 //                        b.getUserid();
                     }
 
@@ -207,12 +176,12 @@ public class MainActivity extends AppCompatActivity {
                 .param("userid", 10086)
                 .param("password", "qwe123456")
                 //.jsonBody(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
-                //.jsonModel(Bean.class)//解析模型
+                //.jsonModel(User.class)//解析模型
                 .buildAndExecute(new HttpCallback() {
                     @Override
                     public void onSuccess(ResponseParams response) {
                         tv.append(response.requestParams().url() + "成功patch\n");
-//                        Bean b = response.parserObject();//解析好的模型
+//                        User b = response.parserObject();//解析好的模型
 //                        b.getUserid();
                     }
 
@@ -222,15 +191,6 @@ public class MainActivity extends AppCompatActivity {
                     }
                 });
 
-//        QSHttp.postJSON(url)
-//                .param("userid", 10086)
-//                .param("password", "qwe123456")
-//                .buildAndExecute(new QSHttpCallback<Bean>() {
-//                    @Override
-//                    public void onComplete(Bean dataBean) {
-//
-//                    }
-//                });
     }
 
 
@@ -309,6 +269,43 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    private void parserJson() {
+        QSHttp.postJSON("https://api.reol.top/test/json")
+                .param("userid", 10086)
+                .param("password", "qwe123456")
+                .buildAndExecute(new MyHttpCallback<User>() {
+                    @Override
+                    public void onComplete(User dataUser) {
+                        tv.append(response.requestParams().url() + JSON.toJSONString(dataUser) + "\n");
+                    }
+                });
+
+        User dataUser = new User();
+        User dataUser2 = new User();
+        dataUser.setPassword("setPassword");
+        dataUser2.setUserid("setUserid");
+        QSHttp.postJSON("https://api.reol.top/test/json")
+                .jsonBody(Arrays.asList(dataUser, dataUser2))
+                .buildAndExecute(new MyHttpCallback<List<User>>() {
+                    @Override
+                    public void onComplete(List<User> dataUser) {
+                        tv.append(response.requestParams().url() + JSON.toJSONString(dataUser) + "\n");
+                    }
+                });
+
+        QSHttp.postJSON("https://api.reol.top/test/json")
+                .header("list", "xx")
+                .jsonBody(Arrays.asList(dataUser, dataUser2))
+                .buildAndExecute(new QSHttpCallback<List<User>>() {
+                    @Override
+                    public void onComplete(List<User> dataUser) {
+                        tv.append(response.requestParams().url() + JSON.toJSONString(dataUser) + "\n");
+                    }
+                });
+
+    }
+
+
     //基本所有api介绍
     public void allAPI() {
         String url = "https://www.baidu.com/s";
@@ -319,10 +316,10 @@ public class MainActivity extends AppCompatActivity {
 
                 .param("userid", 123456)//键值对参数
                 .param("password", "asdfgh")//键值对参数
-                .param(new Bean())//键值对参数
+                .param(new User())//键值对参数
 
                 .toJsonBody()//把 params 转为json;application/json
-                .jsonBody(new Bean())//传入一个对象,会自动转化为json上传;application/json
+                .jsonBody(new User())//传入一个对象,会自动转化为json上传;application/json
 
                 .requestBody("image/jpeg", new File("xx.jpg"))//直接上传自定义的内容 自定义contentType (postjson内部是调用这个实现)
 
@@ -332,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
 
 
                 .parser(parser)//自定义解析,由自己写解析逻辑
-                .jsonModel(Bean.class)//使用FastJson自动解析json,传一个实体类即可
+                .jsonModel(User.class)//使用FastJson自动解析json,传一个实体类即可
 
                 .resultByBytes()//请求结果返回一个字节组 默认是返回字符
                 .resultByFile(".../1.txt")//本地路径 有此参数 请求的内容将被写入文件
@@ -363,7 +360,7 @@ public class MainActivity extends AppCompatActivity {
                         response.headers();//获得响应头
 
                         //获得自动解析/自定义解析的结果
-                        Bean b = response.parserObject();
+                        User b = response.parserObject();
                         b.getUserid();
                     }
 
@@ -386,9 +383,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    Parser parser = new Parser<Bean>() {
+    Parser parser = new Parser<User>() {
         @Override
-        public Bean parser(String result) throws Exception {
+        public User parser(String result) throws Exception {
 
             return null;
         }
