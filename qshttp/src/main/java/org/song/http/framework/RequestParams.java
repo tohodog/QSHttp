@@ -357,7 +357,7 @@ public class RequestParams {
             if (value != null)
                 headers.put(key, value);
             else
-                params.remove(key);
+                headers.remove(key);
             return this;
         }
 
