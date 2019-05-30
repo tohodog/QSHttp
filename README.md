@@ -11,7 +11,7 @@ QSHttp
 ### Gradle
 ```
 dependencies {
-    implementation 'com.github.tohodog:QSHttp:1.3.3'
+    implementation 'com.github.tohodog:QSHttp:1.4.1'
 }
 ```
 
