@@ -12,6 +12,7 @@ import com.alibaba.fastjson.JSON;
 
 import org.song.http.QSHttp;
 import org.song.http.framework.HttpCallback;
+import org.song.http.framework.HttpEnum;
 import org.song.http.framework.HttpException;
 import org.song.http.framework.Parser;
 import org.song.http.framework.ProgressCallback;
@@ -50,6 +51,7 @@ public class MainActivity extends AppCompatActivity {
                 .cacheSize(128 * 1024 * 1024)
                 .connectTimeout(18 * 1000)
                 .debug(true)
+                .xxHttp(HttpEnum.XX_Http.JAVA_HTTP)
                 //拦截器 添加头参数 鉴权
                 .interceptor(new QSInterceptor())
                 .build());

@@ -113,7 +113,7 @@ public class QSHttpConfig {
         private int connectTimeout = 12_000;
         private int readTimeout = 12_000;
         private int writeTimeout = 12_000;
-        private int progressCallbackSpace = 500;//进度回调的频率 毫秒
+        private int progressCallbackSpace = 100;//进度回调的频率 毫秒
 
         private Builder(Application application) {
             this.application = application;

@@ -40,6 +40,7 @@ import javax.net.ssl.TrustManagerFactory;
 public class Utils {
 
     public static final String TAG = "QSHTTP";
+    public static boolean FORMAT_JSON = false;
 
     /**
      * 读取assets/path文件夹里的证书
@@ -142,10 +143,13 @@ public class Utils {
     }
 
     public static void Log(RequestParams params, ResponseParams response) {
-        if (response.isSuccess())
+        if (response.isSuccess()) {
             switch (response.resultType()) {
                 case STRING:
-                    Log(params, "\nHeaders->" + response.headers() + "\nResult->" + response.string());
+                    String result = response.string();
+                    if (FORMAT_JSON)
+                        result = formatJson(result);
+                    Log(params, "\nHeaders->" + response.headers() + "\nResult->" + result);
                     break;
                 case FILE:
                     Log(params, "\nHeaders->" + response.headers() + "\nResult->file:" + response.file());
@@ -154,13 +158,12 @@ public class Utils {
                     Log(params, "\nHeaders->" + response.headers() + "\nResult->bytes:" + response.bytes().length);
                     break;
             }
-        else
+        } else {
             Log(params, "\nError->" + response.exception().getMessage());
-
+        }
     }
 
     public static void Log(RequestParams request, String result) {
-        //result = formatJson(result);
         HttpEnum.RequestMethod type = request.requestMethod();
 
         Map<String, String> head_map = request.headers();
@@ -184,8 +187,8 @@ public class Utils {
                 if (request.multipartBody() != null) {
                     Log.e(TAG, type + "->" + request.urlAndPath()
                             + "\nHeaders->" + head_map
-                            + sbParams.toString()
-                            + "\nUpContent->" + request.multipartBody()
+                            + "\nContent-Type->" + request.multipartType()
+                            + "\nContent->" + request.multipartBody()
                             + "\n请求结果-> ↓↓↓" + result);
                 } else if (request.requestBody() != null) {
                     Log.e(TAG, type + "->" + request.urlAndPath()
@@ -496,7 +499,7 @@ public class Utils {
      */
     public static String formatJson(String jsonStr) {
         if (null == jsonStr || "".equals(jsonStr)) return "";
-        StringBuilder sb = new StringBuilder();
+        StringBuilder sb = new StringBuilder("\n");
         char last = '\0';
         char current = '\0';
         int indent = 0;

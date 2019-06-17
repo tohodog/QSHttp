@@ -28,11 +28,17 @@ public class ThreadHandler extends Handler {
     }
 
 
-    public synchronized int addHttpDataCallback(HttpCallback cb) {
+    public synchronized int addHttpDataCallback(final HttpCallback cb) {
         mThreadWhat++;
         sparseArray.put(mThreadWhat, cb);
-        if (cb instanceof HttpCallbackEx)
-            ((HttpCallbackEx) cb).onStart();
+        if (cb instanceof HttpCallbackEx) {
+            post(new Runnable() {
+                @Override
+                public void run() {
+                    ((HttpCallbackEx) cb).onStart();
+                }
+            });
+        }
         return mThreadWhat;
     }
 
@@ -49,7 +55,13 @@ public class ThreadHandler extends Handler {
                 sparseArray.remove(what);
                 if (cb instanceof HttpCallbackEx && ((HttpCallbackEx) cb).isDestroy())
                     break;
-                cb.onSuccess((ResponseParams) message.obj);
+                ResponseParams responseParams = (ResponseParams) message.obj;
+                try {
+                    cb.onSuccess(responseParams);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    cb.onFailure(HttpException.Run(e).responseParams(responseParams));
+                }
                 if (cb instanceof HttpCallbackEx)
                     ((HttpCallbackEx) cb).onEnd();
                 break;

@@ -24,7 +24,7 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
     protected ResponseParams response;
 
     public QSHttpCallback() {
-        activity = findActivity();
+        activity = findActivity(this);
     }
 
     public QSHttpCallback(Activity activity) {
@@ -36,7 +36,7 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
 
 
     @Override
-    public final void onSuccess(ResponseParams response) {
+    public void onSuccess(ResponseParams response) {
         this.response = response;
         T dataBean = null;
         Exception exception = null;
@@ -86,9 +86,9 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
     }
 
 
-    private Activity findActivity() {
+    public static Activity findActivity(Object o) {
         //获取外部类
-        Object ext = field(this, "this$0");
+        Object ext = field(o, "this$0");
         if (ext != null) {
             if (ext instanceof Activity) {
                 return ((Activity) ext);
@@ -118,7 +118,7 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
         return null;
     }
 
-    private static Object field(Object base, String fieldName) {
+    public static Object field(Object base, String fieldName) {
         try {
             Class<?> clazz;
             if (base instanceof String) {
