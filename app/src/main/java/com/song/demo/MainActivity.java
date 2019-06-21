@@ -12,7 +12,6 @@ import com.alibaba.fastjson.JSON;
 
 import org.song.http.QSHttp;
 import org.song.http.framework.HttpCallback;
-import org.song.http.framework.HttpEnum;
 import org.song.http.framework.HttpException;
 import org.song.http.framework.Parser;
 import org.song.http.framework.ProgressCallback;
@@ -51,16 +50,13 @@ public class MainActivity extends AppCompatActivity {
                 .cacheSize(128 * 1024 * 1024)
                 .connectTimeout(18 * 1000)
                 .debug(true)
-                .xxHttp(HttpEnum.XX_Http.JAVA_HTTP)
                 //拦截器 添加头参数 鉴权
                 .interceptor(new QSInterceptor())
                 .build());
 
         tv = (TextView) findViewById(R.id.textview);
         imageView = (ImageView) findViewById(R.id.imageView);
-        httpsTest("https://www.12306.cn");
 
-        getImg();
 
         String url = "https://api.reol.top/api_test";
         normalGET(url);
@@ -71,25 +67,6 @@ public class MainActivity extends AppCompatActivity {
 
         parserJson();
 
-    }
-
-    //双向认证测试,证书放在 assets里
-    public void httpsTest(final String url) {
-        QSHttp.get(url)
-                .param("wd", "安卓http")
-                .param("ie", "UTF-8")
-                .buildAndExecute(new HttpCallback() {
-                    @Override
-                    public void onSuccess(ResponseParams response) {
-                        tv.append(response.requestParams().url() + "成功\n");
-                    }
-
-                    @Override
-                    public void onFailure(HttpException e) {
-
-                        tv.append("请求 " + url + "-" + e.getPrompt() + '\n');
-                    }
-                });
     }
 
 
@@ -198,8 +175,7 @@ public class MainActivity extends AppCompatActivity {
 
     //文件下载
     public void downGET(String url) {
-        QSHttp.get(url)
-                .resultByFile(getExternalCacheDir().getPath() + "/http.txt")
+        QSHttp.download(url, getExternalCacheDir().getPath() + "/http.txt")
                 .buildAndExecute(new ProgressCallback() {
                     @Override
                     public void onProgress(long var1, long var2, String var3) {
@@ -249,36 +225,14 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void getImg() {
-        QSHttp.get("http://www.5uzdd.com/image/tal_3.png")
-                .errCache()
-                .resultByBytes()
-                .buildAndExecute(new ProgressCallback() {
-                    @Override
-                    public void onProgress(long var1, long var2, String var3) {
-
-                    }
-
-                    @Override
-                    public void onSuccess(ResponseParams response) {
-                        imageView.setImageBitmap(response.bitmap());
-                    }
-
-                    @Override
-                    public void onFailure(HttpException e) {
-
-                    }
-                });
-    }
-
     private void parserJson() {
         QSHttp.postJSON("https://api.reol.top/test/json")
                 .param("userid", 10086)
                 .param("password", "qwe123456")
-                .buildAndExecute(new MyHttpCallback<User>() {
+                .buildAndExecute(new MyHttpCallback<String>() {
                     @Override
-                    public void onComplete(User dataUser) {
-                        tv.append(response.requestParams().url() + JSON.toJSONString(dataUser) + "\n");
+                    public void onComplete(String dataUser) {
+                        tv.append("MyHttpCallback.String=" + dataUser + "\n");
                     }
                 });
 
@@ -291,17 +245,26 @@ public class MainActivity extends AppCompatActivity {
                 .buildAndExecute(new MyHttpCallback<List<User>>() {
                     @Override
                     public void onComplete(List<User> dataUser) {
-                        tv.append(response.requestParams().url() + JSON.toJSONString(dataUser) + "\n");
+                        tv.append("MyHttpCallback.List<User>=" + JSON.toJSONString(dataUser) + "\n");
                     }
                 });
 
         QSHttp.postJSON("https://api.reol.top/test/json")
-                .header("list", "xx")
+                .header("row", "row")
                 .jsonBody(Arrays.asList(dataUser, dataUser2))
                 .buildAndExecute(new QSHttpCallback<List<User>>() {
                     @Override
                     public void onComplete(List<User> dataUser) {
-                        tv.append(response.requestParams().url() + JSON.toJSONString(dataUser) + "\n");
+                        tv.append("QSHttpCallback.List<User>=" + JSON.toJSONString(dataUser) + "\n");
+                    }
+                });
+
+        QSHttp.postJSON("https://api.reol.top/test/json")
+                .header("string","3.6")
+                .buildAndExecute(new QSHttpCallback<String>() {
+                    @Override
+                    public void onComplete(String dataUser) {
+                        tv.append("QSHttpCallback.String=" + dataUser + "\n");
                     }
                 });
 

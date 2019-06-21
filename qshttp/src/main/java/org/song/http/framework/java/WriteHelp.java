@@ -19,6 +19,7 @@ public class WriteHelp {
     private OutputStream os;
     private IHttpProgress hp;
     private int writeCount, allCount = -1;
+
     private String mark = "";
 
     public WriteHelp(OutputStream os, IHttpProgress hp, int allCount) {
@@ -35,9 +36,12 @@ public class WriteHelp {
         this.os = new FileOutputStream(f);
     }
 
-    public void writeBytes(byte[] bytes) throws IOException {
-        mark = "byte[]";
 
+    public void setMark(String mark) {
+        this.mark = mark;
+    }
+
+    public void writeBytes(byte[] bytes) throws IOException {
         int offset = 0, all = bytes.length;
         while (offset < all) {
             int len = Math.min(1024, all - offset);
@@ -48,7 +52,6 @@ public class WriteHelp {
 
     //资源来自文件
     public void writeByFile(File file) throws IOException {
-        mark = file.getName();
         FileInputStream fis = new FileInputStream(file);
         BufferedInputStream bis = new BufferedInputStream(fis);
         byte[] buf = new byte[1024];

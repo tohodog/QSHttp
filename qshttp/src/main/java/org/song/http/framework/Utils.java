@@ -243,7 +243,7 @@ public class Utils {
      */
     public static boolean checkNet() {
         if (QSHttpManage.application == null)
-            return true;
+            return false;
         ConnectivityManager connectivityManager = (ConnectivityManager) QSHttpManage.application.getSystemService(Context.CONNECTIVITY_SERVICE);
         NetworkInfo networkInfo = connectivityManager == null ? null : connectivityManager.getActiveNetworkInfo();
         return networkInfo != null && networkInfo.isAvailable();

@@ -6,10 +6,14 @@ import android.os.Build;
 import android.view.View;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONException;
+import com.alibaba.fastjson.parser.ParserConfig;
+import com.alibaba.fastjson.util.TypeUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 
 /**
  * Created by song
@@ -38,31 +42,48 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
     @Override
     public void onSuccess(ResponseParams response) {
         this.response = response;
-        T dataBean = null;
-        Exception exception = null;
         try {
-            ParameterizedType parameterizedType = (ParameterizedType) getClass().getGenericSuperclass();
+            onComplete(parserT(response.string()));
+        } catch (JSONException e) {
+            e.printStackTrace();
+            onFailure(HttpException.Parser(e).responseParams(response));
+        }
+    }
+
+
+    protected T parserT(Object json) throws JSONException {
+        return TypeUtils.cast(json, findT(), ParserConfig.getGlobalInstance());
+    }
+
+    protected T parserT(String json) throws JSONException {
+        T dataBean = null;
+        Type type = findT();
+        if (type == String.class) {
+            dataBean = (T) json;
+        } else {
+            dataBean = JSON.parseObject(json, type);
+        }
+        return dataBean;
+    }
+
+    protected Type findT() {
+        Type type = getClass().getGenericSuperclass();
+
+        if (!(type instanceof ParameterizedType)) {
+            type = String.class;
+        } else {
+            ParameterizedType parameterizedType = (ParameterizedType) type;
             //T=List<xxx>
             if (parameterizedType.getActualTypeArguments()[0] instanceof ParameterizedType) {
                 ParameterizedType parameterizedType1 = (ParameterizedType) parameterizedType.getActualTypeArguments()[0];
-//                if (List.class.getName().equals(parameterizedType1.getRawType().getTypeName())) {
-//                    dataBean = (T) JSON.toJavaObject(JSON.parseArray(response.string()), (Class<Object>) parameterizedType1.getRawType());
-//                } else {
-//                    dataBean = (T) JSON.parseObject(response.string(), parameterizedType1.getRawType());
-//                }
-                dataBean = JSON.parseObject(response.string(), parameterizedType1.getRawType());
+                type = parameterizedType1.getRawType();
             } else {
-                dataBean = JSON.parseObject(response.string(), parameterizedType.getActualTypeArguments()[0]);
+                type = parameterizedType.getActualTypeArguments()[0];
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-            exception = e;
         }
-        if (dataBean != null)
-            onComplete(dataBean);
-        else
-            onFailure(HttpException.Parser(exception).responseParams(response));
+        return type;
     }
+
 
     @Override
     public void onFailure(HttpException e) {
@@ -107,6 +128,16 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
             if (ext.getClass().getName().equals("android.support.v4.app.Fragment")) {
                 try {
                     Class<?> exClass = Class.forName("android.support.v4.app.Fragment");
+                    Method method = exClass.getMethod("getActivity");
+                    method.setAccessible(true);
+                    return (Activity) method.invoke(ext, new Object[0]);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+            if (ext.getClass().getName().equals("androidx.support.v4.app.Fragment")) {
+                try {
+                    Class<?> exClass = Class.forName("androidx.support.v4.app.Fragment");
                     Method method = exClass.getMethod("getActivity");
                     method.setAccessible(true);
                     return (Activity) method.invoke(ext, new Object[0]);

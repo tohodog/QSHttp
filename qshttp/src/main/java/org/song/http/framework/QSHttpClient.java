@@ -63,7 +63,7 @@ public class QSHttpClient {
                             }
                         });
                         if (response == null) {
-                            throw HttpException.Custom("interceptor return is null " + interceptor);
+                            throw HttpException.Custom(interceptor.getClass().getName() + ".intercept() - return value can't null!");
                         }
                     } else
                         response = access(_request, hp);
@@ -136,7 +136,7 @@ public class QSHttpClient {
     private class HttpProgress implements IHttpProgress {
         private final int mThreadWhat;
         private long var1, var2 = -1;
-        private String var3;
+        private String var3 = "";
         private Timer timer = new Timer();
 
         HttpProgress(final int mThreadWhat) {

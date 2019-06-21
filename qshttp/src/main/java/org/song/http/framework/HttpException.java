@@ -24,9 +24,16 @@ public class HttpException extends Exception {
     private ResponseParams responseParams;//此次请求的
     private final int type;//异常类型
     private int httpStatusCode;//http错误状态码
-    private String customErr;//自定义异常
+
+    private String customMessage;//自定义异常
+    private Object customExObject;//自定义异常
 
     private HttpException(int type, Exception e) {
+        super(e);
+        this.type = type;
+    }
+
+    private HttpException(int type, String e) {
         super(e);
         this.type = type;
     }
@@ -56,14 +63,22 @@ public class HttpException extends Exception {
     }
 
     public static HttpException Custom(String e) {
-        return new HttpException(TYPE_CUSTOM, new Exception()).setCustomErr(e);
+        return new HttpException(TYPE_CUSTOM, e).setCustomMessage(e);
     }
 
-    private HttpException setCustomErr(String customErr) {
-        this.customErr = customErr;
+    public static HttpException Custom(String e, Object o) {
+        return Custom(e).setCustomExObject(o);
+    }
+
+    private HttpException setCustomMessage(String customMessage) {
+        this.customMessage = customMessage;
         return this;
     }
 
+    private HttpException setCustomExObject(Object customExObject) {
+        this.customExObject = customExObject;
+        return this;
+    }
 
     private HttpException setHttpStatusCode(int httpStatusCode) {
         this.httpStatusCode = httpStatusCode;
@@ -86,7 +101,7 @@ public class HttpException extends Exception {
                 case TYPE_PARSER:
                     return "数据解析异常";
                 case TYPE_CUSTOM:
-                    return customErr;
+                    return customMessage;
                 case TYPE_IO:
                     return "IO异常";
                 case TYPE_RUN:
@@ -106,7 +121,7 @@ public class HttpException extends Exception {
                 case TYPE_PARSER:
                     return "Data parsing exception";
                 case TYPE_CUSTOM:
-                    return customErr;
+                    return customMessage;
                 case TYPE_IO:
                     return "IO exception";
                 case TYPE_RUN:

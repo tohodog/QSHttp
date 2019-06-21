@@ -2,7 +2,6 @@ package org.song.http.framework.ok;
 
 import org.song.http.framework.IHttpProgress;
 
-import java.io.File;
 import java.io.IOException;
 
 import okhttp3.MediaType;
@@ -25,31 +24,16 @@ public class RequestBodyProgress extends RequestBody {
     private long len;
     private String mark;
 
-    public RequestBodyProgress(MediaType mediaType, Object content, IHttpProgress iHttpProgress) {
-        if (iHttpProgress == null)
-            throw new IllegalArgumentException("IHttpProgress can not null");
-        this.iHttpProgress = iHttpProgress;
-        if (content instanceof File) {
-            requestBody = RequestBody.create(mediaType, (File) content);
-            mark = ((File) content).getName();
-        } else if (content instanceof byte[]) {
-            requestBody = RequestBody.create(mediaType, (byte[]) content);
-            mark = "byte[]";
-        } else if (content != null) {
-            requestBody = RequestBody.create(mediaType, content.toString());
-            mark = "string";
-        } else {
-            requestBody = RequestBody.create((MediaType) null, new byte[0]);
-            mark = "null";
-        }
-    }
-
-    public RequestBodyProgress(RequestBody requestBody, IHttpProgress iHttpProgress) {
+    public RequestBodyProgress(RequestBody requestBody, IHttpProgress iHttpProgress, String key) {
         if (iHttpProgress == null)
             throw new IllegalArgumentException("IHttpProgress can not null");
         this.requestBody = requestBody;
         this.iHttpProgress = iHttpProgress;
-        this.mark = "upload";
+        this.mark = key;
+    }
+
+    public RequestBodyProgress(RequestBody requestBody, IHttpProgress iHttpProgress) {
+        this(requestBody, iHttpProgress, "");
     }
 
     @Override

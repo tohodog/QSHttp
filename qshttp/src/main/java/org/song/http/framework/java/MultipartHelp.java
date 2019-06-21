@@ -84,7 +84,7 @@ public class MultipartHelp {
                 sb1.append(LINEND);
                 os.write(sb1.toString().getBytes(charset));
                 //写入上传内容
-                writeObject(os, body.getContent(), body.getCharset());
+                writeObject(os, body.getContent(), body.getCharset(), content.getKey());
                 //结束
                 os.write(LINEND.getBytes(charset));
             }
@@ -96,7 +96,7 @@ public class MultipartHelp {
     }
 
 
-    private void writeObject(OutputStream os, Object content, String charset) throws IOException {
+    private void writeObject(OutputStream os, Object content, String charset, String key) throws IOException {
         int len = 0;
         byte[] bytes = null;
         File file = null;
@@ -111,8 +111,8 @@ public class MultipartHelp {
             len = bytes.length;
         }
 
-
         WriteHelp wh = new WriteHelp(os, hp, len);
+        wh.setMark(key);
         if (file != null)
             wh.writeByFile(file);
         if (bytes != null)

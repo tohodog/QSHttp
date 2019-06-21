@@ -323,12 +323,10 @@ public class OkHttpTask implements IHttpTask {
 //        }
         if (content != null) {
             for (Map.Entry<String, RequestParams.RequestBody> entry : content.entrySet()) {
-                RequestBody requestBody;
                 RequestParams.RequestBody body = entry.getValue();
-                if (hp == null)
-                    requestBody = buildRequestBody(body.getContentType(), body.getContent());
-                else
-                    requestBody = new RequestBodyProgress(MediaType.parse(body.getContentType()), body.getContent(), hp);
+                RequestBody requestBody = buildRequestBody(body.getContentType(), body.getContent());
+                if (hp != null)
+                    requestBody = new RequestBodyProgress(requestBody, hp, entry.getKey());
                 builder.addFormDataPart(entry.getKey(), body.getFilename(), requestBody);
             }
         }
