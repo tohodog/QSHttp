@@ -11,7 +11,7 @@ QSHttp
 ### Gradle
 ```
 dependencies {
-    implementation 'com.github.tohodog:QSHttp:1.4.1'
+    implementation 'com.github.tohodog:QSHttp:1.4.2'
 }
 ```
 
@@ -146,7 +146,7 @@ https://api.reol.top/api_test
                     @Override
                     public void onProgress(long rwLen, long allLen, String mark) {
                         int i=rwLen * 100 / allLen ;//百分比
-                        //mark 在传文件的时候为文件路径 其他无意义
+                        //mark 参数名
                     }
 
                     @Override
@@ -268,6 +268,8 @@ https://api.reol.top/api_test
                         });
 ```
 ## Log
+### v1.4.2(2019-06-27)
+  * 优化(进度监听,泛型)
 ### v1.4.1(2019-05-30)
   * 增加PATCH,OPTIONS
   * 优化泛型回调
