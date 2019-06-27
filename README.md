@@ -11,7 +11,7 @@ QSHttp
 ### Gradle
 ```
 dependencies {
-    implementation 'com.github.tohodog:QSHttp:1.3.3'
+    implementation 'com.github.tohodog:QSHttp:1.4.1'
 }
 ```
 
@@ -27,37 +27,9 @@ https://api.reol.top/api_test
 
 ### 初始化框架
 ```
-        //初始化框架 调用一次即可
+        //初始化框架,调用一次即可
         QSHttp.init(getApplication());
 
-
-        //使用配置初始化
-        QSHttp.init(QSHttpConfig.Build(getApplication())
-                //配置需要签名的网站 读取assets/cers文件夹里的证书
-                //支持双向认证 放入xxx.bks
-                .ssl(Utils.getAssetsSocketFactory(this, "cers", "2923584")
-                        , "192.168.1.168")//设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
-                .hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//证书信任规则(全信任)
-                .cacheSize(128 * 1024 * 1024)
-                .connectTimeout(18 * 1000)
-                .debug(true)
-                //拦截器 添加头参数 鉴权
-                .interceptor(interceptor)
-                .build());
-
-        //拦截器
-        //TODO 拦截器需放到在 Application/静态变量/非内部类 里,否则外部类将会内存泄露
-        static Interceptor interceptor = new Interceptor() {
-                @Override
-                public ResponseParams intercept(Chain chain) throws HttpException {
-                    RequestParams r = chain.request()
-                            .newBuild()
-                            .header("Interceptor", "Interceptor")
-                            //继续添加修改其他
-                            .build();
-                    return chain.proceed(r);//请求结果参数如有需要也可以进行修改
-                }
-            };
 ```
 
 ### 普通带参数get请求
@@ -136,6 +108,7 @@ https://api.reol.top/api_test
 
 ###  文件下载
 ```
+        //基于get下载
         String url = "https://api.reol.top/api_test";
         QSHttp.download(url,"/xxx/xxx.txt")
                 .buildAndExecute(new ProgressCallback() {
@@ -188,15 +161,45 @@ https://api.reol.top/api_test
                 });
 ```
 
-###  配置多个client
+
+###  高级配置
 ```
+        //使用配置初始化
+        QSHttp.init(QSHttpConfig.Build(getApplication())
+                //配置需要签名的网站 读取assets/cers文件夹里的证书
+                //支持双向认证 放入xxx.bks
+                .ssl(Utils.getAssetsSocketFactory(this, "cers", "password")
+                        , "192.168.1.168")//地址参数:设置需要自签名的主机地址,不设置则只能访问证书列表里的https网站
+                .hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//证书信任规则(全信任)
+                .cacheSize(128 * 1024 * 1024)
+                .connectTimeout(18 * 1000)
+                .debug(true)
+                //拦截器 添加头参数 鉴权
+                .interceptor(interceptor)
+                .build());
+
+        //拦截器
+        //TODO 拦截器需放到在 Application/静态变量/非内部类 里,否则外部类将会内存泄露
+        static Interceptor interceptor = new Interceptor() {
+                @Override
+                public ResponseParams intercept(Chain chain) throws HttpException {
+                    RequestParams r = chain.request()
+                            .newBuild()
+                            .header("Interceptor", "Interceptor")
+                            //继续添加修改其他
+                            .build();
+                    return chain.proceed(r);//请求结果参数如有需要也可以进行修改
+                }
+            };
+         
+        //配置多个client
         QSHttp.addClient("server2", QSHttpConfig.Build(getApplication())
                 .hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//证书信任规则
                 .cacheSize(128 * 1024 * 1024)
                 .connectTimeout(10 * 1000)
                 .debug(true)
                 .build());
-        QSHttp.get("url").qsClient("server2").buildAndExecute();
+        QSHttp.get("url").qsClient("server2").buildAndExecute();//该请求将使用上述配置
 ```
 
 
@@ -265,6 +268,9 @@ https://api.reol.top/api_test
                         });
 ```
 ## Log
+### v1.4.1(2019-05-30)
+  * 增加PATCH,OPTIONS
+  * 优化泛型回调
 ### v1.3.3(2019-04-16)
   * 增加泛型回调,支持外部类是activity,fragment销毁时不回调
 ### v1.3.1(2019-04-04)
