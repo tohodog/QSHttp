@@ -259,7 +259,7 @@ public class OkHttpTask implements IHttpTask {
     private Headers getHeaders(Map<String, String> headers) {
         if (headers == null)
             headers = new HashMap<>();
-        if (!headers.containsKey("User-Agent"))
+        if (!headers.containsKey("User-Agent") && !headers.containsKey("user-agent"))
             headers.put("User-Agent", "Android/OkHttpClient/QSHttp");
         return Headers.of(headers);
     }

@@ -29,6 +29,7 @@ public class RequestParams {
     private RequestBody requestBody;//自定义post/put内容
     private Map<String, RequestBody> multipartBody;//上传内容参数
     private String multipartType;
+    private int bodyType;//0.键值对urlencode 1.requestBody 2.multiBody
 
     private Object tag;//标记
     private String qsClient;
@@ -112,6 +113,10 @@ public class RequestParams {
         return cacheTime;
     }
 
+    public int bodyType() {
+        return bodyType;
+    }
+
     public String downloadPath() {
         return downloadPath;
     }
@@ -183,6 +188,7 @@ public class RequestParams {
         builder.cacheTime = cacheTime;
         builder.timeOut = timeOut;
 
+        builder.bodyType = bodyType;
         return builder;
     }
 
@@ -201,6 +207,7 @@ public class RequestParams {
         private List<String> pathParams;
         private Map<String, RequestBody> multipartBody;
         private String multipartType;
+        private int bodyType;//0.键值对urlencode 1.requestBody 2.multiBody
 
         private Object tag;//标记
 
@@ -253,6 +260,7 @@ public class RequestParams {
             requestParams.downloadPath = downloadPath;
             requestParams.timeOut = timeOut;
 
+            requestParams.bodyType = bodyType;
             return requestParams;
         }
 
@@ -428,10 +436,13 @@ public class RequestParams {
          * post/put 一个json body
          */
         public RequestParams.Builder jsonBody(Object object) {
+            String json = "{}";
             if (object instanceof org.json.JSONObject) {
-                object = object.toString();
+                json = object.toString();
+            } else {
+                json = JSON.toJSONString(object);
             }
-            requestBody(HttpEnum.CONTENT_TYPE_JSON_ + charset, JSON.toJSONString(object));
+            requestBody(HttpEnum.CONTENT_TYPE_JSON_ + charset, json);
             return this;
         }
 
@@ -441,6 +452,7 @@ public class RequestParams {
          */
         public RequestParams.Builder requestBody(String contentType, Object content) {
             requestBody = new RequestBody(contentType, content);
+            bodyType = 1;
             return this;
         }
 
@@ -457,12 +469,11 @@ public class RequestParams {
          * 把 params 转为multipartBody参数
          */
         public RequestParams.Builder toMultiBody(String multipartType) {
-            if (toMultiBodyFlag)
-                return this;
             toMultiBodyFlag = true;
             this.multipartType = multipartType;
             if (multipartBody == null)
                 multipartBody = new HashMap<>();
+            bodyType = 2;
             return this;
         }
 
@@ -479,6 +490,7 @@ public class RequestParams {
          * 上传
          */
         private RequestParams.Builder multipartBody(Map<String, ?> params) {
+            toMultiBody();
             if (params != null) {
                 for (String key : params.keySet()) {
                     Object value = params.get(key);

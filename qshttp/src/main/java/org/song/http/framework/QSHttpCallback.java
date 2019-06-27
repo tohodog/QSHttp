@@ -125,25 +125,26 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
                     return ((Activity) view.getContext());
                 }
             }
-            if (ext.getClass().getName().equals("android.support.v4.app.Fragment")) {
-                try {
-                    Class<?> exClass = Class.forName("android.support.v4.app.Fragment");
+            try {
+                Class<?> exClass = Class.forName("android.support.v4.app.Fragment");
+                if (exClass.isAssignableFrom(ext.getClass())) {
                     Method method = exClass.getMethod("getActivity");
                     method.setAccessible(true);
                     return (Activity) method.invoke(ext, new Object[0]);
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            if (ext.getClass().getName().equals("androidx.support.v4.app.Fragment")) {
-                try {
-                    Class<?> exClass = Class.forName("androidx.support.v4.app.Fragment");
+
+            try {
+                Class<?> exClass = Class.forName("androidx.support.v4.app.Fragment");
+                if (exClass.isAssignableFrom(ext.getClass())) {
                     Method method = exClass.getMethod("getActivity");
                     method.setAccessible(true);
                     return (Activity) method.invoke(ext, new Object[0]);
-                } catch (Exception e) {
-                    e.printStackTrace();
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         }
         return null;
