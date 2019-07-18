@@ -65,7 +65,7 @@ public class MainActivity extends AppCompatActivity {
         downGET(url);
         upLoad(url);
 
-        parserJson();
+//        parserJson();
 
     }
 
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(ResponseParams response) {
                         tv.append(response.requestParams().url() + "成功postJSON\n");
 //                        User b = response.parserObject();//解析好的模型
-//                        b.getUserid();
+//                        b.getUserName();
                     }
 
                     @Override
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(ResponseParams response) {
                         tv.append(response.requestParams().url() + "成功putJSON\n");
 //                        User b = response.parserObject();//解析好的模型
-//                        b.getUserid();
+//                        b.getUserName();
                     }
 
                     @Override
@@ -161,7 +161,7 @@ public class MainActivity extends AppCompatActivity {
                     public void onSuccess(ResponseParams response) {
                         tv.append(response.requestParams().url() + "成功patch\n");
 //                        User b = response.parserObject();//解析好的模型
-//                        b.getUserid();
+//                        b.getUserName();
                     }
 
                     @Override
@@ -226,41 +226,55 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void parserJson() {
-        QSHttp.postJSON("https://api.reol.top/test/json")
-                .param("userid", 10086)
-                .param("password", "qwe123456")
-                .buildAndExecute(new MyHttpCallback<String>() {
-                    @Override
-                    public void onComplete(String dataUser) {
-                        tv.append("MyHttpCallback.String=" + dataUser + "\n");
-                    }
-                });
 
         User dataUser = new User();
         User dataUser2 = new User();
-        dataUser.setPassword("setPassword");
-        dataUser2.setUserid("setUserid");
+        dataUser.setUserName("Yolanda");
+        dataUser2.setUserName("Song");
+        List<User> users = Arrays.asList(dataUser2);
+        dataUser.setRows(users);
+
+
         QSHttp.postJSON("https://api.reol.top/test/json")
-                .jsonBody(Arrays.asList(dataUser, dataUser2))
-                .buildAndExecute(new MyHttpCallback<List<User>>() {
+                .jsonBody(dataUser)
+                .buildAndExecute(new MyHttpCallback<User<User>>() {
                     @Override
-                    public void onComplete(List<User> dataUser) {
-                        tv.append("MyHttpCallback.List<User>=" + JSON.toJSONString(dataUser) + "\n");
+                    public void onComplete(User<User> dataUser) {
+                        tv.append("MyHttpCallback.User<User>=" + JSON.toJSONString(dataUser) + dataUser.getRows().get(0).getClass() + "\n");
+                    }
+                });
+
+        QSHttp.postJSON("https://api.reol.top/test/json")
+                .header("string", "{\"status\":0,\"data\":3.6}")
+                .buildAndExecute(new MyHttpCallback<Double>() {
+                    @Override
+                    public void onComplete(Double dataUser) {
+                        tv.append("MyHttpCallback.Double=" + JSON.toJSONString(dataUser) + "\n");
                     }
                 });
 
         QSHttp.postJSON("https://api.reol.top/test/json")
                 .header("row", "row")
-                .jsonBody(Arrays.asList(dataUser, dataUser2))
+                .jsonBody(users)
                 .buildAndExecute(new QSHttpCallback<List<User>>() {
                     @Override
                     public void onComplete(List<User> dataUser) {
-                        tv.append("QSHttpCallback.List<User>=" + JSON.toJSONString(dataUser) + "\n");
+                        tv.append("QSHttpCallback.List<User>=" + JSON.toJSONString(dataUser) + dataUser.get(0).getClass() + "\n");
                     }
                 });
 
         QSHttp.postJSON("https://api.reol.top/test/json")
-                .header("string","3.6")
+                .header("row", "row")
+                .jsonBody(dataUser)
+                .buildAndExecute(new QSHttpCallback<User>() {
+                    @Override
+                    public void onComplete(User dataUser) {
+                        tv.append("QSHttpCallback.User=" + JSON.toJSONString(dataUser) + dataUser.getClass() + "\n");
+                    }
+                });
+
+        QSHttp.postJSON("https://api.reol.top/test/json")
+                .header("string", "3.6")
                 .buildAndExecute(new QSHttpCallback<String>() {
                     @Override
                     public void onComplete(String dataUser) {
@@ -326,7 +340,7 @@ public class MainActivity extends AppCompatActivity {
 
                         //获得自动解析/自定义解析的结果
                         User b = response.parserObject();
-                        b.getUserid();
+                        b.getUserName();
                     }
 
                     @Override

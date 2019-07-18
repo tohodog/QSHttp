@@ -11,7 +11,7 @@ QSHttp
 ### Gradle
 ```
 dependencies {
-    implementation 'com.github.tohodog:QSHttp:1.4.2'
+    implementation 'com.github.tohodog:QSHttp:1.4.3'
 }
 ```
 
@@ -57,7 +57,7 @@ https://api.reol.top/api_test
 ```
         String url = "https://api.reol.top/api_test";
         QSHttp.post(url)
-                .param("userid", 10086)
+                .param("userName", 10086)
                 .param("password", "qwe123456")
                 .buildAndExecute(new HttpCallback() {
                     @Override
@@ -76,7 +76,7 @@ https://api.reol.top/api_test
 ```
         String url = "https://api.reol.top/api_test";
         QSHttp.postJSON(url)
-                .param("userid", 10086)
+                .param("userName", 10086)
                 .param("password", "qwe123456")
                 //.jsonBody(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
                 .jsonModel(Bean.class)
@@ -95,7 +95,7 @@ https://api.reol.top/api_test
                 });
         //使用QSHttpCallback,支持外部类是activity,fragment时销毁不回调
         QSHttp.postJSON(url)
-                .param("userid", 10086)
+                .param("userName", 10086)
                 .param("password", "qwe123456")
                 .buildAndExecute(new QSHttpCallback<Bean>() {
                     @Override
@@ -135,7 +135,7 @@ https://api.reol.top/api_test
 ```
         String url = "https://api.reol.top/api_test";
         QSHttp.upload(url)
-                .param("userid", 10086)
+                .param("userName", 10086)
                 .param("password", "qwe123456")
 
                 .param("bytes", new byte[1024])//multipart方式上传一个字节数组
@@ -212,7 +212,7 @@ https://api.reol.top/api_test
 
                         .path(2333, "video")//构建成这样的url https://api.reol.top/api_test/2233/video
 
-                        .param("userid", 123456)//键值对参数
+                        .param("userName", 123456)//键值对参数
                         .param("password", "asdfgh")//键值对参数
                         .param(new Bean())//键值对参数
 
@@ -268,6 +268,8 @@ https://api.reol.top/api_test
                         });
 ```
 ## Log
+### v1.4.3(2019-07-18)
+  * 优化(泛型)
 ### v1.4.2(2019-06-27)
   * 优化(进度监听,泛型)
 ### v1.4.1(2019-05-30)

@@ -7,7 +7,7 @@ import org.song.http.framework.QSHttpCallback;
 /*
  * Created by song on 2019/5/16.
  * 根据自己的项目对回调进行再包装
- * todo 目前用不了
+ * todo 目前用不了 QSHttpCallback无法获取到ResultModel<M>,只能获取到M
  */
 @Deprecated
 public abstract class MyHttpCallback2<M> extends QSHttpCallback<ResultModel<M>> {

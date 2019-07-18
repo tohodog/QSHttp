@@ -6,14 +6,15 @@ import android.os.Build;
 import android.view.View;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
-import com.alibaba.fastjson.parser.ParserConfig;
-import com.alibaba.fastjson.util.TypeUtils;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by song
@@ -50,9 +51,8 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
         }
     }
 
-
     protected T parserT(Object json) throws JSONException {
-        return TypeUtils.cast(json, findT(), ParserConfig.getGlobalInstance());
+        return parserT(JSON.toJSONString(json));
     }
 
     protected T parserT(String json) throws JSONException {
@@ -73,13 +73,14 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
             type = String.class;
         } else {
             ParameterizedType parameterizedType = (ParameterizedType) type;
-            //T=List<xxx>
-            if (parameterizedType.getActualTypeArguments()[0] instanceof ParameterizedType) {
-                ParameterizedType parameterizedType1 = (ParameterizedType) parameterizedType.getActualTypeArguments()[0];
-                type = parameterizedType1.getRawType();
-            } else {
-                type = parameterizedType.getActualTypeArguments()[0];
-            }
+
+//            if (parameterizedType.getActualTypeArguments()[0] instanceof ParameterizedType) {
+//                ParameterizedType parameterizedType1 = (ParameterizedType) parameterizedType.getActualTypeArguments()[0];
+//                type = parameterizedType1.getRawType(); //T=List<xxx>
+//                Class<?> clazz = (Class<?>) parameterizedType1.getActualTypeArguments()[0];
+//            } else {
+            type = parameterizedType.getActualTypeArguments()[0];
+//            }
         }
         return type;
     }
@@ -106,6 +107,14 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
         return activity != null && activity.isFinishing();
     }
 
+    public static <T> List<T> parserList(JSONArray jsonArray, Class<T> _class) {
+        List<T> list = new ArrayList<>();
+        if (jsonArray != null)
+            for (int i = 0; i < jsonArray.size(); i++) {
+                list.add(jsonArray.getJSONObject(i).toJavaObject(_class));
+            }
+        return list;
+    }
 
     public static Activity findActivity(Object o) {
         //获取外部类
@@ -165,7 +174,6 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
             f.setAccessible(true);
             return f.get(base);
         } catch (Exception e) {
-            e.printStackTrace();
         }
         return null;
     }
