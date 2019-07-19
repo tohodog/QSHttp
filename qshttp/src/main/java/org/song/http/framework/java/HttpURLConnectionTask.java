@@ -219,12 +219,15 @@ public class HttpURLConnectionTask implements IHttpTask {
      */
     private ResponseParams getResponse(HttpURLConnection conn, RequestParams params, IHttpProgress hp) throws HttpException {
         try {
-            int code = conn.getResponseCode();
-            if (code < 200 || code >= 300)
-                throw HttpException.HttpCode(code);
+            final int code = conn.getResponseCode();
             final int contentLen = conn.getContentLength();
             InputStream in = conn.getInputStream();
             ReadHelp rh = new ReadHelp(in, hp, contentLen);
+            //状态码出错
+            if (code < 200 || code >= 300) {
+                throw HttpException.HttpCode(code, rh.readString(
+                        Utils.charset(conn.getHeaderField(HttpEnum.HEAD_KEY_CT))));
+            }
 
             ResponseParams response = new ResponseParams();
             response.setHeaders(conn.getHeaderFields());

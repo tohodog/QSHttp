@@ -191,8 +191,10 @@ public class OkHttpTask implements IHttpTask {
             if (response.isSuccessful())
                 return response;
             else {
+                String result = response.body().string();
+                int code = response.code();
                 response.body().close();
-                throw HttpException.HttpCode(response.code());
+                throw HttpException.HttpCode(code, result);
             }
         } catch (SocketTimeoutException e) {
             throw HttpException.HttpTimeOut(e);

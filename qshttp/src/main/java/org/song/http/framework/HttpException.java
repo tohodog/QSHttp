@@ -13,20 +13,16 @@ public class HttpException extends Exception {
     public final static int TYPE_NETWORK = 0x01;//断网/服务器挂了
     public final static int TYPE_HTTP_STATUS_CODE = 0x02;//http状态码
     public final static int TYPE_HTTP_TIMEOUT = 0x03;//超时
-
     public final static int TYPE_PARSER = 0x05;//解析异常
-
     public final static int TYPE_IO = 0x06;//第三方联网的其他异常 【可以继续细分
     public final static int TYPE_RUN = 0x07;//本框架内部运行异常【没明确捕捉到的错误
-
     public final static int TYPE_CUSTOM = 0x08;//自定义异常内容
 
-    private ResponseParams responseParams;//此次请求的
     private final int type;//异常类型
-    private int httpStatusCode;//http错误状态码
 
-    private String customMessage;//自定义异常
-    private Object customExObject;//自定义异常
+    private ResponseParams responseParams;//此次请求的参数
+    private int httpStatusCode;//http错误状态码
+    private Object exObject;//额外参数
 
     private HttpException(int type, Exception e) {
         super(e);
@@ -42,8 +38,9 @@ public class HttpException extends Exception {
         return new HttpException(TYPE_NETWORK, e);
     }
 
-    public static HttpException HttpCode(int code) {
-        return new HttpException(TYPE_HTTP_STATUS_CODE, new Exception("http status code error:" + code)).setHttpStatusCode(code);
+    public static HttpException HttpCode(int code, String result) {
+        return new HttpException(TYPE_HTTP_STATUS_CODE, "http status code error:" + code + " -> " + result)
+                .setHttpStatusCode(code).setExObject(result);
     }
 
     public static HttpException HttpTimeOut(Exception e) {
@@ -63,20 +60,16 @@ public class HttpException extends Exception {
     }
 
     public static HttpException Custom(String e) {
-        return new HttpException(TYPE_CUSTOM, e).setCustomMessage(e);
+        return new HttpException(TYPE_CUSTOM, e);
     }
 
     public static HttpException Custom(String e, Object o) {
-        return Custom(e).setCustomExObject(o);
+        return Custom(e).setExObject(o);
     }
 
-    private HttpException setCustomMessage(String customMessage) {
-        this.customMessage = customMessage;
-        return this;
-    }
 
-    private HttpException setCustomExObject(Object customExObject) {
-        this.customExObject = customExObject;
+    private HttpException setExObject(Object exObject) {
+        this.exObject = exObject;
         return this;
     }
 
@@ -84,6 +77,7 @@ public class HttpException extends Exception {
         this.httpStatusCode = httpStatusCode;
         return this;
     }
+
 
     public String getPrompt() {
 
@@ -101,7 +95,7 @@ public class HttpException extends Exception {
                 case TYPE_PARSER:
                     return "数据解析异常";
                 case TYPE_CUSTOM:
-                    return customMessage;
+                    return getMessage();
                 case TYPE_IO:
                     return "IO异常";
                 case TYPE_RUN:
@@ -121,7 +115,7 @@ public class HttpException extends Exception {
                 case TYPE_PARSER:
                     return "Data parsing exception";
                 case TYPE_CUSTOM:
-                    return customMessage;
+                    return getMessage();
                 case TYPE_IO:
                     return "IO exception";
                 case TYPE_RUN:
@@ -138,6 +132,10 @@ public class HttpException extends Exception {
     public HttpException responseParams(ResponseParams responseParams) {
         this.responseParams = responseParams;
         return this;
+    }
+
+    public Object getExObject() {
+        return exObject;
     }
 
     public int getType() {

@@ -41,6 +41,7 @@ public class Utils {
 
     public static final String TAG = "QSHTTP";
     public static boolean FORMAT_JSON = false;
+    public static boolean LOG_SMIPLE = false;
 
     /**
      * 读取assets/path文件夹里的证书
@@ -169,10 +170,6 @@ public class Utils {
         Map<String, String> head_map = request.headers();
 
         Map<String, Object> param_map = request.params();
-        StringBuilder sbParams = new StringBuilder();
-        if (param_map != null)
-            for (Map.Entry<String, Object> entry : param_map.entrySet())
-                sbParams.append("\nParam->" + entry.getKey() + "=" + entry.getValue());
 
         switch (type) {
             case GET:
@@ -188,18 +185,19 @@ public class Utils {
                     Log.e(TAG, type + "->" + request.urlAndPath()
                             + "\nHeaders->" + head_map
                             + "\nContent-Type->" + request.multipartType()
-                            + "\nContent->" + request.multipartBody()
+                            + "\nMultipartBody->" + request.multipartBody()
                             + "\n请求结果-> ↓↓↓" + result);
                 } else if (request.requestBody() != null) {
                     Log.e(TAG, type + "->" + request.urlAndPath()
                             + "\nHeaders->" + head_map
                             + "\nContent-Type->" + request.requestBody().getContentType()
-                            + "\nContent->" + request.requestBody().getContent()
+                            + "\nRequestBody->" + request.requestBody().getContent()
                             + "\n请求结果-> ↓↓↓" + result);
                 } else {
                     Log.e(TAG, type + "->" + request.urlAndPath()
                             + "\nHeaders->" + head_map
-                            + sbParams.toString()
+                            + "\nContent-Type->" + HttpEnum.CONTENT_TYPE_URL_ + request.charset()
+                            + "\nFormBody->" + param_map
                             + "\n请求结果-> ↓↓↓" + result);
                 }
                 break;
