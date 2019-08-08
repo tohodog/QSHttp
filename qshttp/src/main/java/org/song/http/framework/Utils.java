@@ -281,25 +281,29 @@ public class Utils {
         }).start();
     }
 
+    public static File cacheDir;
+
     /**
      * 获取外部存储上私有数据的路径
      */
     public static String getDiskCacheDir() {
         Context context = QSHttpManage.application;
-        File file;
+        File cacheDir;
         if (context == null)
-            file = new File(Environment.getExternalStorageDirectory(), "qshttp_cache");
+            cacheDir = new File(Environment.getExternalStorageDirectory(), "qshttp_cache");
         else if ((Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
                 || !Environment.isExternalStorageRemovable())
                 && checkPer(context, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            file = new File(context.getExternalCacheDir(), "qshttp_cache");
+            cacheDir = new File(context.getExternalCacheDir(), "qshttp_cache");
         } else {
-            file = new File(context.getCacheDir(), "qshttp_cache");
+            cacheDir = new File(context.getCacheDir(), "qshttp_cache");
         }
-        if (!file.exists())
-            file.mkdirs();
-//        Log.i(TAG, "getDiskCacheDir:" + file.getAbsolutePath());
-        return file.getAbsolutePath();
+        if (!cacheDir.exists())
+            cacheDir.mkdirs();
+        if (Utils.cacheDir == null)
+            Log.i(TAG, "getDiskCacheDir:" + cacheDir.getAbsolutePath());
+        Utils.cacheDir = cacheDir;
+        return cacheDir.getAbsolutePath();
     }
 
     public static boolean checkPer(Context context, String... permissions) {

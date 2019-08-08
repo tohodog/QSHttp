@@ -7,25 +7,18 @@ import com.alibaba.fastjson.JSON;
  */
 public class HttpResultHandler {
 
-    protected final ResponseParams response;
-
-    public HttpResultHandler(ResponseParams response) {
-        this.response = response;
-    }
 
     /**
      * 联网完成后进行数据处理
      */
-    public void onComplete() {
-        dealCache();
-        dealParser();
+    public static void onComplete(ResponseParams response) {
         if (response.isSuccess())
             ThreadHandler.Success(response);
         else
             ThreadHandler.Failure(response);
     }
 
-    private void dealCache() {
+    public static void dealCache(ResponseParams response) {
         HttpCache httpCache = HttpCache.instance();
         try {
             if (response.isSuccess())
@@ -42,12 +35,12 @@ public class HttpResultHandler {
         }
     }
 
-    private void dealParser() {
+    public static void dealParser(ResponseParams response) {
         if (response.isSuccess() && response.requestParams().parserMode() != HttpEnum.ParserMode.NOTHING)
             try {
                 switch (response.resultType()) {
                     case STRING:
-                        response.setParserObject(parser(response.string()));
+                        response.setParserObject(parser(response));
                         break;
                     case BYTES:
                     case FILE:
@@ -60,7 +53,8 @@ public class HttpResultHandler {
             }
     }
 
-    private Object parser(String result) throws Exception {
+    private static Object parser(ResponseParams response) throws Exception {
+        String result = response.string();
         if (result == null || result.isEmpty())
             throw new IllegalArgumentException("server response result is null");
         Object obj = null;

@@ -52,7 +52,7 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
     }
 
     protected T parserT(Object json) throws JSONException {
-        return parserT(JSON.toJSONString(json));
+        return parserT(String.valueOf(json));
     }
 
     protected T parserT(String json) throws JSONException {

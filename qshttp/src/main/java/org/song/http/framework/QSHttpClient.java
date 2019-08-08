@@ -1,6 +1,7 @@
 package org.song.http.framework;
 
 
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
@@ -83,9 +84,13 @@ public class QSHttpClient {
                         hp.destroy();
                     if (qsHttpConfig.debug())
                         Utils.Log(_request, response);
-                } finally {
+
                     //返回数据后续处理 如缓存、解析等
-                    new HttpResultHandler(response).onComplete();
+                    HttpResultHandler.dealCache(response);
+                    HttpResultHandler.dealParser(response);
+
+                } finally {
+                    HttpResultHandler.onComplete(response);
                 }
             }
         });
