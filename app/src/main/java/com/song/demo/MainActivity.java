@@ -58,7 +58,7 @@ public class MainActivity extends AppCompatActivity {
         imageView = (ImageView) findViewById(R.id.imageView);
 
 
-        String url = "http://api.reol.top/xxx";
+        String url = "http://api.reol.top/xxx?";
         normalGET(url);
         normalPost(url);
         jsonPost(url);

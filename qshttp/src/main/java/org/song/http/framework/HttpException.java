@@ -99,7 +99,7 @@ public class HttpException extends Exception {
                 case TYPE_IO:
                     return "IO异常";
                 case TYPE_RUN:
-                    return "Http运行异常";
+                    return "请求结果运行异常";
             }
         } else {
             switch (type) {
@@ -119,7 +119,7 @@ public class HttpException extends Exception {
                 case TYPE_IO:
                     return "IO exception";
                 case TYPE_RUN:
-                    return "Unkown http error";
+                    return "Run error";
             }
         }
         return "Power by github.com/tohodog";

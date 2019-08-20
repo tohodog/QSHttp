@@ -300,7 +300,7 @@ public class Utils {
         }
         if (!cacheDir.exists())
             cacheDir.mkdirs();
-        if (Utils.cacheDir == null)
+        if (!cacheDir.getAbsolutePath().equals(Utils.cacheDir.getAbsolutePath()))
             Log.i(TAG, "getDiskCacheDir:" + cacheDir.getAbsolutePath());
         Utils.cacheDir = cacheDir;
         return cacheDir.getAbsolutePath();
