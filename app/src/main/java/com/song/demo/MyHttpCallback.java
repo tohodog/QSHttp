@@ -27,7 +27,7 @@ public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
                 return;
             }
 
-            onComplete(parserT(jsonObject.getString("data")));
+            onComplete(parserT(jsonObject.get("data")));
         } catch (JSONException e) {
             e.printStackTrace();
             onFailure(HttpException.Parser(e).responseParams(response));

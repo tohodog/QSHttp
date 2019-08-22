@@ -248,7 +248,7 @@ public class Utils {
     }
 
     public static void showToast(String str) {
-        if (QSHttpManage.application != null)
+        if (QSHttpManage.application != null && str != null)
             Toast.makeText(QSHttpManage.application, str, Toast.LENGTH_LONG).show();
     }
 
@@ -300,8 +300,10 @@ public class Utils {
         }
         if (!cacheDir.exists())
             cacheDir.mkdirs();
-        if (!cacheDir.getAbsolutePath().equals(Utils.cacheDir.getAbsolutePath()))
-            Log.i(TAG, "getDiskCacheDir:" + cacheDir.getAbsolutePath());
+        if (Utils.cacheDir != null) {
+            if (!TextUtils.equals(cacheDir.getAbsolutePath(), Utils.cacheDir.getAbsolutePath()))
+                Log.i(TAG, "getDiskCacheDir:" + cacheDir.getAbsolutePath());
+        }
         Utils.cacheDir = cacheDir;
         return cacheDir.getAbsolutePath();
     }

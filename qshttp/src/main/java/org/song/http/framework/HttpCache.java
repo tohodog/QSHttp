@@ -42,7 +42,6 @@ public class HttpCache {
                 return null;
             long lastTime = file.lastModified();
             if (lastTime + cacheTime * 1000 < System.currentTimeMillis()) {
-                Log.i(TAG, "getClinetCache->Timeout:" + lastTime);
                 file.delete();
                 return null;
             }
@@ -96,20 +95,20 @@ public class HttpCache {
                 String s = Utils.readString(filePath);
                 if (s == null)
                     return false;
-                Log.i(TAG, "getCache->" + request.cacheMode() + ":" + s);
+                Log.i(TAG, "getCache->" + request.url() + "\n" + request.cacheMode() + "->" + s);
                 response.setString(s);
                 return true;
             case FILE:
                 response.setFile(request.downloadPath());
                 if (Utils.fileCopy(filePath, response.file())) {
-                    Log.i(TAG, "getCache->" + request.cacheMode() + ":" + response.file());
+                    Log.i(TAG, "getCache->" + request.url() + "\n" + request.cacheMode() + "->" + response.file());
                     return true;
                 }
             case BYTES:
                 byte[] b = Utils.readBytes(filePath);
                 if (b == null || b.length == 0)
                     return false;
-                Log.i(TAG, "getCache->" + request.cacheMode() + ":" + b.length);
+                Log.i(TAG, "getCache->" + request.url() + "\n" + request.cacheMode() + "->" + b.length);
                 response.setBytes(b);
                 return true;
         }
@@ -118,7 +117,7 @@ public class HttpCache {
 
     private boolean write(ResponseParams response, String fileName) {
         String filePath = path + "/" + fileName;
-//        Log.e(TAG, "saveCache->" + response.requestParams().cacheMode() + ":" + filePath);
+        Log.i(TAG, "saveCache->" + response.requestParams().url() + "\n" + response.requestParams().cacheMode() + "->" + filePath);
         switch (response.requestParams().resultType()) {
             case STRING:
                 return Utils.writerString(filePath, response.string());

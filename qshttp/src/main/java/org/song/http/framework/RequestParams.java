@@ -131,11 +131,12 @@ public class RequestParams {
 
         if (params != null) {
             int index = sbUrl.indexOf("?");
-            if (index > -1)
+            if (index > -1) {
                 if (index != sbUrl.length() - 1)
                     sbUrl.append('&');
-                else
-                    sbUrl.append('?');
+            } else {
+                sbUrl.append('?');
+            }
             for (String name : params.keySet()) {
                 String value = String.valueOf(params.get(name));
                 sbUrl.append(Utils.URLEncoder(name, charset))
