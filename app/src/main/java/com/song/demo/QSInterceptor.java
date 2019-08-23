@@ -14,11 +14,18 @@ import org.song.http.framework.ResponseParams;
 public class QSInterceptor implements Interceptor {
     @Override
     public ResponseParams intercept(Chain chain) throws HttpException {
+
+        String url = chain.request().url();
+        if (url != null && !url.startsWith("http")) {
+            url = API.HOST + url;
+        }
+
         RequestParams newRequestParams = chain.request()
-                .newBuild()
+                .newBuild(url)
                 .header("Interceptor", "Interceptor")
                 //继续添加修改其他
                 .build();
+
 
         ResponseParams responseParams = chain.proceed(newRequestParams);
         //请求结果参数如有需要也可以进行修改

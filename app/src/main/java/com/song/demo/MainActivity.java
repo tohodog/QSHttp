@@ -9,6 +9,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
 
 import org.song.http.QSHttp;
 import org.song.http.framework.HttpCallback;
@@ -19,14 +20,12 @@ import org.song.http.framework.QSHttpCallback;
 import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.ResponseParams;
 import org.song.http.framework.TrustAllCerts;
-import org.song.http.framework.Utils;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
-
 
     TextView tv;
     ImageView imageView;
@@ -39,33 +38,17 @@ public class MainActivity extends AppCompatActivity {
             requestPermissions(new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE}, 0);
         }
 
-        //初始化框架 调用一次即可
-        QSHttp.init(QSHttpConfig.Build(getApplication())
-                //配置需要签名的网站 读取assets/cers文件夹里的证书
-                //支持双向认证 放入xxx.bks
-                .ssl(Utils.getAssetsSocketFactory(this, "cers", "2923584")
-                        , "inner.reol.top")//设置需要自签名的主机地址,不设置则只能访问sslSocketFactory里的https网站
-
-                .hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//主机信任规则(全信任)
-                .cacheSize(128 * 1024 * 1024)
-                .connectTimeout(18 * 1000)
-                .debug(true)
-                //拦截器 添加头参数 鉴权
-                .interceptor(new QSInterceptor())
-                .build());
-
         tv = (TextView) findViewById(R.id.textview);
         imageView = (ImageView) findViewById(R.id.imageView);
 
-
-        String url = "http://api.reol.top/api_test";
+        String url = "/api_test";
         normalGET(url);
         normalPost(url);
         jsonPost(url);
         downGET(url);
         upLoad(url);
 
-        parserJson();
+//        parserJson();
 
     }
 
@@ -95,19 +78,12 @@ public class MainActivity extends AppCompatActivity {
         QSHttp.post(url)
                 .param("userid", 10086)
                 .param("password", "qwe123456对")
-                .buildAndExecute(new HttpCallback() {
+                .buildAndExecute(new MyHttpCallback<JSONObject>() {
                     @Override
-                    public void onSuccess(ResponseParams response) {
+                    public void onComplete(JSONObject dataBean) {
                         tv.append(response.requestParams().url() + "成功post\n");
                     }
-
-                    @Override
-                    public void onFailure(HttpException e) {
-                        e.show();
-                    }
                 });
-
-
     }
 
 
@@ -135,41 +111,12 @@ public class MainActivity extends AppCompatActivity {
         QSHttp.putJSON(url)
                 .param("userid", 10086)
                 .param("password", "qwe123456")
-                //.jsonBody(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
-                //.jsonModel(User.class)//解析模型
-                .buildAndExecute(new HttpCallback() {
+                .buildAndExecute(new MyHttpCallback<JSONObject>() {
                     @Override
-                    public void onSuccess(ResponseParams response) {
-                        tv.append(response.requestParams().url() + "成功putJSON\n");
-//                        User b = response.parserObject();//解析好的模型
-//                        b.getUserName();
-                    }
-
-                    @Override
-                    public void onFailure(HttpException e) {
-                        e.show();
+                    public void onComplete(JSONObject dataBean) {
+                        tv.append(response.requestParams().url() + "成功postJSON\n");
                     }
                 });
-
-        QSHttp.patch(url)
-                .param("userid", 10086)
-                .param("password", "qwe123456")
-                //.jsonBody(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
-                //.jsonModel(User.class)//解析模型
-                .buildAndExecute(new HttpCallback() {
-                    @Override
-                    public void onSuccess(ResponseParams response) {
-                        tv.append(response.requestParams().url() + "成功patch\n");
-//                        User b = response.parserObject();//解析好的模型
-//                        b.getUserName();
-                    }
-
-                    @Override
-                    public void onFailure(HttpException e) {
-                        e.show();
-                    }
-                });
-
     }
 
 

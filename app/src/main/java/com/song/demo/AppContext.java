@@ -2,10 +2,8 @@ package com.song.demo;
 
 import android.app.Application;
 
-import org.song.http.framework.HttpException;
-import org.song.http.framework.Interceptor;
-import org.song.http.framework.RequestParams;
-import org.song.http.framework.ResponseParams;
+import org.song.http.QSHttp;
+import org.song.http.framework.QSHttpConfig;
 
 /**
  * appcontext
@@ -26,25 +24,13 @@ public class AppContext extends Application {
     public void onCreate() {
         super.onCreate();
         instance = this;
+        init();
     }
 
     private void init() {
 
-//        QSHttp.init(QSHttpConfig.Build(AppContext.getInstance()).interceptor(interceptor).build());
+        QSHttp.init(QSHttpConfig.Build(this).interceptor(new QSInterceptor()).build());
 
     }
 
-    public static final Interceptor interceptor = new Interceptor() {
-        @Override
-        public ResponseParams intercept(Chain chain) throws HttpException {
-            RequestParams requestParams = chain.request();
-
-            return chain.proceed(chain.request()
-                    .newBuild()
-                    .header("User-Agent", "Android/OkHttpClient/Smacircle")
-                    .header("Content-MD5", "MD5")
-                    .build());
-
-        }
-    };
 }
