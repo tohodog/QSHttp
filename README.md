@@ -11,7 +11,7 @@ QSHttp
 ### Gradle
 ```
 dependencies {
-    implementation 'com.github.tohodog:QSHttp:1.4.3'
+    implementation 'com.github.tohodog:QSHttp:1.4.4'
 }
 ```
 
@@ -268,6 +268,9 @@ https://api.reol.top/api_test
                         });
 ```
 ## Log
+### v1.4.4(2019-09-06)
+  * 非200状态码也会接受body数据
+  * 优化
 ### v1.4.3(2019-07-18)
   * 优化(泛型)
 ### v1.4.2(2019-06-27)
