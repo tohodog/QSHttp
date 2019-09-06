@@ -9,7 +9,7 @@ import org.song.http.framework.ResponseParams;
  * Created by song
  * Contact github.com/tohodog
  * Date 2019/5/25
- * TODO 拦截器不要放在匿名内部类使用,否则外部类将会内存泄露
+ * TODO 拦截器不要放在非全局外部类的匿名内部类使用,否则外部类将会内存泄露
  */
 public class QSInterceptor implements Interceptor {
     @Override
