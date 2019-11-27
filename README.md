@@ -10,6 +10,15 @@ QSHttp
 
 ### Gradle
 ```
+//build.gradle
+allprojects {
+    repositories {
+        maven {
+            url "https://jitpack.io"
+        }
+    }
+}
+
 dependencies {
     implementation 'com.github.tohodog:QSHttp:1.4.4'
 }
