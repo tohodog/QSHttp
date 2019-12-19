@@ -5,7 +5,7 @@ QSHttp
   * 支持自定义有效时间缓存,错误缓存(联网失败时使用)
   * 详细的请求信息回调、错误类型(网络链接失败,超时,断网,解析失败,404...)
   * 详细的访问日记打印,非常方便调试
-  * 提供拦截器,可添加一些公共鉴权参数...
+  * 支持多拦截器,可添加一些公共鉴权参数...
   * 模块化设计,联网模块可更换,目前提供OkHttp和java原生两种实现
 
 ### Gradle
@@ -20,7 +20,7 @@ allprojects {
 }
 
 dependencies {
-    implementation 'com.github.tohodog:QSHttp:1.4.4'
+    implementation 'com.github.tohodog:QSHttp:1.5.0'
 }
 ```
 
@@ -150,6 +150,7 @@ https://api.reol.top/api_test
                 .param("bytes", new byte[1024])//multipart方式上传一个字节数组
                 .param("file", new File("xx.jpg"))//multipart方式上传一个文件
                 .multipartBody("icon", "image/*", "x.jpg", new byte[1024])
+                .multipartBody(new String("icon"), "image/*", "x.jpg", new byte[1024])//icon[]数组上传
 
                 .buildAndExecute(new ProgressCallback() {
                     @Override
@@ -277,6 +278,9 @@ https://api.reol.top/api_test
                         });
 ```
 ## Log
+### v1.5.0(2019-12-19)
+  * 支持多拦截器
+  * 支持multipart数组上传
 ### v1.4.4(2019-09-06)
   * 非200状态码也会接受body数据
   * 优化
