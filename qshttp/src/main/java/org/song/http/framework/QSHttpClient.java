@@ -1,7 +1,7 @@
 package org.song.http.framework;
 
 
-import java.util.Random;
+import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.ExecutorService;
@@ -21,12 +21,13 @@ public class QSHttpClient {
 
     private ExecutorService executorService;
 
-    private Interceptor interceptor;
+    private List<Interceptor> interceptorList;
+
 
     public QSHttpClient(IHttpTask iHttpTask, QSHttpConfig qsHttpConfig) {
         this.iHttpTask = iHttpTask;
         this.qsHttpConfig = qsHttpConfig;
-        interceptor = qsHttpConfig.interceptor();
+        interceptorList = qsHttpConfig.interceptorList();
         executorService = Executors.newFixedThreadPool(qsHttpConfig.poolSize());
     }
 
@@ -50,24 +51,10 @@ public class QSHttpClient {
                 ResponseParams response;
                 final HttpProgress hp = isProgress ? new HttpProgress(mThreadWhat) : null;
                 try {
-                    if (interceptor != null) {//拦截器
-                        response = interceptor.intercept(new Interceptor.Chain() {
-                            @Override
-                            public RequestParams request() {
-                                return _request;
-                            }
-
-                            @Override
-                            public ResponseParams proceed(RequestParams request) throws HttpException {
-                                _request = request;
-                                return access(request, hp);
-                            }
-                        });
-                        if (response == null) {
-                            throw HttpException.Custom(interceptor.getClass().getName() + ".intercept() - return value can't null!");
-                        }
-                    } else
-                        response = access(_request, hp);
+                    //拦截器
+                    response = runInterceptor(0, _request, hp);
+                    //经过拦截器,request被改变了
+                    _request = response.requestParams();
                     response.setSuccess(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -95,6 +82,28 @@ public class QSHttpClient {
             }
         });
         return mThreadWhat;
+    }
+
+    //递归调用拦截器
+    private ResponseParams runInterceptor(final int index, final RequestParams request, final HttpProgress hp) throws HttpException {
+        if (interceptorList == null || index >= interceptorList.size()) {//递归终点
+            ResponseParams response = access(request, hp);
+            response.setRequestParams(request);
+            return response;
+        }
+
+        Interceptor interceptor = interceptorList.get(index);
+        return interceptor.intercept(new Interceptor.Chain() {
+            @Override
+            public RequestParams request() {
+                return request;
+            }
+
+            @Override
+            public ResponseParams proceed(RequestParams request) throws HttpException {
+                return runInterceptor(index + 1, request, hp);//递归调用
+            }
+        });
     }
 
     //具体联网逻辑 保证返回ResponseParams对象不为null

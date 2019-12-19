@@ -248,8 +248,11 @@ public class Utils {
     }
 
     public static void showToast(String str) {
-        if (QSHttpManage.application != null && str != null)
-            Toast.makeText(QSHttpManage.application, str, Toast.LENGTH_LONG).show();
+        if (QSHttpManage.application != null && str != null) {
+            Toast toast = Toast.makeText(QSHttpManage.application, str, Toast.LENGTH_LONG);
+            toast.setText(str);
+            toast.show();
+        }
     }
 
 

@@ -48,7 +48,7 @@ public class MainActivity extends AppCompatActivity {
         downGET(url);
         upLoad(url);
 
-//        parserJson();
+        parserJson();
 
     }
 
@@ -150,7 +150,10 @@ public class MainActivity extends AppCompatActivity {
 
                 .param("bytes", new byte[1024])//multipart方式上传一个字节数组
                 .param("file", new File(getExternalCacheDir(), "http.txt"))//multipart方式上传一个文件
-                .multipartBody("img", "image/*", "x.jpg", new byte[1024])
+
+                //IdentityHashMap支持重复key,需new
+                .multipartBody(new String("img"), "image/*", "qs.jpg", new byte[1024])
+                .multipartBody(new String("img"), "image/*", "qs.jpg", new byte[1024])
 
                 .buildAndExecute(new ProgressCallback() {
                     @Override
@@ -192,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         QSHttp.postJSON("https://api.reol.top/test/json")
-                .header("string", "{\"status\":0,\"data\":3.6}")
+                .jsonBody("3.666489")
                 .buildAndExecute(new MyHttpCallback<Double>() {
                     @Override
                     public void onComplete(Double dataUser) {
@@ -221,7 +224,8 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         QSHttp.postJSON("https://api.reol.top/test/json")
-                .header("string", "3.6")
+                .header("row", "row")
+                .jsonBody("3.6")
                 .buildAndExecute(new QSHttpCallback<String>() {
                     @Override
                     public void onComplete(String dataUser) {

@@ -10,6 +10,7 @@ import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -445,9 +446,10 @@ public class RequestParams {
             String json = "{}";
             if (object instanceof org.json.JSONObject) {
                 json = object.toString();
-            } else {
+            } else if (!(object instanceof CharSequence)) {
                 json = JSON.toJSONString(object);
-            }
+            } else
+                json = String.valueOf(object);
             requestBody(HttpEnum.CONTENT_TYPE_JSON_ + charset, json);
             return this;
         }
@@ -478,7 +480,7 @@ public class RequestParams {
             toMultiBodyFlag = true;
             this.multipartType = multipartType;
             if (multipartBody == null)
-                multipartBody = new HashMap<>();
+                multipartBody = new IdentityHashMap<>();//支持重复key,内存地址要不一样
             bodyType = 2;
             return this;
         }
@@ -488,6 +490,7 @@ public class RequestParams {
          */
         public RequestParams.Builder multipartBody(String key, String contentType, String filename, Object value) {
             toMultiBody();
+            //new String(key)才能保证不同地址,key不重复
             multipartBody.put(key, new RequestBody(contentType, filename, value));
             return this;
         }

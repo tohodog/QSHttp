@@ -29,7 +29,10 @@ public class AppContext extends Application {
 
     private void init() {
 
-        QSHttp.init(QSHttpConfig.Build(this).interceptor(new QSInterceptor()).build());
+        QSHttp.init(QSHttpConfig.Build(this)
+                .interceptor(new QSInterceptor())
+                .interceptor(new QSInterceptor2())
+                .build());
 
     }
 

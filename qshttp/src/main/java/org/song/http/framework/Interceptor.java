@@ -9,8 +9,8 @@ public interface Interceptor {
     ResponseParams intercept(Chain chain) throws HttpException;
 
     interface Chain {
-        RequestParams request();
+        RequestParams request();//请求参数
 
-        ResponseParams proceed(RequestParams request) throws HttpException;
+        ResponseParams proceed(RequestParams request) throws HttpException;//流程继续
     }
 }

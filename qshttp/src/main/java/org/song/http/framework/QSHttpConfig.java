@@ -2,6 +2,9 @@ package org.song.http.framework;
 
 import android.app.Application;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 
@@ -16,7 +19,7 @@ public class QSHttpConfig {
     private Application application;
     private HttpEnum.XX_Http xxHttp;
 
-    private Interceptor interceptor;
+    private List<Interceptor> interceptorList;
 
     private SSLSocketFactory sslSocketFactory;
     private String[] sslHost;
@@ -46,8 +49,8 @@ public class QSHttpConfig {
         return xxHttp;
     }
 
-    public Interceptor interceptor() {
-        return interceptor;
+    public List<Interceptor> interceptorList() {
+        return interceptorList;
     }
 
     public String[] sslHost() {
@@ -102,7 +105,7 @@ public class QSHttpConfig {
         private HttpEnum.XX_Http xxHttp = HttpEnum.XX_Http.OK_HTTP;//
         private String cachePath;
 
-        private Interceptor interceptor;
+        private List<Interceptor> interceptorList;
 
         private SSLSocketFactory sslSocketFactory;
         private String[] sslHost;
@@ -122,7 +125,7 @@ public class QSHttpConfig {
         public QSHttpConfig build() {
             QSHttpConfig qsHttpConfig = new QSHttpConfig();
             qsHttpConfig.debug = debug;
-            qsHttpConfig.interceptor = interceptor;
+            qsHttpConfig.interceptorList = interceptorList;
             qsHttpConfig.application = application;
             qsHttpConfig.xxHttp = xxHttp;
             qsHttpConfig.poolSize = poolSize;
@@ -154,7 +157,8 @@ public class QSHttpConfig {
         }
 
         public Builder interceptor(Interceptor interceptor) {
-            this.interceptor = interceptor;
+            if (this.interceptorList == null) this.interceptorList = new ArrayList<>();
+            this.interceptorList.add(interceptor);
             return this;
         }
 

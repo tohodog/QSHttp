@@ -99,10 +99,9 @@ public class QSHttp {
         return postMulti(url);
     }
 
-    //这里可以添加公共参数鉴权
+
     private static RequestParams.Builder build(String url, HttpEnum.RequestMethod requestMethod) {
         return RequestParams.Build(url)
                 .requestMethod(requestMethod);
-        //.header("sessionKey", "sessionKey");
     }
 }
