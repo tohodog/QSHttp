@@ -1,6 +1,6 @@
 QSHttp
 ====
-  * 一句代码联网,参数控制方便,自动json解析,使用简单
+  * 一句代码联网,参数控制方便,支持泛型回调,使用简单
   * 多年生产环境迭代,稳定可靠
   * 支持http/自签名双向https(get post put head...) 文件上传、下载、进度监听、自动解析,基于Okhttp的支持cookie自动管理,缓存控制
   * 支持自定义有效时间缓存,错误缓存(联网失败时使用)
@@ -60,6 +60,17 @@ https://api.reol.top/api_test
                         e.show();
                     }
                 });
+                
+         //使用泛型回调,开发者可继承QSHttpCallback封装泛型回调,实现自动判断状态码、弹出加载框、错误吐司提示等等,具体参考demo源码MyHttpCallback
+         QSHttp.get(url)
+                .param("wd", "安卓http")
+                .param("ie", "UTF-8")
+                .buildAndExecute(new QSHttpCallback<Bean>() {
+                    @Override
+                    public void onComplete(Bean dataUser) {
+
+                    }
+                });
 ```
 
 
@@ -90,26 +101,9 @@ https://api.reol.top/api_test
                 .param("password", "qwe123456")
                 //.jsonBody(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
                 .jsonModel(Bean.class)
-                .buildAndExecute(new HttpCallback() {
+                .buildAndExecute(new QSHttpCallback<UserBean>() {
                     @Override
-                    public void onSuccess(ResponseParams response) {
-                        response.string();//响应内容
-                        Bean b = response.parserObject();//自动解析好的实体类
-                        b.getUserid();
-                    }
-
-                    @Override
-                    public void onFailure(HttpException e) {
-                        e.show();
-                    }
-                });
-        //使用QSHttpCallback,支持外部类是activity,fragment时销毁不回调
-        QSHttp.postJSON(url)
-                .param("userName", 10086)
-                .param("password", "qwe123456")
-                .buildAndExecute(new QSHttpCallback<Bean>() {
-                    @Override
-                    public void onComplete(Bean dataUser) {
+                    public void onComplete(UserBean dataUser) {
 
                     }
                 });
@@ -304,3 +298,9 @@ https://api.reol.top/api_test
 ### v1.2.0(2019-03-27)
   * 船新版本,使用更愉悦
   * 支持自定义有效期缓存
+## Other
+  * 有问题请Add [issues](https://github.com/tohodog/QSHttp/issues)
+  * 如果项目对你有帮助的话欢迎[![star][starsvg]][star]
+  
+[starsvg]: https://img.shields.io/github/stars/tohodog/QSHttp.svg?style=social&label=Stars
+[star]: https://github.com/tohodog/QSHttp
