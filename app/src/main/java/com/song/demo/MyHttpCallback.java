@@ -1,6 +1,11 @@
 package com.song.demo;
 
 
+import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.support.annotation.CallSuper;
+import android.widget.Toast;
+
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONException;
 import com.alibaba.fastjson.JSONObject;
@@ -34,5 +39,49 @@ public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
         }
     }
 
+
+    @Override
+    public void onFailure(HttpException e) {
+        if (activity != null) Toast.makeText(activity, e.getPrompt(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onStart() {
+        showProgressDialog(false);
+    }
+
+    @CallSuper
+    @Override
+    public void onEnd() {
+        dismissProgressDialog();
+    }
+
+
+    protected ProgressDialog mDialog;
+
+    /**
+     * 用于显示Dialog
+     */
+    protected void showProgressDialog(boolean mCancelable) {
+        if (mDialog == null && activity != null) {
+            mDialog = new ProgressDialog(activity);
+            mDialog.setCancelable(mCancelable);
+            if (mCancelable) {
+                mDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                    }
+                });
+            }
+            mDialog.show();
+        }
+    }
+
+    protected void dismissProgressDialog() {
+        if (mDialog != null) {
+            mDialog.dismiss();
+            mDialog = null;
+        }
+    }
 
 }
