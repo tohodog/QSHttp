@@ -143,66 +143,74 @@ public class Utils {
         return null;
     }
 
-    public static void Log(RequestParams params, ResponseParams response) {
-        if (response.isSuccess()) {
-            switch (response.resultType()) {
-                case STRING:
-                    String result = response.string();
-                    if (FORMAT_JSON)
-                        result = formatJson(result);
-                    Log(params, "\nHeaders->" + response.headers() + "\nResult->" + result);
-                    break;
-                case FILE:
-                    Log(params, "\nHeaders->" + response.headers() + "\nResult->file:" + response.file());
-                    break;
-                case BYTES:
-                    Log(params, "\nHeaders->" + response.headers() + "\nResult->bytes:" + response.bytes().length);
-                    break;
-            }
-        } else {
-            Log(params, "\nError->" + response.exception().getMessage());
-        }
+    public static void Log(RequestParams request, ResponseParams response, long time) {
+        String requestLog = requestLog(request);
+        String responseLog = responseLog(response);
+        String log = requestLog + "\n请求结果" + time + "ms-> ↓↓↓\n" + responseLog;
+        Log.e(TAG, log);
     }
 
-    public static void Log(RequestParams request, String result) {
+
+    public static String requestLog(RequestParams request) {
+
+        String log = "";
         HttpEnum.RequestMethod type = request.requestMethod();
-
         Map<String, String> head_map = request.headers();
-
         Map<String, Object> param_map = request.params();
 
         switch (type) {
             case GET:
             case HEAD:
             case DELETE:
-                Log.e(TAG, type + "->" + request.urlEncode()
-                        + "\nHeaders->" + head_map
-                        + "\n请求结果-> ↓↓↓" + result);
+            case OPTIONS:
+                log = type + "->" + request.urlEncode()
+                        + "\nHeaders->" + head_map;
                 break;
             case POST:
             case PUT:
+            case PATCH:
                 if (request.multipartBody() != null) {
-                    Log.e(TAG, type + "->" + request.urlAndPath()
+                    log = type + "->" + request.urlAndPath()
                             + "\nHeaders->" + head_map
                             + "\nContent-Type->" + request.multipartType()
-                            + "\nMultipartBody->" + request.multipartBody()
-                            + "\n请求结果-> ↓↓↓" + result);
+                            + "\nMultipartBody->" + request.multipartBody();
                 } else if (request.requestBody() != null) {
-                    Log.e(TAG, type + "->" + request.urlAndPath()
+                    log = type + "->" + request.urlAndPath()
                             + "\nHeaders->" + head_map
                             + "\nContent-Type->" + request.requestBody().getContentType()
-                            + "\nRequestBody->" + request.requestBody().getContent()
-                            + "\n请求结果-> ↓↓↓" + result);
+                            + "\nRequestBody->" + request.requestBody().getContent();
                 } else {
-                    Log.e(TAG, type + "->" + request.urlAndPath()
+                    log = type + "->" + request.urlAndPath()
                             + "\nHeaders->" + head_map
                             + "\nContent-Type->" + HttpEnum.CONTENT_TYPE_URL_ + request.charset()
-                            + "\nFormBody->" + param_map
-                            + "\n请求结果-> ↓↓↓" + result);
+                            + "\nFormBody->" + param_map;
                 }
                 break;
         }
+        return log;
+    }
 
+    public static String responseLog(ResponseParams response) {
+        String responseLog = "";
+        if (response.isSuccess()) {
+            switch (response.resultType()) {
+                case STRING:
+                    responseLog = response.string();
+                    if (FORMAT_JSON)
+                        responseLog = formatJson(responseLog);
+                    responseLog = "Headers->" + response.headers() + "\nResult->" + responseLog;
+                    break;
+                case FILE:
+                    responseLog = "Headers->" + response.headers() + "\nResult->file:" + response.file();
+                    break;
+                case BYTES:
+                    responseLog = "Headers->" + response.headers() + "\nResult->bytes:" + response.bytes().length;
+                    break;
+            }
+        } else {
+            responseLog = "Error->" + response.exception().getMessage();
+        }
+        return responseLog;
     }
 
     public static String URLEncoder(String value, String charset) {

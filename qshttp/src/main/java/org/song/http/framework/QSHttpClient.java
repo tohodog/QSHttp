@@ -48,6 +48,7 @@ public class QSHttpClient {
 
             @Override
             public void run() {
+                long time = System.currentTimeMillis();
                 ResponseParams response;
                 final HttpProgress hp = isProgress ? new HttpProgress(mThreadWhat) : null;
                 try {
@@ -70,7 +71,7 @@ public class QSHttpClient {
                     if (hp != null)
                         hp.destroy();
                     if (qsHttpConfig.debug())
-                        Utils.Log(_request, response);
+                        Utils.Log(_request, response, System.currentTimeMillis() - time);
 
                     //返回数据后续处理 如缓存、解析等
                     HttpResultHandler.dealCache(response);
