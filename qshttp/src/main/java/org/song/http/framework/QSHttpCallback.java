@@ -145,7 +145,7 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
                     return (Activity) method.invoke(ext, new Object[0]);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
 
             try {
@@ -156,7 +156,7 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
                     return (Activity) method.invoke(ext, new Object[0]);
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+//                e.printStackTrace();
             }
         }
         return null;

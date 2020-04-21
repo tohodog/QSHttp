@@ -444,12 +444,14 @@ public class RequestParams {
          */
         public RequestParams.Builder jsonBody(Object object) {
             String json = "{}";
-            if (object instanceof org.json.JSONObject) {
-                json = object.toString();
-            } else if (!(object instanceof CharSequence)) {
-                json = JSON.toJSONString(object);
-            } else
-                json = String.valueOf(object);
+            if (object != null) {
+                if (object instanceof org.json.JSONObject) {
+                    json = object.toString();
+                } else if (!(object instanceof CharSequence)) {
+                    json = JSON.toJSONString(object);
+                } else
+                    json = String.valueOf(object);
+            }
             requestBody(HttpEnum.CONTENT_TYPE_JSON_ + charset, json);
             return this;
         }
