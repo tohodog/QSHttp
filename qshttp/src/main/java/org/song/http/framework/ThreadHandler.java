@@ -74,9 +74,9 @@ public class ThreadHandler extends Handler {
                     ((HttpCallbackEx) cb).onEnd();
                 break;
             case HttpEnum.HTTP_PROGRESS:
-                if (cb instanceof ProgressCallback) {
+                if (cb instanceof IHttpProgress) {
                     Object[] arr = (Object[]) message.obj;
-                    ((ProgressCallback) cb).onProgress((long) arr[0], (long) arr[1], (String) arr[2]);
+                    ((IHttpProgress) cb).onProgress((long) arr[0], (long) arr[1], (String) arr[2]);
                 }
                 break;
         }

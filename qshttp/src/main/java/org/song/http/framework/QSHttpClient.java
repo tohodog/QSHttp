@@ -40,7 +40,7 @@ public class QSHttpClient {
      */
     public int execute(final RequestParams request, HttpCallback cb) {
         final int mThreadWhat = ThreadHandler.AddHttpCallback(cb);
-        final boolean isProgress = cb instanceof ProgressCallback;
+        final boolean isProgress = cb instanceof IHttpProgress;
 
         executorService.submit(new Runnable() {
 
@@ -85,7 +85,7 @@ public class QSHttpClient {
         return mThreadWhat;
     }
 
-    //递归调用拦截器
+    //递归调用拦截器列表
     private ResponseParams runInterceptor(final int index, final RequestParams request, final HttpProgress hp) throws HttpException {
         if (interceptorList == null || index >= interceptorList.size()) {//递归终点
             ResponseParams response = access(request, hp);

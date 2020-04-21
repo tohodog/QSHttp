@@ -15,7 +15,7 @@ import org.song.http.QSHttp;
 import org.song.http.framework.HttpCallback;
 import org.song.http.framework.HttpException;
 import org.song.http.framework.Parser;
-import org.song.http.framework.ProgressCallback;
+import org.song.http.framework.HttpCallbackProgress;
 import org.song.http.framework.QSHttpCallback;
 import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.ResponseParams;
@@ -123,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
     //文件下载
     public void downGET(String url) {
         QSHttp.download(url, getExternalCacheDir().getPath() + "/http.txt")
-                .buildAndExecute(new ProgressCallback() {
+                .buildAndExecute(new HttpCallbackProgress() {
                     @Override
                     public void onProgress(long var1, long var2, String var3) {
                         Log.d("downGET:", var1 * 100 / var2 + "%\n");
@@ -155,7 +155,7 @@ public class MainActivity extends AppCompatActivity {
                 .multipartBody(new String("img"), "image/*", "qs.jpg", new byte[1024])
                 .multipartBody(new String("img"), "image/*", "qs.jpg", new byte[1024])
 
-                .buildAndExecute(new ProgressCallback() {
+                .buildAndExecute(new HttpCallbackProgress() {
                     @Override
                     public void onProgress(long var1, long var2, String var3) {
                         Log.d("upLoad:", var1 * 100 / var2 + "%" + var3 + "\n");
@@ -270,7 +270,7 @@ public class MainActivity extends AppCompatActivity {
                 .openServerCache()//开启服务器缓存规则 基于okhttp支持
 
                 //构建好参数和配置后调用执行联网
-                .buildAndExecute(new ProgressCallback() {
+                .buildAndExecute(new HttpCallbackProgress() {
 
                     //-----回调均已在主线程
 
