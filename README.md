@@ -20,9 +20,11 @@ allprojects {
     }
 }
 
+//app.gradle
 dependencies {
     implementation 'com.github.tohodog:QSHttp:1.5.0'
 }
+
 ```
 
 ### 最简单的使用例子
@@ -169,6 +171,10 @@ https://api.reol.top/api_test
 
 ###  高级配置
 ```
+
+        //混淆
+        -keep class * extends org.song.http.framework.QSHttpCallback { *; }
+
         //使用配置初始化
         QSHttp.init(QSHttpConfig.Build(getApplication())
                 //配置需要签名的网站 读取assets/cers文件夹里的证书
