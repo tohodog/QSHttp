@@ -5,6 +5,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -40,6 +41,13 @@ public class MainActivity extends AppCompatActivity {
 
         tv = (TextView) findViewById(R.id.textview);
         imageView = (ImageView) findViewById(R.id.imageView);
+
+        tv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                NetManager.select4GNetwork();
+            }
+        });
 
         String url = "/api_test";
         normalGET(url);
@@ -171,6 +179,7 @@ public class MainActivity extends AppCompatActivity {
                         e.show();
                     }
                 });
+
 
     }
 
