@@ -1,5 +1,7 @@
 package org.song.http.framework.java;
 
+import android.os.Build;
+
 import org.song.http.framework.HttpEnum;
 import org.song.http.framework.HttpException;
 import org.song.http.framework.IHttpProgress;
@@ -93,7 +95,11 @@ public class HttpURLConnectionTask implements IHttpTask {
         try {
             HttpURLConnection conn;
             URL uri = new URL(url);
-            conn = (HttpURLConnection) uri.openConnection();//这里可能预请求了一次了
+            if (qsHttpConfig.network() != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+                conn = (HttpURLConnection) qsHttpConfig.network().openConnection(uri);//这里可能预请求了一次了
+            else
+                conn = (HttpURLConnection) uri.openConnection();//这里可能预请求了一次了
+
             if (conn instanceof HttpsURLConnection) {//支持自签名https
                 SSLSocketFactory sslSocketFactory = Utils.checkSSL(url, qsHttpConfig);//获取本地的自签名证书
                 if (sslSocketFactory != null) {//设置了自己的证书之后访问其他信任的https网址 会访问失败 所以check一下

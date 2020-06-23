@@ -1,10 +1,12 @@
 package org.song.http.framework;
 
 import android.app.Application;
+import android.net.Network;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.net.SocketFactory;
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSocketFactory;
 
@@ -18,13 +20,14 @@ public class QSHttpConfig {
 
     private Application application;
     private HttpEnum.XX_Http xxHttp;
-
+    private String cachePath;
     private List<Interceptor> interceptorList;
 
     private SSLSocketFactory sslSocketFactory;
     private String[] sslHost;
     private HostnameVerifier hostnameVerifier;
-    private String cachePath;
+    private SocketFactory socketFactory;
+    private Network network;
 
     private int poolSize;
     private int cacheSize;
@@ -59,6 +62,14 @@ public class QSHttpConfig {
 
     public HostnameVerifier hostnameVerifier() {
         return hostnameVerifier;
+    }
+
+    public SocketFactory socketFactory() {
+        return socketFactory;
+    }
+
+    public Network network() {
+        return network;
     }
 
     public int cacheSize() {
@@ -104,12 +115,13 @@ public class QSHttpConfig {
         private Application application;
         private HttpEnum.XX_Http xxHttp = HttpEnum.XX_Http.OK_HTTP;//
         private String cachePath;
-
         private List<Interceptor> interceptorList;
 
         private SSLSocketFactory sslSocketFactory;
         private String[] sslHost;
         private HostnameVerifier hostnameVerifier;
+        private SocketFactory socketFactory;
+        private Network network;
 
         private int poolSize = 8;
         private int cacheSize = 128 * 1024 * 1024;
@@ -130,6 +142,8 @@ public class QSHttpConfig {
             qsHttpConfig.xxHttp = xxHttp;
             qsHttpConfig.poolSize = poolSize;
             qsHttpConfig.sslSocketFactory = sslSocketFactory;
+            qsHttpConfig.socketFactory = socketFactory;
+            qsHttpConfig.network = network;
             qsHttpConfig.sslHost = sslHost;
             qsHttpConfig.hostnameVerifier = hostnameVerifier;
             qsHttpConfig.cacheSize = cacheSize;
@@ -171,6 +185,26 @@ public class QSHttpConfig {
         public Builder ssl(SSLSocketFactory sslSocketFactory, String... sslHost) {
             this.sslSocketFactory = sslSocketFactory;
             this.sslHost = sslHost;
+            return this;
+        }
+
+        /**
+         * 配置网络通道,比如WiFi下访问4G网络
+         *
+         * @param socketFactory 设置socketFactory
+         */
+        public Builder socketFactory(SocketFactory socketFactory) {
+            this.socketFactory = socketFactory;
+            return this;
+        }
+
+        /**
+         * 配置网络通道,比如WiFi下访问4G网络
+         *
+         * @param network 设置socketFactory
+         */
+        public Builder network(Network network) {
+            this.network = network;
             return this;
         }
 

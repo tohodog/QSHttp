@@ -637,7 +637,13 @@ public class RequestParams {
     public int execute(HttpCallback cb) {
         if (qsClient == null)
             return QSHttpManage.getQSHttpClient().execute(this, cb);
-        else
-            return QSHttpManage.getQSHttpClient(qsClient).execute(this, cb);
+        else {
+            QSHttpClient qsHttpClient = QSHttpManage.getQSHttpClient(qsClient);
+            if (qsHttpClient == null) {
+                Log.e(Utils.TAG, "can't find clint:" + qsClient);
+                return -1;
+            }
+            return qsHttpClient.execute(this, cb);
+        }
     }
 }

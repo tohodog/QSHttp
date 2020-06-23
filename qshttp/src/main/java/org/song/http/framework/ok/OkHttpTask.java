@@ -1,5 +1,6 @@
 package org.song.http.framework.ok;
 
+import android.os.Build;
 import android.util.Log;
 
 import org.song.http.framework.HttpEnum;
@@ -72,6 +73,9 @@ public class OkHttpTask implements IHttpTask {
                         qsHttpConfig.cacheSize()));
         if (qsHttpConfig.hostnameVerifier() != null)
             builder.hostnameVerifier(qsHttpConfig.hostnameVerifier());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && qsHttpConfig.socketFactory() != null) {
+            builder.socketFactory(qsHttpConfig.socketFactory());
+        }
         return builder.build();
 
     }
