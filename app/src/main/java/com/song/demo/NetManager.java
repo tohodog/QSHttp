@@ -82,18 +82,19 @@ public class NetManager extends BroadcastReceiver {
                     Log.i("onAvailable", "网络:" + network);
 
                     // 可以通过下面代码将app接下来的请求都绑定到这个网络下请求
-                    if (Build.VERSION.SDK_INT >= 23) {
-                        connectivityManager.bindProcessToNetwork(network);
-                    } else {// 23后这个方法舍弃了
-                        ConnectivityManager.setProcessDefaultNetwork(network);
-                    }
+//                    if (Build.VERSION.SDK_INT >= 23) {
+//                        connectivityManager.bindProcessToNetwork(network);
+//                    } else {// 23后这个方法舍弃了
+//                        ConnectivityManager.setProcessDefaultNetwork(network);
+//                    }
                     //配置多个client
-                    QSHttp.addClient("server2", QSHttpConfig.Build(AppContext.getInstance())
+                    QSHttp.addClient("CELLULAR", QSHttpConfig.Build(AppContext.getInstance())
                             .hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//证书信任规则
                             .cacheSize(128 * 1024 * 1024)
                             .connectTimeout(18 * 1000)
+                            .socketFactory(network.getSocketFactory())
                             .network(network)
-                            .xxHttp(HttpEnum.XX_Http.JAVA_HTTP)
+//                            .xxHttp(HttpEnum.XX_Http.JAVA_HTTP)
                             .debug(true)
                             //拦截器 添加头参数 鉴权
                             .interceptor(new QSInterceptor())
@@ -104,7 +105,7 @@ public class NetManager extends BroadcastReceiver {
             connectivityManager.registerNetworkCallback(request, callback);
 
             QSHttp.get("http://baidu.com?").buildAndExecute();//对照用 使用默认通道
-            QSHttp.get("http://baidu.com").qsClient("server2").buildAndExecute();//将使用4G通道
+            QSHttp.get("http://baidu.com").qsClient("CELLULAR").buildAndExecute();//将使用4G通道
 
         }
     }

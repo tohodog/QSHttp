@@ -310,15 +310,15 @@ public class MainActivity extends AppCompatActivity {
                 });
 
         //配置多个client
-        QSHttp.addClient("server2", QSHttpConfig.Build(getApplication())
-                .hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//证书信任规则
+        QSHttp.addClient("CELLULAR", QSHttpConfig.Build(getApplication())
                 .cacheSize(128 * 1024 * 1024)
                 .connectTimeout(18 * 1000)
+//                .network(network)//配置蜂窝网络通道
                 .debug(true)
                 //拦截器 添加头参数 鉴权
                 .interceptor(new QSInterceptor())
                 .build());
-        QSHttp.get("url").qsClient("server2").buildAndExecute();//将使用上述的配置
+        QSHttp.get("url").qsClient("CELLULAR").buildAndExecute();//该请求将使用上述的配置,走蜂窝网路
 
     }
 

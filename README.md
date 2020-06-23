@@ -115,7 +115,7 @@ https://api.reol.top/api_test
         //基于get下载
         String url = "https://api.reol.top/api_test";
         QSHttp.download(url,"/xxx/xxx.txt")
-                .buildAndExecute(new ProgressCallback() {
+                .buildAndExecute(new HttpCallbackProgress() {
                     @Override
                     public void onProgress(long var1, long var2, String var3) {
                         Log.i("http",var1 * 100 / var2 + "%\n");
@@ -147,7 +147,7 @@ https://api.reol.top/api_test
                 .multipartBody("icon", "image/*", "x.jpg", new byte[1024])
                 .multipartBody(new String("icon"), "image/*", "x.jpg", new byte[1024])//icon[]数组上传
 
-                .buildAndExecute(new ProgressCallback() {
+                .buildAndExecute(new HttpCallbackProgress() {
                     @Override
                     public void onProgress(long rwLen, long allLen, String mark) {
                         int i=rwLen * 100 / allLen ;//百分比
@@ -197,14 +197,14 @@ https://api.reol.top/api_test
                 }
             };
          
-        //配置多个client
-        QSHttp.addClient("server2", QSHttpConfig.Build(getApplication())
-                .hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//证书信任规则
+        //配置多个client,这里实现在wifi下使用蜂窝网络
+        QSHttp.addClient("CELLULAR", QSHttpConfig.Build(getApplication())
+//                .network(network)//配置蜂窝网络通道
                 .cacheSize(128 * 1024 * 1024)
                 .connectTimeout(10 * 1000)
                 .debug(true)
                 .build());
-        QSHttp.get("url").qsClient("server2").buildAndExecute();//该请求将使用上述配置
+        QSHttp.get("url").qsClient("CELLULAR").buildAndExecute();//该请求将使用上述的配置,走蜂窝网路
 ```
 
 
@@ -273,6 +273,9 @@ https://api.reol.top/api_test
                         });
 ```
 ## Log
+### v1.5.0(2019-12-19)
+  * 支持多网络同时访问(在打开WIFI情况下访问蜂窝网络)
+  * 优化
 ### v1.5.0(2019-12-19)
   * 支持多拦截器
   * 支持multipart数组上传
