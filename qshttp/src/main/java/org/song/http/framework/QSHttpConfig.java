@@ -2,6 +2,7 @@ package org.song.http.framework;
 
 import android.app.Application;
 import android.net.Network;
+import android.os.Build;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -205,6 +206,9 @@ public class QSHttpConfig {
          */
         public Builder network(Network network) {
             this.network = network;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                socketFactory(network.getSocketFactory());
+            }
             return this;
         }
 
