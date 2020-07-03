@@ -50,6 +50,7 @@ https://api.reol.top/api_test
         QSHttp.get(url)
                 .param("wd", "安卓http")
                 .param("ie", "UTF-8")//自动构建url--https://api.reol.top/api_test?ie=UTF-8&wd=安卓http
+                //.param(new Bean())
                 //.path(123,11) 这个参数会构建这样的url--https://api.reol.top/api_test/123/11
                 .buildAndExecute(new HttpCallback() {
                     @Override
@@ -72,6 +73,10 @@ https://api.reol.top/api_test
                     public void onComplete(Bean dataUser) {
 
                     }
+                    //@Override
+                    //public void onFailure(HttpException e) {
+                    //    e.show();
+                    //}
                 });
 ```
 
@@ -171,7 +176,6 @@ https://api.reol.top/api_test
 
 ###  高级配置
 ```
-
         //混淆
         -keep class * extends org.song.http.framework.QSHttpCallback { *; }
 
@@ -214,7 +218,7 @@ https://api.reol.top/api_test
 ```
 
 
-### 基本所有API一览
+### 所有API一览
 
 ```
         String url = "https://api.reol.top/api_test";
@@ -279,7 +283,7 @@ https://api.reol.top/api_test
                         });
 ```
 ## Log
-### v1.5.0(2019-12-19)
+### v1.5.1(2020-07-03)
   * 支持多网络同时访问(在打开WIFI情况下访问蜂窝网络)
   * 优化
 ### v1.5.0(2019-12-19)
