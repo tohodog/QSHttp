@@ -22,7 +22,7 @@ allprojects {
 
 //app.gradle
 dependencies {
-    implementation 'com.github.tohodog:QSHttp:1.5.0'
+    implementation 'com.github.tohodog:QSHttp:1.5.1'
 }
 
 ```
