@@ -23,6 +23,7 @@ public class QSHttpClient {
 
     private List<Interceptor> interceptorList;
 
+    private ThreadLocal<RequestParams> threadLocal = new ThreadLocal<>();//经过拦截器,request被改变了,这个保存最新的
 
     public QSHttpClient(IHttpTask iHttpTask, QSHttpConfig qsHttpConfig) {
         this.iHttpTask = iHttpTask;
@@ -44,18 +45,16 @@ public class QSHttpClient {
 
         executorService.submit(new Runnable() {
 
-            RequestParams _request = request;
 
             @Override
             public void run() {
+                threadLocal.set(request);
                 long time = System.currentTimeMillis();
                 ResponseParams response;
                 final HttpProgress hp = isProgress ? new HttpProgress(mThreadWhat) : null;
                 try {
                     //拦截器
-                    response = runInterceptor(0, _request, hp);
-                    //经过拦截器,request被改变了
-                    _request = response.requestParams();
+                    response = runInterceptor(0, threadLocal, hp);
                     response.setSuccess(true);
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -63,6 +62,9 @@ public class QSHttpClient {
                     response.setException(e);
                     response.setSuccess(false);
                 }
+                //获取最新请求参数,拦截器里可能修改了
+                RequestParams _request = threadLocal.get();
+                assert _request != null;
                 response.setRequestID(mThreadWhat);
                 response.setResultType(_request.resultType());
                 response.setRequestParams(_request);
@@ -86,23 +88,22 @@ public class QSHttpClient {
     }
 
     //递归调用拦截器列表
-    private ResponseParams runInterceptor(final int index, final RequestParams request, final HttpProgress hp) throws HttpException {
+    private ResponseParams runInterceptor(final int index, final ThreadLocal<RequestParams> threadLocal, final HttpProgress hp) throws HttpException {
         if (interceptorList == null || index >= interceptorList.size()) {//递归终点
-            ResponseParams response = access(request, hp);
-            response.setRequestParams(request);
-            return response;
+            return access(threadLocal.get(), hp);
         }
 
         Interceptor interceptor = interceptorList.get(index);
         return interceptor.intercept(new Interceptor.Chain() {
             @Override
             public RequestParams request() {
-                return request;
+                return threadLocal.get();
             }
 
             @Override
             public ResponseParams proceed(RequestParams request) throws HttpException {
-                return runInterceptor(index + 1, request, hp);//递归调用
+                threadLocal.set(request);
+                return runInterceptor(index + 1, threadLocal, hp);//递归调用
             }
         });
     }
@@ -145,6 +146,8 @@ public class QSHttpClient {
                     break;
             }
         }
+        if (response != null)
+            response.setRequestParams(request);
         return response;
     }
 
