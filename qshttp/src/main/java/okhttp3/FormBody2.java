@@ -120,7 +120,7 @@ public final class FormBody2 extends RequestBody {
         private final Charset charset;
 
         public Builder() {
-            this(Util.UTF_8);
+            this(Charset.defaultCharset());
         }
 
         public Builder(Charset charset) {

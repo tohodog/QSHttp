@@ -3,6 +3,7 @@ package org.song.http.framework;
 import android.app.Activity;
 import android.app.Fragment;
 import android.os.Build;
+import android.util.Log;
 import android.view.View;
 
 import com.alibaba.fastjson.JSON;
@@ -120,6 +121,7 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
     public static Activity findActivity(Object o) {
         //获取外部类
         Object ext = field(o, "this$0");
+        Log.d(Utils.TAG, "findActivity:" + ext);
         if (ext != null) {
             if (ext instanceof Activity) {
                 return ((Activity) ext);
@@ -147,7 +149,7 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
             }
 
             try {
-                Class<?> exClass = Class.forName("androidx.support.v4.app.Fragment");
+                Class<?> exClass = Class.forName("androidx.fragment.app.Fragment");
                 if (exClass.isAssignableFrom(ext.getClass())) {
                     Method method = exClass.getMethod("getActivity");
                     method.setAccessible(true);
