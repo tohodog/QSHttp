@@ -107,7 +107,6 @@ https://api.reol.top/api_test
                 .param("userName", 10086)
                 .param("password", "qwe123456")
                 //.jsonBody(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
-                .jsonModel(Bean.class)
                 .buildAndExecute(new QSHttpCallback<UserBean>() {
                     @Override
                     public void onComplete(UserBean dataUser) {
