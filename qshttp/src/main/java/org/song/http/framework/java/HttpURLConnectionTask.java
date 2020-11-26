@@ -62,7 +62,7 @@ public class HttpURLConnectionTask implements IHttpTask {
     public ResponseParams P_BODY(RequestParams params, IHttpProgress hp) throws HttpException {
         HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), params.requestMethod().name(), params.headers(), params.timeOut());
         writeMediaBody(conn, params.requestBody().getContentType(), params.requestBody().getContent(), hp);
-        return getResponse(conn, params, null);
+        return getResponse(conn, params, hp);
     }
 
     @Override
@@ -189,6 +189,7 @@ public class HttpURLConnectionTask implements IHttpTask {
         try {
             OutputStream os = conn.getOutputStream();
             WriteHelp wh = new WriteHelp(os, hp, len);
+            wh.setMark("up");
             if (file != null)
                 wh.writeByFile(file);
             if (bytes != null)

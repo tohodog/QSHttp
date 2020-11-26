@@ -33,7 +33,7 @@ public class RequestBodyProgress extends RequestBody {
     }
 
     public RequestBodyProgress(RequestBody requestBody, IHttpProgress iHttpProgress) {
-        this(requestBody, iHttpProgress, "");
+        this(requestBody, iHttpProgress, "up");
     }
 
     @Override

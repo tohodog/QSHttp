@@ -101,7 +101,7 @@ public class OkHttpTask implements IHttpTask {
         if (hp != null)
             requestBody = new RequestBodyProgress(requestBody, hp);
         Request request = getRequest(params, requestBody);
-        Response response = getResponse(editOkHttpClient(params, null), request);
+        Response response = getResponse(editOkHttpClient(params, hp), request);
         return dealResponse(params, response);
     }
 
