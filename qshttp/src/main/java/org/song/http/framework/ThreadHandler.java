@@ -5,18 +5,21 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.SparseArray;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
 /*
  * Created by song on 2016/9/18.
  * 子线程联网任务 回调主线程 类
  */
 public class ThreadHandler extends Handler {
 
-    private int mThreadWhat = 233;
-    private SparseArray<HttpCallback> sparseArray;
+    private int mThreadWhat = 19930411;
+    private Map<Integer, HttpCallback> sparseArray = new ConcurrentHashMap<>();
+//    private SparseArray<HttpCallback> sparseArray = new SparseArray<>();
 
     private ThreadHandler() {
         super(Looper.getMainLooper());
-        sparseArray = new SparseArray<>();
     }
 
     private static ThreadHandler instance;
@@ -103,18 +106,21 @@ public class ThreadHandler extends Handler {
     /**
      * 成功的处理
      */
-    public static void Success(ResponseParams obj) {
+    public static void Success(ResponseParams obj, boolean sync) {
         Message msg = Message.obtain();
         msg.what = obj.requestID();
         msg.arg1 = HttpEnum.HTTP_SUCCESS;
         msg.obj = obj;
-        getInstance().sendMessage(msg);
+        if (sync)
+            getInstance().handleMessage(msg);
+        else
+            getInstance().sendMessage(msg);
     }
 
     /**
      * 失败的处理
      */
-    public static void Failure(ResponseParams obj) {
+    public static void Failure(ResponseParams obj, boolean sync) {
         Message msg = Message.obtain();
         msg.what = obj.requestID();
         msg.arg1 = HttpEnum.HTTP_FAILURE;
@@ -122,7 +128,10 @@ public class ThreadHandler extends Handler {
         if (!(e instanceof HttpException))
             e = HttpException.Run(e);
         msg.obj = ((HttpException) e).responseParams(obj);
-        getInstance().sendMessage(msg);
+        if (sync)
+            getInstance().handleMessage(msg);
+        else
+            getInstance().sendMessage(msg);
     }
 
     /**

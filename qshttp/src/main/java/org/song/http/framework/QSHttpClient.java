@@ -42,6 +42,7 @@ public class QSHttpClient {
     public int execute(final RequestParams request, HttpCallback cb) {
         final int mThreadWhat = ThreadHandler.AddHttpCallback(cb);
         final boolean isProgress = cb instanceof IHttpProgress;
+        final boolean isSync = false;
 
         executorService.submit(new Runnable() {
 
@@ -80,7 +81,7 @@ public class QSHttpClient {
                     HttpResultHandler.dealParser(response);
 
                 } finally {
-                    HttpResultHandler.onComplete(response);
+                    HttpResultHandler.onComplete(response, isSync);
                 }
             }
         });
