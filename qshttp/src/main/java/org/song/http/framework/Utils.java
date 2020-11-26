@@ -163,6 +163,13 @@ public class Utils {
             case HEAD:
             case DELETE:
             case OPTIONS:
+//                StringBuilder sbUrl = new StringBuilder();
+//                sbUrl.append(request.urlAndPath()).append("?");
+//                for (String name : param_map.keySet()) {
+//                    String value = String.valueOf(param_map.get(name));
+//                    sbUrl.append(name).append('=').append(value).append('&');
+//                }
+//                sbUrl.deleteCharAt(sbUrl.length() - 1);
                 log = type + "->" + request.urlEncode()
                         + "\nHeaders->" + head_map;
                 break;

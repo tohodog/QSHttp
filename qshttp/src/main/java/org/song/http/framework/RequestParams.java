@@ -131,6 +131,12 @@ public class RequestParams {
         sbUrl.append(urlAndPath());
 
         if (params != null) {
+            String page = "";
+            int pageIndex = sbUrl.lastIndexOf("#");
+            if (pageIndex > 0) {
+                page = sbUrl.substring(pageIndex);
+                sbUrl.delete(pageIndex, sbUrl.length());
+            }
             int index = sbUrl.indexOf("?");
             if (index > -1) {
                 if (index != sbUrl.length() - 1)
@@ -146,25 +152,40 @@ public class RequestParams {
                         .append('&');
             }
             sbUrl.deleteCharAt(sbUrl.length() - 1);
+            sbUrl.append(page);
         }
 
         return sbUrl.toString();
     }
 
     /**
-     * 提取参数数据 构建带参数url格式
+     * 提取path数据,构建带path的url
      */
     public String urlAndPath() {
-        StringBuilder sbUrl = new StringBuilder(url);
-
         if (pathParams != null) {
+            StringBuilder sbUrl = new StringBuilder(url);
+            String page = "";
+            int pageIndex = sbUrl.lastIndexOf("?");
+            int pageIndex2 = sbUrl.lastIndexOf("#");
+
+            if (pageIndex > 0) {
+                page = sbUrl.substring(pageIndex);
+                sbUrl.delete(pageIndex, sbUrl.length());
+            } else if (pageIndex2 > 0) {
+                page = sbUrl.substring(pageIndex2);
+                sbUrl.delete(pageIndex2, sbUrl.length());
+            }
+            if (sbUrl.charAt(sbUrl.length() - 1) == '/') sbUrl.deleteCharAt(sbUrl.length() - 1);
             for (String value : pathParams) {
                 value = Utils.URLEncoder(value, charset);
                 sbUrl.append("/").append(value);
             }
+            sbUrl.append(page);
+            return sbUrl.toString();
+        } else {
+            return url;
         }
 
-        return sbUrl.toString();
     }
 
     public Builder newBuild() {
