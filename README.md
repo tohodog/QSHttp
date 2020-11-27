@@ -183,7 +183,7 @@ public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
         JSONObject jsonObject = JSON.parseObject(response);
         //服务器状态码不对
         if (jsonObject.getIntValue("status") != 0) {
-            throw HttpException.Custom(jsonObject.getString("msg"));
+            throw HttpException.Custom(jsonObject.getString("msg"), jsonObject);
         }
         //这里可以继续加统一的处理代码,如登录失效
         
@@ -284,62 +284,69 @@ public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
 ### 所有API一览
 
 ```
-        String url = "https://api.reol.top/api_test";
-                QSHttp.post(url)//选择请求的类型
-                        .header("User-Agent", "QsHttp/Android")//添加请求头
+String url = "https://api.reol.top/api_test";
+        QSHttp.post(url)//选择请求的类型
+                .header("User-Agent", "QsHttp/Android")//添加请求头
 
-                        .path(2333, "video")//构建成这样的url https://api.reol.top/api_test/2233/video
+                .path(2333, "video")//构建成这样的url https://api.reol.top/api_test/2233/video
 
-                        .param("userName", 123456)//键值对参数
-                        .param("password", "asdfgh")//键值对参数
-                        .param(new Bean())//键值对参数
+                .param("userName", 123456)//键值对参数
+                .param("password", "asdfgh")//键值对参数
+                .param(new Bean())//键值对参数
+                .param("bytes", new byte[1024])//传一个字节数组,multipart支持此参数
+                .param("file", new File("xx.jpg"))//传一个文件,multipart支持此参数
 
-                        .jsonBody(new Bean())//传入一个对象,会自动转化为json上传;application/json
+                .jsonBody(new Bean())//传入一个对象,会自动转化为json上传;application/json
+                //自定义Body的内容 自定义contentType (postjson内部是调用这个实现)
+                .requestBody("image/jpeg", new File("xx.jpg"))
 
-                        .requestBody("image/jpeg", new File("xx.jpg"))//直接上传自定义的内容 自定义contentType (postjson内部是调用这个实现)
+                .parser(parser)//自定义解析,由自己写解析逻辑
+                .resultByBytes()//请求结果返回一个字节组 默认是返回字符
+                .resultByFile(".../1.txt")//本地路径 有此参数 请求的内容将被写入文件
 
-                        .param("bytes", new byte[1024])//传一个字节数组,multipart支持此参数
-                        .param("file", new File("xx.jpg"))//传一个文件,multipart支持此参数
+                .errCache()//开启这个 [联网失败]会使用缓存,如果有的话
+                .timeOut(10 * 1000)//单独设置超时
+                .openServerCache()//开启服务器缓存规则 基于okhttp支持
+                .clientCache(24 * 3600)//开启强制缓存,一天内都不会请求了
+                .charset("utf-8")//特殊需求可以更改编码
+                .tag("no token")//可配合拦截器使用
+                //执行联网
+                .buildAndExecute(new HttpCallbackEx() {
 
-                        .parser(parser)//自定义解析,由自己写解析逻辑
+                    @Override
+                    public void onStart() {
+                        //开始请求
+                    }
 
-                        .resultByBytes()//请求结果返回一个字节组 默认是返回字符
-                        .resultByFile(".../1.txt")//本地路径 有此参数 请求的内容将被写入文件
+                    @Override
+                    public void onSuccess(ResponseParams response) {
+                        response.string();//获得响应字符串 *默认
+                        response.file();//设置了下载 获得路径
+                        response.bytes();//设置了返回字节组 获得字节组
 
-                        .errCache()//开启这个 [联网失败]会使用缓存,如果有的话
-                        .clientCache(24 * 3600)//开启缓存,有效时间一天
-                        .timeOut(10 * 1000)//单独设置超时
-                        .openServerCache()//开启服务器缓存规则 基于okhttp支持
-                        //构建好参数和配置后调用执行联网
-                        .buildAndExecute(new ProgressCallback() {
+                        response.headers();//获得响应头
 
-                            //-----回调均已在主线程
+                        //获得解析的模型
+                        Bean b = response.jsonModel(Bean.class);
+                    }
 
-                            @Override
-                            public void onProgress(long var1, long var2, String var3) {
-                                //进度回调 不需要监听进度 buildAndExecute()传 new HttpCallback(){...}即可
-                                long i = var1 * 100 / var2;//百分比
-                                //var3 在传文件的时候为文件路径 其他无意义
-                            }
+                    @Override
+                    public void onFailure(HttpException e) {
+                        e.show();//弹出错误提示 网络连接失败 超时 404 解析失败 ...等
+                        String response = (String) e.getExObject();//可获取非200异常的参数
+                    }
 
-                            @Override
-                            public void onSuccess(ResponseParams response) {
-                                response.string();//获得响应字符串 *默认
-                                response.file();//设置了下载 获得路径
-                                response.bytes();//设置了返回字节组 获得字节组
+                    @Override
+                    public void onEnd() {
+                        //结束请求
+                    }
 
-                                response.headers();//获得响应头
 
-                                //获得自动解析/自定义解析的结果
-                                Bean b = response.parserObject();
-                                b.getUserid();
-                            }
-
-                            @Override
-                            public void onFailure(HttpException e) {
-                                e.show();//弹出错误提示 网络连接失败 超时 404 解析失败 ...等
-                            }
-                        });
+                    @Override
+                    public boolean isDestroy() {
+                        return isFinishing();//页面关闭不会回调
+                    }
+                });
 ```
 ## Log
 ### v1.5.1(2020-07-03)
