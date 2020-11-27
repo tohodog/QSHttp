@@ -1,10 +1,10 @@
 QSHttp
 ====
-One Code Man! GET,POST,表单,JSON,上传,下载等等统统同一行代码搞定!
+开箱即用,GET,POST,表单,JSON,上传,下载等等统统同一行代码搞定! One Code Man!
 <br>
   * 5年实战环境验证迭代,稳定可靠
   * 强大灵活的入参,支持泛型回调,使用简单
-  * 简单实现自动弹加载框,判断业务状态码,弹错误提示
+  * 可简单实现自动弹加载框,判断业务状态码,弹错误提示
   * 支持异步(回调已在主线程),同步请求
   * 支持自签名,双向https
   * 支持自定义有效时间缓存,错误缓存(联网失败时使用),缓存控制,cookie自动管理
@@ -50,13 +50,13 @@ https://api.reol.top/api_test
 ### GET
 ```
         String url = "https://api.reol.top/api_test";
-        //使用泛型回调,自动解析json数据
+        //使用泛型回调,自动解析json数据成模型
         QSHttp.get(url)
                 .param("name", "QSHttp")
-                .buildAndExecute(new QSHttpCallback<User>() {
+                .buildAndExecute(new QSHttpCallback<BaseModel<User>>() {
                     @Override
-                    public void onComplete(User bean) {
-                        //请求解析成功,执行业务逻辑
+                    public void onComplete(BaseModel<User> bean) {
+                        //请求解析成功,执行业务逻辑,BaseModel是接口返回数据通用模型,如status,msg和泛型data
                     }
                     
                     //@Override//需要处理失败可覆盖
@@ -94,9 +94,9 @@ https://api.reol.top/api_test
         QSHttp.postJSON(url)
                 .param("userName", "song")
                 .param("password", "123456")
-                .buildAndExecute(new QSHttpCallback<UserBean>() {
+                .buildAndExecute(new QSHttpCallback<Bean>() {
                     @Override
-                    public void onComplete(UserBean dataUser) {
+                    public void onComplete(Bean dataBean) {
 
                     }
                 });
@@ -157,29 +157,108 @@ https://api.reol.top/api_test
                     }
                 });
 ```
+###  实现一个自动弹出加载框,判断业务状态码的Callback
+　在实际项目中,和后端交互JSON会有一套标准的格式,如`{"status":0,"msg":"OK","data":{}}`, 每个请求都判断太过于麻烦,而且也不方便统一处理,下面就实现一个用起来非常愉悦的回调:
+```
+public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
+
+    protected boolean isShow = true;
+
+    public MyHttpCallback() {
+        super();
+    }
+
+    //在Activity/Fragment/view里调用QSHTTP可不传入context,会自动反射获取
+    public MyHttpCallback(boolean isShow) {
+        this.isShow = isShow;
+    }
+
+    public MyHttpCallback(Activity activity, boolean isShow) {
+        super(activity);
+        this.isShow = isShow;
+    }
+
+    @Override//这里开发者根据自己的情况修改键值即可
+    public T map(String response) throws HttpException {
+        JSONObject jsonObject = JSON.parseObject(response);
+        //服务器状态码不对
+        if (jsonObject.getIntValue("status") != 0) {
+            throw HttpException.Custom(jsonObject.getString("msg"));
+        }
+        //这里可以继续加统一的处理代码,如登录失效
+        
+        return parserT(jsonObject.getString("data"));
+    }
+
+
+    @Override
+    public void onFailure(HttpException e) {
+        if (activity != null) Toast.makeText(activity, e.getPrompt(), Toast.LENGTH_LONG).show();
+    }
+
+    @Override
+    public void onStart() {
+        showProgressDialog(false);
+    }
+
+    @CallSuper
+    @Override
+    public void onEnd() {
+        dismissProgressDialog();
+    }
+
+
+    protected ProgressDialog mDialog;
+
+    /**
+     * 用于显示Dialog
+     */
+    protected void showProgressDialog(boolean mCancelable) {
+        if (isShow && mDialog == null && activity != null && !activity.isFinishing()) {
+            mDialog = new ProgressDialog(activity);
+            mDialog.setCancelable(mCancelable);
+            if (mCancelable) {
+                mDialog.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                    @Override
+                    public void onCancel(DialogInterface dialogInterface) {
+                    }
+                });
+            }
+            mDialog.show();
+        }
+    }
+
+    protected void dismissProgressDialog() {
+        if (isShow && mDialog != null && activity != null && !activity.isFinishing()) {
+            mDialog.dismiss();
+            mDialog = null;
+        }
+    }
+
+}
+```
 
 
 ###  高级配置
 ```
         //混淆
-        -keep class * extends org.song.http.framework.QSHttpCallback { *; }
+        -keep class * extends org.song.http.** { *; }
 
         //使用配置初始化
         QSHttp.init(QSHttpConfig.Build(getApplication())
                 //配置需要签名的网站 读取assets/cers文件夹里的证书
                 //支持双向认证 放入xxx.bks
                 .ssl(Utils.getAssetsSocketFactory(this, "cers", "password")
-                        , "192.168.1.168")//地址参数:设置需要自签名的主机地址,不设置则只能访问证书列表里的https网站
+                        , "192.168.1.168")//host参数:设置需要自签名的主机地址,不设置则只能访问证书列表里的https网站
                 .hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//证书信任规则(全信任)
                 .cacheSize(128 * 1024 * 1024)
                 .connectTimeout(18 * 1000)
-                .debug(true)
+                .debug(true)//打印日记
                 //拦截器 添加头参数 鉴权
                 .interceptor(interceptor)
                 .build());
 
         //拦截器
-        //TODO 拦截器需放到在 Application/静态变量/非内部类 里,否则外部类将会内存泄露
         static Interceptor interceptor = new Interceptor() {
                 @Override
                 public ResponseParams intercept(Chain chain) throws HttpException {
@@ -192,14 +271,13 @@ https://api.reol.top/api_test
                 }
             };
          
-        //配置多个client,这里实现在wifi下使用蜂窝网络
-        QSHttp.addClient("CELLULAR", QSHttpConfig.Build(getApplication())
-//                .network(network)//配置蜂窝网络通道
+        //配置多个client
+        QSHttp.addClient("test", QSHttpConfig.Build(getApplication())
                 .cacheSize(128 * 1024 * 1024)
                 .connectTimeout(10 * 1000)
                 .debug(true)
                 .build());
-        QSHttp.get("url").qsClient("CELLULAR").buildAndExecute();//该请求将使用上述的配置,走蜂窝网路
+        QSHttp.get("url").qsClient("test").buildAndExecute();//该请求将使用上述的配置
 ```
 
 
@@ -216,25 +294,21 @@ https://api.reol.top/api_test
                         .param("password", "asdfgh")//键值对参数
                         .param(new Bean())//键值对参数
 
-                        .toJsonBody()//把 params 转为json;application/json
                         .jsonBody(new Bean())//传入一个对象,会自动转化为json上传;application/json
 
                         .requestBody("image/jpeg", new File("xx.jpg"))//直接上传自定义的内容 自定义contentType (postjson内部是调用这个实现)
 
                         .param("bytes", new byte[1024])//传一个字节数组,multipart支持此参数
                         .param("file", new File("xx.jpg"))//传一个文件,multipart支持此参数
-                        .toMultiBody()//把 params 转为multipartBody参数;multipart/form-data
-
 
                         .parser(parser)//自定义解析,由自己写解析逻辑
-                        .jsonModel(Bean.class)//使用FastJson自动解析json,传一个实体类即可
 
                         .resultByBytes()//请求结果返回一个字节组 默认是返回字符
                         .resultByFile(".../1.txt")//本地路径 有此参数 请求的内容将被写入文件
 
                         .errCache()//开启这个 [联网失败]会使用缓存,如果有的话
                         .clientCache(24 * 3600)//开启缓存,有效时间一天
-                        .timeOut(10 * 1000)
+                        .timeOut(10 * 1000)//单独设置超时
                         .openServerCache()//开启服务器缓存规则 基于okhttp支持
                         //构建好参数和配置后调用执行联网
                         .buildAndExecute(new ProgressCallback() {
