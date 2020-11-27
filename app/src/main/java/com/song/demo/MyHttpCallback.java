@@ -39,7 +39,7 @@ public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
         JSONObject jsonObject = JSON.parseObject(response);
         //服务器状态码不对
         if (jsonObject.getIntValue("status") != 0) {
-            throw HttpException.Custom(jsonObject.getString("msg"));
+            throw HttpException.Custom(jsonObject.getString("msg"), response);
         }
         return parserT(jsonObject.getString("data"));
     }
@@ -47,6 +47,7 @@ public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
 
     @Override
     public void onFailure(HttpException e) {
+        String response = (String) e.getExObject();//可获取非200异常的参数
         if (activity != null) Toast.makeText(activity, e.getPrompt(), Toast.LENGTH_LONG).show();
     }
 

@@ -7,7 +7,7 @@ import java.util.List;
  * Created by song on 2017/2/16.
  */
 
-public class User<M> implements Serializable {
+public class Bean<M> implements Serializable {
 
     private String userName;
 

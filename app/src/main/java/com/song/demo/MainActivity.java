@@ -9,21 +9,19 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import org.song.http.QSHttp;
-import org.song.http.framework.ability.HttpCallback;
-import org.song.http.framework.ability.HttpCallbackProgress;
 import org.song.http.framework.HttpException;
-import org.song.http.framework.ability.Parser;
-import org.song.http.framework.util.QSHttpCallback;
 import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.ResponseParams;
+import org.song.http.framework.ability.HttpCallback;
+import org.song.http.framework.ability.HttpCallbackEx;
+import org.song.http.framework.ability.HttpCallbackProgress;
+import org.song.http.framework.ability.Parser;
+import org.song.http.framework.util.QSHttpCallback;
 
 import java.io.File;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
@@ -72,6 +70,16 @@ public class MainActivity extends AppCompatActivity {
     public void normalGET(String url) {
 
         QSHttp.get(url)
+                .param("name", "QSHttp")
+                .buildAndExecute(new QSHttpCallback<Bean>() {
+                    @Override
+                    public void onComplete(Bean bean) {
+
+                    }
+                });
+
+
+        QSHttp.get(url)
                 .param("wd", "Android")
                 .param("ie", "UTF-8")//自动构建url--https://www.baidu.com/s?ie=UTF-8&wd=安卓http
                 //.path(123,11) 这个参数会构建这样的url--https://www.baidu.com/s/123/11
@@ -86,13 +94,15 @@ public class MainActivity extends AppCompatActivity {
                         e.show();
                     }
                 });
+
+
     }
 
     //普通键值对 post, application/x-www-form-urlencoded
     public void normalPost(String url) {
         QSHttp.post(url)
                 .param("userid", 10086)
-                .param("password", "安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp安卓htt安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓http安卓httpp")
+                .param("password", "qwe123456")
                 .buildAndExecute(new MyHttpCallback<JSONObject>() {
                     @Override
                     public void onComplete(JSONObject dataBean) {
@@ -191,110 +201,40 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void parserJson() {
-
-        User dataUser = new User();
-        User dataUser2 = new User();
-        dataUser.setUserName("Yolanda");
-        dataUser2.setUserName("Song");
-        List<User> users = Arrays.asList(dataUser2);
-        dataUser.setRows(users);
-
-
-        QSHttp.postJSON("https://api.reol.top/test/json")
-                .jsonBody(dataUser)
-                .buildAndExecute(new MyHttpCallback<User<User>>() {
-                    @Override
-                    public void onComplete(User<User> dataUser) {
-                        tv.append("MyHttpCallback.User<User>=" + JSON.toJSONString(dataUser) + dataUser.getRows().get(0).getClass() + "\n");
-                    }
-                });
-
-        QSHttp.postJSON("https://api.reol.top/test/json")
-                .jsonBody("3.666489")
-                .buildAndExecute(new MyHttpCallback<Double>() {
-                    @Override
-                    public void onComplete(Double dataUser) {
-                        tv.append("MyHttpCallback.Double=" + JSON.toJSONString(dataUser) + "\n");
-                    }
-                });
-
-        QSHttp.postJSON("https://api.reol.top/test/json")
-                .header("row", "row")
-                .jsonBody(users)
-                .buildAndExecute(new QSHttpCallback<List<User>>() {
-                    @Override
-                    public void onComplete(List<User> dataUser) {
-                        tv.append("QSHttpCallback.List<User>=" + JSON.toJSONString(dataUser) + dataUser.get(0).getClass() + "\n");
-                    }
-                });
-
-        QSHttp.postJSON("https://api.reol.top/test/json")
-                .header("row", "row")
-                .jsonBody(dataUser)
-                .buildAndExecute(new QSHttpCallback<User>() {
-                    @Override
-                    public void onComplete(User dataUser) {
-                        tv.append("QSHttpCallback.User=" + JSON.toJSONString(dataUser) + dataUser.getClass() + "\n");
-                    }
-                });
-
-        QSHttp.postJSON("https://api.reol.top/test/json")
-                .header("row", "row")
-                .jsonBody("3.6")
-                .buildAndExecute(new QSHttpCallback<String>() {
-                    @Override
-                    public void onComplete(String dataUser) {
-                        tv.append("QSHttpCallback.String=" + dataUser + "\n");
-                    }
-                });
-
-    }
-
-
     //基本所有api介绍
     public void allAPI() {
-        String url = "https://www.baidu.com/s";
+        String url = "https://api.reol.top/api_test";
         QSHttp.post(url)//选择请求的类型
                 .header("User-Agent", "QsHttp/Android")//添加请求头
 
-                .path(2333, "video")//构建成这样的url https://www.baidu.com/s/2233/video
+                .path(2333, "video")//构建成这样的url https://api.reol.top/api_test/2233/video
 
-                .param("userid", 123456)//键值对参数
+                .param("userName", 123456)//键值对参数
                 .param("password", "asdfgh")//键值对参数
-                .param(new User())//键值对参数
-
-                .toJsonBody()//把 params 转为json;application/json
-                .jsonBody(new User())//传入一个对象,会自动转化为json上传;application/json
-
-                .requestBody("image/jpeg", new File("xx.jpg"))//直接上传自定义的内容 自定义contentType (postjson内部是调用这个实现)
-
+                .param(new Bean())//键值对参数
                 .param("bytes", new byte[1024])//传一个字节数组,multipart支持此参数
                 .param("file", new File("xx.jpg"))//传一个文件,multipart支持此参数
-                .toMultiBody()//把 params 转为multipartBody参数;multipart/form-data
 
+                .jsonBody(new Bean())//传入一个对象,会自动转化为json上传;application/json
+                //自定义Body的内容 自定义contentType (postjson内部是调用这个实现)
+                .requestBody("image/jpeg", new File("xx.jpg"))
 
                 .parser(parser)//自定义解析,由自己写解析逻辑
-                .jsonModel(User.class)//使用FastJson自动解析json,传一个实体类即可
-
                 .resultByBytes()//请求结果返回一个字节组 默认是返回字符
                 .resultByFile(".../1.txt")//本地路径 有此参数 请求的内容将被写入文件
 
                 .errCache()//开启这个 [联网失败]会使用缓存,如果有的话
-                .clientCache(24 * 3600)//开启缓存,有效时间一天
-                .timeOut(10 * 1000)
+                .timeOut(10 * 1000)//单独设置超时
                 .openServerCache()//开启服务器缓存规则 基于okhttp支持
-
-                //构建好参数和配置后调用执行联网
-                .buildAndExecute(new HttpCallbackProgress() {
-
-                    //-----回调均已在主线程
+                .clientCache(24 * 3600)//开启强制缓存,一天内都不会请求了
+                .charset("utf-8")//特殊需求可以更改编码
+                .tag("no token")//可配合拦截器使用
+                //执行联网
+                .buildAndExecute(new HttpCallbackEx() {
 
                     @Override
-                    public void onProgress(long var1, long var2, String var3) {
-                        //进度回调 不需要监听进度 buildAndExecute()传 new HttpCallback(){...}即可
-                        long i = var1 * 100 / var2;//百分比
-                        //var3 在传文件的时候为文件路径 其他无意义
+                    public void onStart() {
+                        //开始请求
                     }
 
                     @Override
@@ -305,14 +245,25 @@ public class MainActivity extends AppCompatActivity {
 
                         response.headers();//获得响应头
 
-                        //获得自动解析/自定义解析的结果
-                        User b = response.parserModel();
-                        b.getUserName();
+                        //获得解析的模型
+                        Bean b = response.jsonModel(Bean.class);
                     }
 
                     @Override
                     public void onFailure(HttpException e) {
                         e.show();//弹出错误提示 网络连接失败 超时 404 解析失败 ...等
+                        String response = (String) e.getExObject();//可获取非200异常的参数
+                    }
+
+                    @Override
+                    public void onEnd() {
+                        //结束请求
+                    }
+
+
+                    @Override
+                    public boolean isDestroy() {
+                        return isFinishing();//页面关闭不会回调
                     }
                 });
 
@@ -329,11 +280,71 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    Parser parser = new Parser<User>() {
+    Parser parser = new Parser<Bean>() {
         @Override
-        public User parser(String result) throws Exception {
+        public Bean parser(String result) throws Exception {
 
             return null;
         }
     };
+
+
+//    private void parserJson() {
+//
+//        Bean dataBean = new Bean();
+//        Bean dataBean2 = new Bean();
+//        dataBean.setUserName("Yolanda");
+//        dataBean2.setUserName("Song");
+//        List<Bean> beans = Arrays.asList(dataBean2);
+//        dataBean.setRows(beans);
+//
+//
+//        QSHttp.postJSON("https://api.reol.top/test/json")
+//                .jsonBody(dataBean)
+//                .buildAndExecute(new MyHttpCallback<Bean<Bean>>() {
+//                    @Override
+//                    public void onComplete(Bean<Bean> dataBean) {
+//                        tv.append("MyHttpCallback.User<User>=" + JSON.toJSONString(dataBean) + dataBean.getRows().get(0).getClass() + "\n");
+//                    }
+//                });
+//
+//        QSHttp.postJSON("https://api.reol.top/test/json")
+//                .jsonBody("3.666489")
+//                .buildAndExecute(new MyHttpCallback<Double>() {
+//                    @Override
+//                    public void onComplete(Double dataUser) {
+//                        tv.append("MyHttpCallback.Double=" + JSON.toJSONString(dataUser) + "\n");
+//                    }
+//                });
+//
+//        QSHttp.postJSON("https://api.reol.top/test/json")
+//                .header("row", "row")
+//                .jsonBody(beans)
+//                .buildAndExecute(new QSHttpCallback<List<Bean>>() {
+//                    @Override
+//                    public void onComplete(List<Bean> dataBean) {
+//                        tv.append("QSHttpCallback.List<User>=" + JSON.toJSONString(dataBean) + dataBean.get(0).getClass() + "\n");
+//                    }
+//                });
+//
+//        QSHttp.postJSON("https://api.reol.top/test/json")
+//                .header("row", "row")
+//                .jsonBody(dataBean)
+//                .buildAndExecute(new QSHttpCallback<Bean>() {
+//                    @Override
+//                    public void onComplete(Bean dataBean) {
+//                        tv.append("QSHttpCallback.User=" + JSON.toJSONString(dataBean) + dataBean.getClass() + "\n");
+//                    }
+//                });
+//
+//        QSHttp.postJSON("https://api.reol.top/test/json")
+//                .header("row", "row")
+//                .jsonBody("3.6")
+//                .buildAndExecute(new QSHttpCallback<String>() {
+//                    @Override
+//                    public void onComplete(String dataUser) {
+//                        tv.append("QSHttpCallback.String=" + dataUser + "\n");
+//                    }
+//                });
+//    }
 }

@@ -70,7 +70,7 @@ https://api.reol.top/api_test
                 .param("ie", "UTF-8")
                 .buildAndExecute(new QSHttpCallback<Bean>() {
                     @Override
-                    public void onComplete(Bean dataUser) {
+                    public void onComplete(Bean dataBean) {
 
                     }
                     //@Override
@@ -110,7 +110,7 @@ https://api.reol.top/api_test
                 .jsonModel(Bean.class)
                 .buildAndExecute(new QSHttpCallback<UserBean>() {
                     @Override
-                    public void onComplete(UserBean dataUser) {
+                    public void onComplete(UserBean dataBean) {
 
                     }
                 });
