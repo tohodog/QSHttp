@@ -1,4 +1,4 @@
-package org.song.http.framework;
+package org.song.http.framework.util;
 
 import android.Manifest;
 import android.content.Context;
@@ -11,6 +11,12 @@ import android.os.Process;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
+
+import org.song.http.framework.HttpEnum;
+import org.song.http.framework.QSHttpConfig;
+import org.song.http.framework.QSHttpManage;
+import org.song.http.framework.RequestParams;
+import org.song.http.framework.ResponseParams;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -146,8 +152,8 @@ public class Utils {
     public static void Log(RequestParams request, ResponseParams response, long time) {
         String requestLog = requestLog(request);
         String responseLog = responseLog(response);
-        String log = requestLog + "\n请求结果" + time + "ms-> ↓↓↓\n" + responseLog;
-        Log.e(TAG, log);
+        String log = requestLog + "\n请求结果" + time + "ms-> ↓↓↓\n" + responseLog+"\n ";
+        Log.d(TAG, log);
     }
 
 

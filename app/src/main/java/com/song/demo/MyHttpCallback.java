@@ -11,7 +11,7 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
 import org.song.http.framework.HttpException;
-import org.song.http.framework.QSHttpCallback;
+import org.song.http.framework.util.QSHttpCallback;
 
 /*
  * Created by song on 2019/4/16.
@@ -36,7 +36,7 @@ public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
 
     @Override
     public T map(String response) throws HttpException {
-        JSONObject jsonObject = JSON.parseObject(response, JSONObject.class);
+        JSONObject jsonObject = JSON.parseObject(response);
         //服务器状态码不对
         if (jsonObject.getIntValue("status") != 0) {
             throw HttpException.Custom(jsonObject.getString("msg"));

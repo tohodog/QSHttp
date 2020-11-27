@@ -1,9 +1,9 @@
 package org.song.http.framework.java;
 
 import org.song.http.framework.HttpEnum;
-import org.song.http.framework.IHttpProgress;
+import org.song.http.framework.ability.IHttpProgress;
 import org.song.http.framework.RequestParams;
-import org.song.http.framework.Utils;
+import org.song.http.framework.util.Utils;
 
 import java.io.File;
 import java.io.IOException;

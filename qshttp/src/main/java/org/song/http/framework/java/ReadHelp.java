@@ -1,6 +1,6 @@
 package org.song.http.framework.java;
 
-import org.song.http.framework.IHttpProgress;
+import org.song.http.framework.ability.IHttpProgress;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;

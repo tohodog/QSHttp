@@ -1,4 +1,4 @@
-package org.song.http.framework;
+package org.song.http.framework.util;
 
 import android.app.Activity;
 import android.app.Fragment;
@@ -10,6 +10,12 @@ import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONException;
 
+import org.song.http.framework.HttpEnum;
+import org.song.http.framework.HttpException;
+import org.song.http.framework.ResponseParams;
+import org.song.http.framework.ability.HttpCallbackEx;
+
+import java.io.File;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.ParameterizedType;
@@ -45,7 +51,13 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
     public void onSuccess(ResponseParams response) {
         this.response = response;
         try {
-            onComplete(map(response.string()));
+            if (response.resultType() == HttpEnum.ResultType.STRING) {
+                onComplete(map(response.string()));
+            } else if (response.resultType() == HttpEnum.ResultType.BYTES) {
+                onComplete((T) response.bytes());
+            } else if (response.resultType() == HttpEnum.ResultType.FILE) {
+                onComplete((T) new File(response.file()));
+            }
         } catch (JSONException e) {
             e.printStackTrace();
             onFailure(HttpException.Parser(e).responseParams(response));

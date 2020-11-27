@@ -4,12 +4,12 @@ import android.os.Build;
 
 import org.song.http.framework.HttpEnum;
 import org.song.http.framework.HttpException;
-import org.song.http.framework.IHttpProgress;
-import org.song.http.framework.IHttpTask;
+import org.song.http.framework.ability.IHttpProgress;
+import org.song.http.framework.ability.IHttpTask;
 import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.RequestParams;
 import org.song.http.framework.ResponseParams;
-import org.song.http.framework.Utils;
+import org.song.http.framework.util.Utils;
 
 import java.io.File;
 import java.io.IOException;

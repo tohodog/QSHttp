@@ -3,7 +3,10 @@ package org.song.http.framework;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-import android.util.SparseArray;
+
+import org.song.http.framework.ability.HttpCallback;
+import org.song.http.framework.ability.HttpCallbackEx;
+import org.song.http.framework.ability.IHttpProgress;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

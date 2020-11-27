@@ -13,9 +13,8 @@ import android.util.Log;
 import android.widget.Toast;
 
 import org.song.http.QSHttp;
-import org.song.http.framework.HttpEnum;
 import org.song.http.framework.QSHttpConfig;
-import org.song.http.framework.TrustAllCerts;
+import org.song.http.framework.util.TrustAllCerts;
 
 import java.io.IOException;
 

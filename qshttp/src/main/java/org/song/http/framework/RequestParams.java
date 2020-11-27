@@ -5,6 +5,11 @@ import android.util.Log;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import org.song.http.framework.ability.HttpCallback;
+import org.song.http.framework.ability.HttpFutureCallback;
+import org.song.http.framework.ability.Parser;
+import org.song.http.framework.util.Utils;
+
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;

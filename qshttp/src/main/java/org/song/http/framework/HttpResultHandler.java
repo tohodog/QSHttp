@@ -2,6 +2,8 @@ package org.song.http.framework;
 
 import com.alibaba.fastjson.JSON;
 
+import org.song.http.framework.util.HttpCache;
+
 /**
  * Created by song on 2016/9/18.
  */

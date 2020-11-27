@@ -4,6 +4,8 @@ import android.app.Application;
 import android.net.Network;
 import android.os.Build;
 
+import org.song.http.framework.ability.Interceptor;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -1,6 +1,6 @@
 package org.song.http.framework.ok;
 
-import org.song.http.framework.IHttpProgress;
+import org.song.http.framework.ability.IHttpProgress;
 
 import java.io.IOException;
 
