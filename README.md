@@ -1,13 +1,16 @@
 QSHttp
 ====
-  * 一句代码联网,参数控制方便,支持泛型回调,使用简单
-  * 多年生产环境迭代,稳定可靠
-  * 支持http/自签名双向https(get post put head...) 文件上传、下载、进度监听、自动解析,基于Okhttp的支持cookie自动管理,缓存控制
-  * 支持自定义有效时间缓存,错误缓存(联网失败时使用)
+One Code Man! GET,POST,表单,JSON,上传,下载等等统统同一行代码搞定!
+<br>
+  * 5年实战环境验证迭代,稳定可靠
+  * 强大灵活的入参,支持泛型回调,使用简单
+  * 简单实现自动弹加载框,判断业务状态码,弹错误提示
+  * 支持异步(回调已在主线程),同步请求
+  * 支持自签名,双向https
+  * 支持自定义有效时间缓存,错误缓存(联网失败时使用),缓存控制,cookie自动管理
   * 详细的请求信息回调、错误类型(网络链接失败,超时,断网,解析失败,404...)
   * 详细的访问日记打印,非常方便调试
   * 支持多拦截器,可添加一些公共鉴权参数...
-  * 模块化设计,联网模块可更换,目前提供OkHttp和java原生两种实现
 
 ### Gradle
 ```
@@ -27,7 +30,7 @@ dependencies {
 
 ```
 
-### 最简单的使用例子
+### 最简单的例子
 ```
 QSHttp.get("http://xxx").buildAndExecute();
 ```
@@ -44,36 +47,19 @@ https://api.reol.top/api_test
 
 ```
 
-### 普通带参数get请求
+### GET
 ```
         String url = "https://api.reol.top/api_test";
+        //使用泛型回调,自动解析json数据
         QSHttp.get(url)
-                .param("wd", "安卓http")
-                .param("ie", "UTF-8")//自动构建url--https://api.reol.top/api_test?ie=UTF-8&wd=安卓http
-                //.param(new Bean())
-                //.path(123,11) 这个参数会构建这样的url--https://api.reol.top/api_test/123/11
-                .buildAndExecute(new HttpCallback() {
+                .param("name", "QSHttp")
+                .buildAndExecute(new QSHttpCallback<User>() {
                     @Override
-                    public void onSuccess(ResponseParams response) {
-                        response.string();//响应内容
+                    public void onComplete(User bean) {
+                        //请求解析成功,执行业务逻辑
                     }
-
-                    @Override
-                    public void onFailure(HttpException e) {
-                        e.show();
-                    }
-                });
-                
-         //使用泛型回调,开发者可继承QSHttpCallback封装泛型回调,实现自动判断状态码、弹出加载框、错误吐司提示等等,具体参考demo源码MyHttpCallback
-         QSHttp.get(url)
-                .param("wd", "安卓http")
-                .param("ie", "UTF-8")
-                .buildAndExecute(new QSHttpCallback<Bean>() {
-                    @Override
-                    public void onComplete(Bean dataUser) {
-
-                    }
-                    //@Override
+                    
+                    //@Override//需要处理失败可覆盖
                     //public void onFailure(HttpException e) {
                     //    e.show();
                     //}
@@ -81,9 +67,10 @@ https://api.reol.top/api_test
 ```
 
 
-### 普通键值对post请求(application/x-www-form-urlencoded)
+### POST (application/x-www-form-urlencoded)
 ```
         String url = "https://api.reol.top/api_test";
+        //使用原始回调
         QSHttp.post(url)
                 .param("userName", 10086)
                 .param("password", "qwe123456")
@@ -100,13 +87,13 @@ https://api.reol.top/api_test
                 });
 ```
 
-###  post一个json,并自动解析返回信息(application/json)
+### POST (application/json)
 ```
         String url = "https://api.reol.top/api_test";
+        //不同类型请求只需改个方法名称即可实现
         QSHttp.postJSON(url)
-                .param("userName", 10086)
-                .param("password", "qwe123456")
-                //.jsonBody(Object) 这个参数可以直接传一个实体类,fastjson会自动转化成json字符串
+                .param("userName", "song")
+                .param("password", "123456")
                 .buildAndExecute(new QSHttpCallback<UserBean>() {
                     @Override
                     public void onComplete(UserBean dataUser) {
@@ -116,21 +103,20 @@ https://api.reol.top/api_test
 ```
 
 
-###  文件下载
+### Download
 ```
         //基于get下载
         String url = "https://api.reol.top/api_test";
-        QSHttp.download(url,"/xxx/xxx.txt")
+        QSHttp.download(url,"/sdcard/xxx.txt")
                 .buildAndExecute(new HttpCallbackProgress() {
                     @Override
                     public void onProgress(long var1, long var2, String var3) {
-                        Log.i("http",var1 * 100 / var2 + "%\n");
+                        long i = var1 * 100 / var2;//下载百分比
                     }
 
                     @Override
                     public void onSuccess(ResponseParams response) {
-                        response.headers().toString();//获取响应求头
-                        response.bytes();
+                        response.file();//获取目录
                     }
 
                     @Override
@@ -141,23 +127,23 @@ https://api.reol.top/api_test
 ```
 
 
-###  文件上传(multipart/form-data)
+### Upload (multipart/form-data)
 ```
         String url = "https://api.reol.top/api_test";
         QSHttp.upload(url)
+                //文本参数
                 .param("userName", 10086)
                 .param("password", "qwe123456")
-
-                .param("bytes", new byte[1024])//multipart方式上传一个字节数组
-                .param("file", new File("xx.jpg"))//multipart方式上传一个文件
-                .multipartBody("icon", "image/*", "x.jpg", new byte[1024])
-                .multipartBody(new String("icon"), "image/*", "x.jpg", new byte[1024])//icon[]数组上传
-
+                //文件参数
+                .param("file", new File("xx.jpg"))
+                .param("bytes", new byte[1024])//上传一个字节数组
+                //指定上传的文件名,content-type参数
+                .multipartBody("icon", "image/*", "icon.jpg", new File("xx.jpg"))
+                .multipartBody(new String("icon"), "image/*", "icon2.jpg", new byte[1024])//icon文件数组上传
                 .buildAndExecute(new HttpCallbackProgress() {
                     @Override
                     public void onProgress(long rwLen, long allLen, String mark) {
-                        int i=rwLen * 100 / allLen ;//百分比
-                        //mark 参数名
+                        int progress=rwLen * 100 / allLen ;//进度百分比,mark=参数名
                     }
 
                     @Override
