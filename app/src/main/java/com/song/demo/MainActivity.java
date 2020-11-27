@@ -14,17 +14,17 @@ import com.alibaba.fastjson.JSONObject;
 
 import org.song.http.QSHttp;
 import org.song.http.framework.HttpCallback;
+import org.song.http.framework.HttpCallbackProgress;
 import org.song.http.framework.HttpException;
 import org.song.http.framework.Parser;
-import org.song.http.framework.HttpCallbackProgress;
 import org.song.http.framework.QSHttpCallback;
 import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.ResponseParams;
-import org.song.http.framework.TrustAllCerts;
 
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -56,8 +56,15 @@ public class MainActivity extends AppCompatActivity {
         downGET(url);
         upLoad(url);
 
-        parserJson();
+//        parserJson();
 
+        try {
+            tv.append(QSHttp.get(url).param("future", "future").buildAndExecute().get().string() + "成功future\n");
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
 
@@ -299,7 +306,7 @@ public class MainActivity extends AppCompatActivity {
                         response.headers();//获得响应头
 
                         //获得自动解析/自定义解析的结果
-                        User b = response.parserObject();
+                        User b = response.parserModel();
                         b.getUserName();
                     }
 

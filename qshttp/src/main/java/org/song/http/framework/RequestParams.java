@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
  * Created by song on 2016/9/18.
@@ -550,6 +551,18 @@ public class RequestParams {
         }
 
         /**
+         * 自动解析模型
+         * 返回xml解析成对象
+         * 暂不支持
+         */
+        @Deprecated
+        public RequestParams.Builder xmlModel(Class<?> _class) {
+            this._class = _class;
+            parserMode(HttpEnum.ParserMode.XML);
+            return this;
+        }
+
+        /**
          * 手动解析的实现类
          */
         public RequestParams.Builder parser(Parser parser) {
@@ -597,10 +610,11 @@ public class RequestParams {
             return build().execute(cb);
         }
 
-        //构建并执行
-        public int buildAndExecute() {
-            return buildAndExecute(null);
+        //构建并执行,异步转同步
+        public Future<ResponseParams> buildAndExecute() {
+            return build().execute();
         }
+
     }
 
     public static class RequestBody {
@@ -666,5 +680,11 @@ public class RequestParams {
             }
             return qsHttpClient.execute(this, cb);
         }
+    }
+
+    public Future<ResponseParams> execute() {
+        HttpFutureCallback httpFutureCallback = new HttpFutureCallback();
+        execute(httpFutureCallback);
+        return httpFutureCallback;
     }
 }

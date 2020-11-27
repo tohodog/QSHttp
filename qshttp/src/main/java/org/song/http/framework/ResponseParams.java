@@ -3,6 +3,9 @@ package org.song.http.framework;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONObject;
+
 import java.util.List;
 import java.util.Map;
 
@@ -55,8 +58,22 @@ public class ResponseParams {
         return bytes;
     }
 
-    public <T extends Object> T parserObject() {
+    /**
+     * RequestParams入参配置的自动解析的模型
+     */
+    public <T extends Object> T parserModel() {
         return (T) parserObject;
+    }
+
+    /**
+     * 解析json
+     */
+    public <T> T jsonModel(Class<T> _class) {
+        return JSON.parseObject(string, _class);
+    }
+
+    public JSONObject jsonModel() {
+        return jsonModel(JSONObject.class);
     }
 
     public Map<String, List<String>> headers() {

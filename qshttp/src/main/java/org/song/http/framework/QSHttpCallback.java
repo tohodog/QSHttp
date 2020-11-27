@@ -45,16 +45,17 @@ public abstract class QSHttpCallback<T> implements HttpCallbackEx {
     public void onSuccess(ResponseParams response) {
         this.response = response;
         try {
-            onComplete(parserT(response.string()));
+            onComplete(map(response.string()));
         } catch (JSONException e) {
             e.printStackTrace();
             onFailure(HttpException.Parser(e).responseParams(response));
+        } catch (HttpException e1) {
+            onFailure(e1.responseParams(response));
         }
     }
 
-    protected T parserT(Object json) throws JSONException {
-//        return TypeUtils.cast(json, findT(), ParserConfig.global);//解析不到
-        return parserT(String.valueOf(json));
+    protected T map(String result) throws HttpException {
+        return parserT(result);
     }
 
     protected T parserT(String json) throws JSONException {
