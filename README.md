@@ -1,6 +1,6 @@
 QSHttp
 ====
-[![QSHttp][QSHttpsvg]][QSHttp]  [![License][licensesvg]][license]
+[![QSHttp][QSHttpsvg]][QSHttp] [![fastjson][fastjsonsvg]][fastjson]  [![okhttp][okhttpsvg]][okhttp]  [![License][licensesvg]][license]
 
 开箱即用,GET,POST,表单,JSON,上传,下载等等统统同一行代码搞定! One Code Man!
 <br>
@@ -396,8 +396,9 @@ public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
 [licensesvg]: https://img.shields.io/badge/License-Apache--2.0-red.svg
 [license]: https://raw.githubusercontent.com/tohodog/QSHttp/master/LICENSE
 
-[QSHttpsvg]: https://img.shields.io/badge/QSHttp-1.5.3-blue.svg
+[QSHttpsvg]: https://img.shields.io/badge/QSHttp-1.5.3-green.svg
 [QSHttp]: https://github.com/tohodog/QSHttp
 [fastjsonsvg]: https://img.shields.io/badge/fastjson-1.1.71-blue.svg
-[okhttpsvg]: https://img.shields.io/badge/okhttp-3.14.7-blue.svg
-
+[fastjson]: https://github.com/alibaba/fastjson
+[okhttpsvg]: https://img.shields.io/badge/okhttp3-3.14.7-orange.svg
+[okhttp]: https://github.com/square/okhttp
