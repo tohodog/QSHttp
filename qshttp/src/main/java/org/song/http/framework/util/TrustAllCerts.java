@@ -1,4 +1,4 @@
-package org.song.http.framework;
+package org.song.http.framework.util;
 
 
 import java.security.SecureRandom;

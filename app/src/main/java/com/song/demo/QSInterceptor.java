@@ -1,7 +1,7 @@
 package com.song.demo;
 
 import org.song.http.framework.HttpException;
-import org.song.http.framework.Interceptor;
+import org.song.http.framework.ability.Interceptor;
 import org.song.http.framework.RequestParams;
 import org.song.http.framework.ResponseParams;
 

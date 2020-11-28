@@ -4,12 +4,12 @@ import android.os.Build;
 
 import org.song.http.framework.HttpEnum;
 import org.song.http.framework.HttpException;
-import org.song.http.framework.IHttpProgress;
-import org.song.http.framework.IHttpTask;
+import org.song.http.framework.ability.IHttpProgress;
+import org.song.http.framework.ability.IHttpTask;
 import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.RequestParams;
 import org.song.http.framework.ResponseParams;
-import org.song.http.framework.Utils;
+import org.song.http.framework.util.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -62,7 +62,7 @@ public class HttpURLConnectionTask implements IHttpTask {
     public ResponseParams P_BODY(RequestParams params, IHttpProgress hp) throws HttpException {
         HttpURLConnection conn = getHttpURLConnection(params.urlAndPath(), params.requestMethod().name(), params.headers(), params.timeOut());
         writeMediaBody(conn, params.requestBody().getContentType(), params.requestBody().getContent(), hp);
-        return getResponse(conn, params, null);
+        return getResponse(conn, params, hp);
     }
 
     @Override
@@ -189,6 +189,7 @@ public class HttpURLConnectionTask implements IHttpTask {
         try {
             OutputStream os = conn.getOutputStream();
             WriteHelp wh = new WriteHelp(os, hp, len);
+            wh.setMark("up");
             if (file != null)
                 wh.writeByFile(file);
             if (bytes != null)

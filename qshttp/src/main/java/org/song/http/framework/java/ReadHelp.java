@@ -1,6 +1,6 @@
 package org.song.http.framework.java;
 
-import org.song.http.framework.IHttpProgress;
+import org.song.http.framework.ability.IHttpProgress;
 
 import java.io.BufferedOutputStream;
 import java.io.ByteArrayOutputStream;
@@ -72,7 +72,7 @@ public class ReadHelp {
         if (len > 0)
             readCount += len;
         if (hp != null)
-            hp.onProgress(readCount, len < 0 ? readCount : allCount, "");
+            hp.onProgress(readCount, len < 0 ? readCount : allCount, "down");
         return len;
     }
 

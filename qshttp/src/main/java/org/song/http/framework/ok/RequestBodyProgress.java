@@ -1,6 +1,6 @@
 package org.song.http.framework.ok;
 
-import org.song.http.framework.IHttpProgress;
+import org.song.http.framework.ability.IHttpProgress;
 
 import java.io.IOException;
 
@@ -33,7 +33,7 @@ public class RequestBodyProgress extends RequestBody {
     }
 
     public RequestBodyProgress(RequestBody requestBody, IHttpProgress iHttpProgress) {
-        this(requestBody, iHttpProgress, "");
+        this(requestBody, iHttpProgress, "up");
     }
 
     @Override

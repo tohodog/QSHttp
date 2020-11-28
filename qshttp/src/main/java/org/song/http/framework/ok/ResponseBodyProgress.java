@@ -1,6 +1,6 @@
 package org.song.http.framework.ok;
 
-import org.song.http.framework.IHttpProgress;
+import org.song.http.framework.ability.IHttpProgress;
 
 import java.io.IOException;
 
@@ -67,7 +67,7 @@ public class ResponseBodyProgress extends ResponseBody {
                 //增加当前读取的字节数，如果读取完成了bytesRead会返回-1
                 totalBytesRead += bytesRead != -1 ? bytesRead : 0;
                 //回调，如果contentLength()不知道长度，会返回-1
-                iHttpProgress.onProgress(totalBytesRead, bytesRead == -1 ? totalBytesRead : responseBody.contentLength(), "");
+                iHttpProgress.onProgress(totalBytesRead, bytesRead == -1 ? totalBytesRead : responseBody.contentLength(), "down");
                 return bytesRead;
             }
         };

@@ -5,6 +5,11 @@ import android.util.Log;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import org.song.http.framework.ability.HttpCallback;
+import org.song.http.framework.ability.HttpFutureCallback;
+import org.song.http.framework.ability.Parser;
+import org.song.http.framework.util.Utils;
+
 import java.io.File;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -13,6 +18,7 @@ import java.util.HashMap;
 import java.util.IdentityHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Future;
 
 /**
  * Created by song on 2016/9/18.
@@ -131,6 +137,12 @@ public class RequestParams {
         sbUrl.append(urlAndPath());
 
         if (params != null) {
+            String page = "";
+            int pageIndex = sbUrl.lastIndexOf("#");
+            if (pageIndex > 0) {
+                page = sbUrl.substring(pageIndex);
+                sbUrl.delete(pageIndex, sbUrl.length());
+            }
             int index = sbUrl.indexOf("?");
             if (index > -1) {
                 if (index != sbUrl.length() - 1)
@@ -146,25 +158,40 @@ public class RequestParams {
                         .append('&');
             }
             sbUrl.deleteCharAt(sbUrl.length() - 1);
+            sbUrl.append(page);
         }
 
         return sbUrl.toString();
     }
 
     /**
-     * 提取参数数据 构建带参数url格式
+     * 提取path数据,构建带path的url
      */
     public String urlAndPath() {
-        StringBuilder sbUrl = new StringBuilder(url);
-
         if (pathParams != null) {
+            StringBuilder sbUrl = new StringBuilder(url);
+            String page = "";
+            int pageIndex = sbUrl.lastIndexOf("?");
+            int pageIndex2 = sbUrl.lastIndexOf("#");
+
+            if (pageIndex > 0) {
+                page = sbUrl.substring(pageIndex);
+                sbUrl.delete(pageIndex, sbUrl.length());
+            } else if (pageIndex2 > 0) {
+                page = sbUrl.substring(pageIndex2);
+                sbUrl.delete(pageIndex2, sbUrl.length());
+            }
+            if (sbUrl.charAt(sbUrl.length() - 1) == '/') sbUrl.deleteCharAt(sbUrl.length() - 1);
             for (String value : pathParams) {
                 value = Utils.URLEncoder(value, charset);
                 sbUrl.append("/").append(value);
             }
+            sbUrl.append(page);
+            return sbUrl.toString();
+        } else {
+            return url;
         }
 
-        return sbUrl.toString();
     }
 
     public Builder newBuild() {
@@ -529,6 +556,18 @@ public class RequestParams {
         }
 
         /**
+         * 自动解析模型
+         * 返回xml解析成对象
+         * 暂不支持
+         */
+        @Deprecated
+        public RequestParams.Builder xmlModel(Class<?> _class) {
+            this._class = _class;
+            parserMode(HttpEnum.ParserMode.XML);
+            return this;
+        }
+
+        /**
          * 手动解析的实现类
          */
         public RequestParams.Builder parser(Parser parser) {
@@ -576,10 +615,11 @@ public class RequestParams {
             return build().execute(cb);
         }
 
-        //构建并执行
-        public int buildAndExecute() {
-            return buildAndExecute(null);
+        //构建并执行,异步转同步
+        public Future<ResponseParams> buildAndExecute() {
+            return build().execute();
         }
+
     }
 
     public static class RequestBody {
@@ -645,5 +685,11 @@ public class RequestParams {
             }
             return qsHttpClient.execute(this, cb);
         }
+    }
+
+    public Future<ResponseParams> execute() {
+        HttpFutureCallback httpFutureCallback = new HttpFutureCallback();
+        execute(httpFutureCallback);
+        return httpFutureCallback;
     }
 }

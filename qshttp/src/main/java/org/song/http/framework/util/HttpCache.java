@@ -1,8 +1,10 @@
-package org.song.http.framework;
+package org.song.http.framework.util;
 
 import android.util.Log;
 
 import org.song.http.framework.HttpEnum.CacheMode;
+import org.song.http.framework.RequestParams;
+import org.song.http.framework.ResponseParams;
 
 import java.io.File;
 import java.io.UnsupportedEncodingException;

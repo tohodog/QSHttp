@@ -2,6 +2,8 @@ package org.song.http.framework;
 
 import com.alibaba.fastjson.JSON;
 
+import org.song.http.framework.util.HttpCache;
+
 /**
  * Created by song on 2016/9/18.
  */
@@ -11,19 +13,19 @@ public class HttpResultHandler {
     /**
      * 联网完成后进行数据处理
      */
-    public static void onComplete(ResponseParams response) {
+    public static void onComplete(ResponseParams response, boolean isSync) {
         if (response.isSuccess())
-            ThreadHandler.Success(response);
+            ThreadHandler.Success(response, isSync);
         else
-            ThreadHandler.Failure(response);
+            ThreadHandler.Failure(response, isSync);
     }
 
     public static void dealCache(ResponseParams response) {
         HttpCache httpCache = HttpCache.instance();
         try {
-            if (response.isSuccess())
+            if (response.isSuccess()) {
                 httpCache.checkAndSaveCache(response);
-            else {
+            } else {
                 boolean b = httpCache.checkAndGetErrCache(response);
                 if (b) {
                     response.setSuccess(true);

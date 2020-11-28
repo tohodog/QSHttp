@@ -1,4 +1,4 @@
-package org.song.http.framework;
+package org.song.http.framework.ability;
 
 /**
  * Created by song on 2017/4/13.

@@ -1,6 +1,14 @@
 package org.song.http.framework;
 
 
+import org.song.http.framework.ability.HttpCallback;
+import org.song.http.framework.ability.HttpFutureCallback;
+import org.song.http.framework.ability.IHttpProgress;
+import org.song.http.framework.ability.IHttpTask;
+import org.song.http.framework.ability.Interceptor;
+import org.song.http.framework.util.HttpCache;
+import org.song.http.framework.util.Utils;
+
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -42,6 +50,7 @@ public class QSHttpClient {
     public int execute(final RequestParams request, HttpCallback cb) {
         final int mThreadWhat = ThreadHandler.AddHttpCallback(cb);
         final boolean isProgress = cb instanceof IHttpProgress;
+        final boolean isSync = cb instanceof HttpFutureCallback;
 
         executorService.submit(new Runnable() {
 
@@ -80,7 +89,7 @@ public class QSHttpClient {
                     HttpResultHandler.dealParser(response);
 
                 } finally {
-                    HttpResultHandler.onComplete(response);
+                    HttpResultHandler.onComplete(response, isSync);
                 }
             }
         });

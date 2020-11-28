@@ -5,13 +5,13 @@ import android.util.Log;
 
 import org.song.http.framework.HttpEnum;
 import org.song.http.framework.HttpException;
-import org.song.http.framework.IHttpProgress;
-import org.song.http.framework.IHttpTask;
+import org.song.http.framework.ability.IHttpProgress;
+import org.song.http.framework.ability.IHttpTask;
 import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.QSHttpManage;
 import org.song.http.framework.RequestParams;
 import org.song.http.framework.ResponseParams;
-import org.song.http.framework.Utils;
+import org.song.http.framework.util.Utils;
 import org.song.http.framework.ok.cookie.CookieManage;
 
 import java.io.File;
@@ -101,7 +101,7 @@ public class OkHttpTask implements IHttpTask {
         if (hp != null)
             requestBody = new RequestBodyProgress(requestBody, hp);
         Request request = getRequest(params, requestBody);
-        Response response = getResponse(editOkHttpClient(params, null), request);
+        Response response = getResponse(editOkHttpClient(params, hp), request);
         return dealResponse(params, response);
     }
 
