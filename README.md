@@ -1,5 +1,7 @@
 QSHttp
 ====
+[![QSHttp][QSHttpsvg]][QSHttp]  [![License][licensesvg]][license]
+
 开箱即用,GET,POST,表单,JSON,上传,下载等等统统同一行代码搞定! One Code Man!
 <br>
   * 5年实战环境验证迭代,稳定可靠
@@ -25,7 +27,7 @@ allprojects {
 
 //app.gradle
 dependencies {
-    implementation 'com.github.tohodog:QSHttp:1.5.2'
+    implementation 'com.github.tohodog:QSHttp:1.5.3'
 }
 
 ```
@@ -284,7 +286,11 @@ public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
 ### 所有API一览
 
 ```
-String url = "https://api.reol.top/api_test";
+        String url = "https://api.reol.top/api_test";
+        //同步请求
+        Future<ResponseParams> future = QSHttp.get(url).param("future", "future").buildAndExecute();
+        ResponseParams res = future.get();//get阻塞
+
         QSHttp.post(url)//选择请求的类型
                 .header("User-Agent", "QsHttp/Android")//添加请求头
 
@@ -349,6 +355,9 @@ String url = "https://api.reol.top/api_test";
                 });
 ```
 ## Log
+### v1.5.3(2020-11-27)
+  * 支持同步
+  * 优化监听回调,url兼容性
 ### v1.5.1(2020-07-03)
   * 支持多网络同时访问(在打开WIFI情况下访问蜂窝网络)
   * 优化
@@ -383,3 +392,12 @@ String url = "https://api.reol.top/api_test";
   
 [starsvg]: https://img.shields.io/github/stars/tohodog/QSHttp.svg?style=social&label=Stars
 [star]: https://github.com/tohodog/QSHttp
+
+[licensesvg]: https://img.shields.io/badge/License-Apache--2.0-red.svg
+[license]: https://raw.githubusercontent.com/tohodog/QSHttp/master/LICENSE
+
+[QSHttpsvg]: https://img.shields.io/badge/QSHttp-1.5.3-blue.svg
+[QSHttp]: https://github.com/tohodog/QSHttp
+[fastjsonsvg]: https://img.shields.io/badge/fastjson-1.1.71-blue.svg
+[okhttpsvg]: https://img.shields.io/badge/okhttp-3.14.7-blue.svg
+
