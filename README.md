@@ -2,17 +2,19 @@ QSHttp
 ====
 [![QSHttp][QSHttpsvg]][QSHttp] [![fastjson][fastjsonsvg]][fastjson]  [![okhttp][okhttpsvg]][okhttp]  [![License][licensesvg]][license]
 
-开箱即用,GET,POST,表单,JSON,上传,下载等等统统同一行代码搞定! One Code Man!
+开箱即用,GET,POST,表单,JSON,上传,下载等等统统同一行代码搞定! One Code Man!  
+AIP精简到极致,调用没有一行多余代码,几乎零成本使用,大道至简
 <br>
   * 5年实战环境验证迭代,稳定可靠
   * 强大灵活的入参,支持泛型回调,使用简单
   * 可简单实现自动弹加载框,判断业务状态码,弹错误提示
+  * 支持多拦截器,可全局配置一些公共鉴权参数
   * 支持异步(回调已在主线程),同步请求
   * 支持自签名,双向https
   * 支持自定义有效时间缓存,错误缓存(联网失败时使用),缓存控制,cookie自动管理
   * 详细的请求信息回调、错误类型(网络链接失败,超时,断网,解析失败,404...)
   * 详细的访问日记打印,非常方便调试
-  * 支持多拦截器,可添加一些公共鉴权参数...
+  * 底层支持原生和okhttp
 
 ### Gradle
 ```
@@ -44,7 +46,7 @@ https://api.reol.top/api_test
 
 ### 初始化框架
 ```
-        //初始化框架,调用一次即可
+        //初始化框架,调用一次即可,详细配置见#高级配置#
         QSHttp.init(getApplication());
 
 ```
@@ -246,17 +248,17 @@ public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
         //混淆
         -keep class * extends org.song.http.** { *; }
 
-        //使用配置初始化
+        //使用配置初始化,全局参数
         QSHttp.init(QSHttpConfig.Build(getApplication())
-                //配置需要签名的网站 读取assets/cers文件夹里的证书
-                //支持双向认证 放入xxx.bks
+                //配置需要签名的网站, 读取assets/cers文件夹里的证书
+                //支持双向认证,只需放入xxx.bks,见demo
                 .ssl(Utils.getAssetsSocketFactory(this, "cers", "password")
                         , "192.168.1.168")//host参数:设置需要自签名的主机地址,不设置则只能访问证书列表里的https网站
                 .hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//证书信任规则(全信任)
                 .cacheSize(128 * 1024 * 1024)
                 .connectTimeout(18 * 1000)
                 .debug(true)//打印日记
-                //拦截器 添加头参数 鉴权
+                //拦截器 全局添加头参数 鉴权
                 .interceptor(interceptor)
                 .build());
 
@@ -266,15 +268,16 @@ public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
                 public ResponseParams intercept(Chain chain) throws HttpException {
                     RequestParams r = chain.request()
                             .newBuild()
-                            .header("Interceptor", "Interceptor")
+                            .header("Interceptor", "Interceptor")//全局
                             //继续添加修改其他
                             .build();
                     return chain.proceed(r);//请求结果参数如有需要也可以进行修改
                 }
             };
          
-        //配置多个client
+        //添加不同配置的client,满足不同需求
         QSHttp.addClient("test", QSHttpConfig.Build(getApplication())
+                .xxHttp(HttpEnum.XX_Http.JAVA_HTTP)//使用原生底层实现
                 .cacheSize(128 * 1024 * 1024)
                 .connectTimeout(10 * 1000)
                 .debug(true)
