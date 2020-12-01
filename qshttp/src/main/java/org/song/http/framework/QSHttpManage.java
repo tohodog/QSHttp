@@ -46,14 +46,15 @@ public class QSHttpManage {
     }
 
     public static QSHttpClient getQSHttpClient() {
-        if (getQSHttpClient(null) == null) {//兼容下不初始化
+        if (mapQSHttpClient.get(null) == null) {//兼容下不初始化
             Log.w(Utils.TAG, "You are not initialized QSHttp");
             init(QSHttpConfig.Build(null).build());
         }
-        return getQSHttpClient(null);
+        return mapQSHttpClient.get(null);
     }
 
     public static QSHttpClient getQSHttpClient(String key) {
+        if (key == null) return getQSHttpClient();
         return mapQSHttpClient.get(key);
     }
 

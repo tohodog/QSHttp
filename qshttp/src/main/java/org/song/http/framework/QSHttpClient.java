@@ -194,4 +194,7 @@ public class QSHttpClient {
 
     }
 
+    public QSHttpConfig getQsHttpConfig() {
+        return qsHttpConfig;
+    }
 }

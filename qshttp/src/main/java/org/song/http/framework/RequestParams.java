@@ -262,15 +262,31 @@ public class RequestParams {
         private boolean toMultiBodyFlag;
 
         public Builder(String url) {
+            if (url == null) url = "";
             this.url = url;
         }
 
         public RequestParams build() {
-            if (toJsonBodyFlag & requestBody == null) {
+            if (toJsonBodyFlag && requestBody == null) {
                 jsonBody(params);
             } else if (toMultiBodyFlag) {
                 multipartBody(params);
             }
+
+            String base = QSHttpManage.getQSHttpClient(qsClient).getQsHttpConfig().baseUrl();
+            if (base != null && !url.startsWith("http")) {
+                int size = 0;
+                if (!base.isEmpty() && base.charAt(base.length() - 1) == '/') size++;
+                if (!url.isEmpty() && url.charAt(0) == '/') size++;
+                if (size == 0) {
+                    url = base + '/' + url;
+                } else if (size == 1) {
+                    url = base + url;
+                } else {
+                    url = base + url.substring(1);
+                }
+            }
+
             RequestParams requestParams = new RequestParams();
             requestParams.charset = charset;
             requestParams.url = url;
@@ -680,7 +696,7 @@ public class RequestParams {
         else {
             QSHttpClient qsHttpClient = QSHttpManage.getQSHttpClient(qsClient);
             if (qsHttpClient == null) {
-                Log.e(Utils.TAG, "can't find clint:" + qsClient);
+                Log.e(Utils.TAG, "can't find client:" + qsClient);
                 return -1;
             }
             return qsHttpClient.execute(this, cb);
