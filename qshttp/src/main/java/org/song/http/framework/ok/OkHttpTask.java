@@ -5,14 +5,14 @@ import android.util.Log;
 
 import org.song.http.framework.HttpEnum;
 import org.song.http.framework.HttpException;
-import org.song.http.framework.ability.IHttpProgress;
-import org.song.http.framework.ability.IHttpTask;
 import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.QSHttpManage;
 import org.song.http.framework.RequestParams;
 import org.song.http.framework.ResponseParams;
-import org.song.http.framework.util.Utils;
+import org.song.http.framework.ability.IHttpProgress;
+import org.song.http.framework.ability.IHttpTask;
 import org.song.http.framework.ok.cookie.CookieManage;
+import org.song.http.framework.util.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -195,10 +195,15 @@ public class OkHttpTask implements IHttpTask {
             if (response.isSuccessful())
                 return response;
             else {
+                ResponseParams responseParams = new ResponseParams();
+                responseParams.setHeaders(response.headers().toMultimap());
+//                byte[] bytes = response.body().bytes();
+//                responseParams.setBytes(bytes);
                 String result = response.body().string();
                 int code = response.code();
                 response.body().close();
-                throw HttpException.HttpCode(code, result);
+                responseParams.setString(result);
+                throw HttpException.HttpCode(code, result).responseParams(responseParams);
             }
         } catch (SocketTimeoutException e) {
             throw HttpException.HttpTimeOut(e);
