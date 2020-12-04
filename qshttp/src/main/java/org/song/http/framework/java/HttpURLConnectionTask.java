@@ -115,10 +115,7 @@ public class HttpURLConnectionTask implements IHttpTask {
             conn.setUseCaches(false);
 
             conn.setRequestProperty("Connection", "keep-alive");
-            if (head == null)
-                head = new HashMap<>();
-            if (!head.containsKey("User-Agent") && !head.containsKey("user-agent"))
-                head.put("User-Agent", "Android/JavaHttpClient/QSHttp");
+            if (head == null) head = new HashMap<>();
             for (Map.Entry<String, String> entry : head.entrySet())
                 conn.setRequestProperty(entry.getKey(), entry.getValue());
 

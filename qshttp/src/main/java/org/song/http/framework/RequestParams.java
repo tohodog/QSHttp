@@ -5,6 +5,7 @@ import android.util.Log;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import org.song.http.BuildConfig;
 import org.song.http.framework.ability.HttpCallback;
 import org.song.http.framework.ability.HttpFutureCallback;
 import org.song.http.framework.ability.Parser;
@@ -236,7 +237,7 @@ public class RequestParams {
 
         private String url;
         private RequestBody requestBody;
-        private Map<String, String> headers;
+        private Map<String, String> headers = new HashMap<>();
         private Map<String, Object> params;
         private List<String> pathParams;
         private Map<String, RequestBody> multipartBody;
@@ -285,6 +286,9 @@ public class RequestParams {
                 } else {
                     url = base + url.substring(1);
                 }
+            }
+            if (!headers.containsKey("User-Agent") && !headers.containsKey("user-agent")) {
+                header("User-Agent", System.getProperty("http.agent") + " QSHttp/" + BuildConfig.VERSION_NAME);
             }
 
             RequestParams requestParams = new RequestParams();
@@ -687,6 +691,7 @@ public class RequestParams {
         public String toString() {
             return "{ " + "ContentType:" + contentType + "; filename:" + filename + "; Content:" + content + " }";
         }
+
     }
 
     //
