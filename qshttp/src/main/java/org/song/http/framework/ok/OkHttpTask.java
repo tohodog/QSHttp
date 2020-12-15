@@ -197,12 +197,13 @@ public class OkHttpTask implements IHttpTask {
             else {
                 ResponseParams responseParams = new ResponseParams();
                 responseParams.setHeaders(response.headers().toMultimap());
-//                byte[] bytes = response.body().bytes();
-//                responseParams.setBytes(bytes);
-                String result = response.body().string();
+                Charset charset = Util.bomAwareCharset(response.body().source(), Charset.defaultCharset());
+                byte[] bytes = response.body().bytes();
+                responseParams.setBytes(bytes);
+                String result = new String(bytes, charset);
+                responseParams.setString(result);
                 int code = response.code();
                 response.body().close();
-                responseParams.setString(result);
                 throw HttpException.HttpCode(code, result).responseParams(responseParams);
             }
         } catch (SocketTimeoutException e) {

@@ -231,8 +231,10 @@ public class HttpURLConnectionTask implements IHttpTask {
             if (code < 200 || code >= 300) {
                 ResponseParams responseParams = new ResponseParams();
                 responseParams.setHeaders(conn.getHeaderFields());
-                String result = rh.readString(Utils.charset(conn.getHeaderField(HttpEnum.HEAD_KEY_CT)));
+                byte[] bytes = rh.readBytes();
+                String result = new String(bytes, Utils.charset(conn.getHeaderField(HttpEnum.HEAD_KEY_CT)));
                 responseParams.setString(result);
+                responseParams.setBytes(bytes);
                 throw HttpException.HttpCode(code, result).responseParams(responseParams);
             }
 
