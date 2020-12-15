@@ -71,9 +71,9 @@ public class MainActivity extends AppCompatActivity {
 
         QSHttp.get(url)
                 .param("name", "QSHttp")
-                .buildAndExecute(new QSHttpCallback<Bean>() {
+                .buildAndExecute(new QSHttpCallback<BeanModel>() {
                     @Override
-                    public void onComplete(Bean bean) {
+                    public void onComplete(BeanModel bean) {
 
                     }
                 });
@@ -211,11 +211,11 @@ public class MainActivity extends AppCompatActivity {
 
                 .param("userName", 123456)//键值对参数
                 .param("password", "asdfgh")//键值对参数
-                .param(new Bean())//键值对参数
+                .param(new BeanModel())//键值对参数
                 .param("bytes", new byte[1024])//传一个字节数组,multipart支持此参数
                 .param("file", new File("xx.jpg"))//传一个文件,multipart支持此参数
 
-                .jsonBody(new Bean())//传入一个对象,会自动转化为json上传;application/json
+                .jsonBody(new BeanModel())//传入一个对象,会自动转化为json上传;application/json
                 //自定义Body的内容 自定义contentType (postjson内部是调用这个实现)
                 .requestBody("image/jpeg", new File("xx.jpg"))
 
@@ -246,7 +246,7 @@ public class MainActivity extends AppCompatActivity {
                         response.headers();//获得响应头
 
                         //获得解析的模型
-                        Bean b = response.jsonModel(Bean.class);
+                        BeanModel b = response.jsonModel(BeanModel.class);
                     }
 
                     @Override
@@ -280,9 +280,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    Parser parser = new Parser<Bean>() {
+    Parser parser = new Parser<BeanModel>() {
         @Override
-        public Bean parser(String result) throws Exception {
+        public BeanModel parser(String result) throws Exception {
 
             return null;
         }
