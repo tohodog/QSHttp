@@ -29,7 +29,7 @@ allprojects {
 
 //app.gradle
 dependencies {
-    implementation 'com.github.tohodog:QSHttp:1.5.3'
+    implementation 'com.github.tohodog:QSHttp:1.5.4'
 }
 
 ```
@@ -250,14 +250,19 @@ public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
 
         //使用配置初始化,全局参数
         QSHttp.init(QSHttpConfig.Build(getApplication())
-                //配置需要签名的网站, 读取assets/cers文件夹里的证书
+                //请求host,智能拼接请求地址
+                .baseUrl("http://reol.top/api")
+
+                //配置需要签名的网站, 读取assets/cers文件夹里的.cer证书
                 //支持双向认证,只需放入xxx.bks,见demo
                 .ssl(Utils.getAssetsSocketFactory(this, "cers", "password")
-                        , "192.168.1.168")//host参数:设置需要自签名的主机地址,不设置则只能访问证书列表里的https网站
+                        , "192.168.1.168")//host参数:设置需要自签名的主机地址,不设置则只能访问.cer证书列表里的https网站
                 .hostnameVerifier(new TrustAllCerts.TrustAllHostnameVerifier())//证书信任规则(全信任)
+
                 .cacheSize(128 * 1024 * 1024)
                 .connectTimeout(18 * 1000)
                 .debug(true)//打印日记
+
                 //拦截器 全局添加头参数 鉴权
                 .interceptor(interceptor)
                 .build());
@@ -268,7 +273,7 @@ public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
                 public ResponseParams intercept(Chain chain) throws HttpException {
                     RequestParams r = chain.request()
                             .newBuild()
-                            .header("Interceptor", "Interceptor")//全局
+                            .header("Interceptor", "Interceptor")//全局头参数
                             //继续添加修改其他
                             .build();
                     return chain.proceed(r);//请求结果参数如有需要也可以进行修改
@@ -358,6 +363,10 @@ public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
                 });
 ```
 ## Log
+### v1.5.4(2020-12-15)
+  * 支持baseUrl
+  * 更新依赖
+  * 优化
 ### v1.5.3(2020-11-27)
   * 支持同步
   * 优化监听回调,url兼容性
@@ -367,28 +376,6 @@ public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
 ### v1.5.0(2019-12-19)
   * 支持多拦截器
   * 支持multipart数组上传
-### v1.4.4(2019-09-06)
-  * 非200状态码也会接受body数据
-  * 优化
-### v1.4.3(2019-07-18)
-  * 优化(泛型)
-### v1.4.2(2019-06-27)
-  * 优化(进度监听,泛型)
-### v1.4.1(2019-05-30)
-  * 增加PATCH,OPTIONS
-  * 优化泛型回调
-### v1.3.3(2019-04-16)
-  * 增加泛型回调,支持外部类是activity,fragment销毁时不回调
-### v1.3.1(2019-04-04)
-  * 可单独配置多个client
-  * 双向ssl优化
-### v1.3.0(2019-04-03)
-  * 支持双向认证
-  * 优化全局配置
-  * 支持自定义编码
-### v1.2.0(2019-03-27)
-  * 船新版本,使用更愉悦
-  * 支持自定义有效期缓存
 ## Other
   * 有问题请Add [issues](https://github.com/tohodog/QSHttp/issues)
   * 如果项目对你有帮助的话欢迎[![star][starsvg]][star]
@@ -399,9 +386,9 @@ public abstract class MyHttpCallback<T> extends QSHttpCallback<T> {
 [licensesvg]: https://img.shields.io/badge/License-Apache--2.0-red.svg
 [license]: https://raw.githubusercontent.com/tohodog/QSHttp/master/LICENSE
 
-[QSHttpsvg]: https://img.shields.io/badge/QSHttp-1.5.3-green.svg
+[QSHttpsvg]: https://img.shields.io/badge/QSHttp-1.5.4-green.svg
 [QSHttp]: https://github.com/tohodog/QSHttp
-[fastjsonsvg]: https://img.shields.io/badge/fastjson-1.1.71-blue.svg
+[fastjsonsvg]: https://img.shields.io/badge/fastjson-1.1.72-blue.svg
 [fastjson]: https://github.com/alibaba/fastjson
-[okhttpsvg]: https://img.shields.io/badge/okhttp3-3.14.7-orange.svg
+[okhttpsvg]: https://img.shields.io/badge/okhttp3-3.14.9-orange.svg
 [okhttp]: https://github.com/square/okhttp
