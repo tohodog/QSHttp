@@ -2,7 +2,7 @@ QSHttp
 ====
 [![QSHttp][QSHttpsvg]][QSHttp] [![fastjson][fastjsonsvg]][fastjson]  [![okhttp][okhttpsvg]][okhttp]  [![License][licensesvg]][license]
 
-开箱即用,GET,POST,表单,JSON,上传,下载等等统统同一行代码搞定! One Code Man!  
+开箱即用,GET,POST,表单,JSON,上传,下载等等统统同一行代码搞定!  
 AIP精简到极致,调用没有一行多余代码,几乎零成本使用,大道至简
 <br>
   * 5年实战环境验证迭代,稳定可靠
@@ -60,7 +60,7 @@ https://api.reol.top/api_test
                 .buildAndExecute(new QSHttpCallback<BaseModel<User>>() {
                     @Override
                     public void onComplete(BaseModel<User> bean) {
-                        //请求解析成功,执行业务逻辑,BaseModel是接口返回数据通用模型,如status,msg和泛型data
+                        //请求解析成功,执行业务逻辑,BaseModel是接口返回数据通用模型
                     }
                     
                     //@Override//需要处理失败可覆盖
@@ -68,6 +68,13 @@ https://api.reol.top/api_test
                     //    e.show();
                     //}
                 });
+
+
+        public class BeanModel<M> {
+            public int status;
+            public String msg;
+            public M data;
+        }
 ```
 
 
