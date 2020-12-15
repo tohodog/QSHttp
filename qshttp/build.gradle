@@ -6,8 +6,8 @@ android {
         minSdkVersion 9
         targetSdkVersion
         compileSdkVersion 28
-        versionCode 15
-        versionName "1.5.3"
+        versionCode 16
+        versionName "1.5.4"
     }
     buildTypes {
         release {
@@ -35,7 +35,7 @@ android {
 dependencies {
     //compile fileTree(dir: 'libs', include: ['*.jar'])
 
-    api 'com.alibaba:fastjson:1.1.71.android'
-    api 'com.squareup.okhttp3:okhttp:3.14.7'
+    api 'com.alibaba:fastjson:1.1.72.android'
+    api 'com.squareup.okhttp3:okhttp:3.14.9'
 }
 //apply from: '../gradle/maven_push.gradle'
