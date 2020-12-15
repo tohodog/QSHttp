@@ -4,11 +4,11 @@ import android.os.Build;
 
 import org.song.http.framework.HttpEnum;
 import org.song.http.framework.HttpException;
-import org.song.http.framework.ability.IHttpProgress;
-import org.song.http.framework.ability.IHttpTask;
 import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.RequestParams;
 import org.song.http.framework.ResponseParams;
+import org.song.http.framework.ability.IHttpProgress;
+import org.song.http.framework.ability.IHttpTask;
 import org.song.http.framework.util.Utils;
 
 import java.io.File;
@@ -115,10 +115,7 @@ public class HttpURLConnectionTask implements IHttpTask {
             conn.setUseCaches(false);
 
             conn.setRequestProperty("Connection", "keep-alive");
-            if (head == null)
-                head = new HashMap<>();
-            if (!head.containsKey("User-Agent") && !head.containsKey("user-agent"))
-                head.put("User-Agent", "Android/JavaHttpClient/QSHttp");
+            if (head == null) head = new HashMap<>();
             for (Map.Entry<String, String> entry : head.entrySet())
                 conn.setRequestProperty(entry.getKey(), entry.getValue());
 
@@ -232,8 +229,13 @@ public class HttpURLConnectionTask implements IHttpTask {
             ReadHelp rh = new ReadHelp(in, hp, contentLen);
             //状态码出错
             if (code < 200 || code >= 300) {
-                throw HttpException.HttpCode(code, rh.readString(
-                        Utils.charset(conn.getHeaderField(HttpEnum.HEAD_KEY_CT))));
+                ResponseParams responseParams = new ResponseParams();
+                responseParams.setHeaders(conn.getHeaderFields());
+                byte[] bytes = rh.readBytes();
+                String result = new String(bytes, Utils.charset(conn.getHeaderField(HttpEnum.HEAD_KEY_CT)));
+                responseParams.setString(result);
+                responseParams.setBytes(bytes);
+                throw HttpException.HttpCode(code, result).responseParams(responseParams);
             }
 
             ResponseParams response = new ResponseParams();

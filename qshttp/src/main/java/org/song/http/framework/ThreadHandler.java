@@ -127,10 +127,10 @@ public class ThreadHandler extends Handler {
         Message msg = Message.obtain();
         msg.what = obj.requestID();
         msg.arg1 = HttpEnum.HTTP_FAILURE;
-        Exception e = obj.exception();
-        if (!(e instanceof HttpException))
-            e = HttpException.Run(e);
-        msg.obj = ((HttpException) e).responseParams(obj);
+        HttpException e = obj.exception();
+        if (e == null) e = HttpException.Run(new NullPointerException());
+        e.responseParams(obj);
+        msg.obj = e;
         if (sync)
             getInstance().handleMessage(msg);
         else

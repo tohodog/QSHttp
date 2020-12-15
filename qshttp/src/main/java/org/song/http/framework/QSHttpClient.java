@@ -59,7 +59,7 @@ public class QSHttpClient {
             public void run() {
                 threadLocal.set(request);
                 long time = System.currentTimeMillis();
-                ResponseParams response;
+                ResponseParams response = null;
                 final HttpProgress hp = isProgress ? new HttpProgress(mThreadWhat) : null;
                 try {
                     //拦截器
@@ -67,8 +67,16 @@ public class QSHttpClient {
                     response.setSuccess(true);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    response = new ResponseParams();
-                    response.setException(e);
+                    HttpException httpException;
+                    if (e instanceof HttpException) {
+                        httpException = (HttpException) e;
+                        response = ((HttpException) e).responseParams();
+                    } else {
+                        httpException = HttpException.Run(e);
+                    }
+                    if (response == null)
+                        response = new ResponseParams();
+                    response.setException(httpException);
                     response.setSuccess(false);
                 }
                 //获取最新请求参数,拦截器里可能修改了
@@ -194,4 +202,7 @@ public class QSHttpClient {
 
     }
 
+    public QSHttpConfig getQsHttpConfig() {
+        return qsHttpConfig;
+    }
 }

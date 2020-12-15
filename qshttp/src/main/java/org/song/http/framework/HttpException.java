@@ -22,7 +22,7 @@ public class HttpException extends Exception {
 
     private final int type;//异常类型
 
-    private ResponseParams responseParams;//此次请求的参数
+    private ResponseParams responseParams;//此次请求的响应参数
     private int httpStatusCode;//http错误状态码
     private Object exObject;//额外参数
 

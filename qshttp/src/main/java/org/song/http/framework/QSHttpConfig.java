@@ -24,6 +24,8 @@ public class QSHttpConfig {
     private Application application;
     private HttpEnum.XX_Http xxHttp;
     private String cachePath;
+    private String baseUrl;
+
     private List<Interceptor> interceptorList;
 
     private SSLSocketFactory sslSocketFactory;
@@ -57,6 +59,10 @@ public class QSHttpConfig {
 
     public List<Interceptor> interceptorList() {
         return interceptorList;
+    }
+
+    public String baseUrl() {
+        return baseUrl;
     }
 
     public String[] sslHost() {
@@ -118,6 +124,8 @@ public class QSHttpConfig {
         private Application application;
         private HttpEnum.XX_Http xxHttp = HttpEnum.XX_Http.OK_HTTP;//
         private String cachePath;
+        private String baseUrl;
+
         private List<Interceptor> interceptorList;
 
         private SSLSocketFactory sslSocketFactory;
@@ -155,6 +163,8 @@ public class QSHttpConfig {
             qsHttpConfig.readTimeout = readTimeout;
             qsHttpConfig.writeTimeout = writeTimeout;
             qsHttpConfig.progressCallbackSpace = progressCallbackSpace;
+            qsHttpConfig.baseUrl = baseUrl;
+
             return qsHttpConfig;
         }
 
@@ -234,6 +244,11 @@ public class QSHttpConfig {
 //            this.cachePath = cachePath;
 //            return this;
 //        }
+
+        public Builder baseUrl(String baseUrl) {
+            this.baseUrl = baseUrl;
+            return this;
+        }
 
         public Builder connectTimeout(int connectTimeout) {
             this.connectTimeout = connectTimeout;

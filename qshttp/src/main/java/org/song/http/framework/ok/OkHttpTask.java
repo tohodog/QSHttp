@@ -5,14 +5,14 @@ import android.util.Log;
 
 import org.song.http.framework.HttpEnum;
 import org.song.http.framework.HttpException;
-import org.song.http.framework.ability.IHttpProgress;
-import org.song.http.framework.ability.IHttpTask;
 import org.song.http.framework.QSHttpConfig;
 import org.song.http.framework.QSHttpManage;
 import org.song.http.framework.RequestParams;
 import org.song.http.framework.ResponseParams;
-import org.song.http.framework.util.Utils;
+import org.song.http.framework.ability.IHttpProgress;
+import org.song.http.framework.ability.IHttpTask;
 import org.song.http.framework.ok.cookie.CookieManage;
+import org.song.http.framework.util.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -195,10 +195,16 @@ public class OkHttpTask implements IHttpTask {
             if (response.isSuccessful())
                 return response;
             else {
-                String result = response.body().string();
+                ResponseParams responseParams = new ResponseParams();
+                responseParams.setHeaders(response.headers().toMultimap());
+                Charset charset = Util.bomAwareCharset(response.body().source(), Charset.defaultCharset());
+                byte[] bytes = response.body().bytes();
+                responseParams.setBytes(bytes);
+                String result = new String(bytes, charset);
+                responseParams.setString(result);
                 int code = response.code();
                 response.body().close();
-                throw HttpException.HttpCode(code, result);
+                throw HttpException.HttpCode(code, result).responseParams(responseParams);
             }
         } catch (SocketTimeoutException e) {
             throw HttpException.HttpTimeOut(e);
@@ -263,10 +269,7 @@ public class OkHttpTask implements IHttpTask {
      * @return Headers
      */
     private Headers getHeaders(Map<String, String> headers) {
-        if (headers == null)
-            headers = new HashMap<>();
-        if (!headers.containsKey("User-Agent") && !headers.containsKey("user-agent"))
-            headers.put("User-Agent", "Android/OkHttpClient/QSHttp");
+        if (headers == null) headers = new HashMap<>();
         return Headers.of(headers);
     }
 

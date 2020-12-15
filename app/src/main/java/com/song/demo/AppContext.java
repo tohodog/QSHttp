@@ -30,6 +30,7 @@ public class AppContext extends Application {
     private void init() {
 
         QSHttp.init(QSHttpConfig.Build(this)
+                .baseUrl(API.HOST)
                 .interceptor(new QSInterceptor())
                 .interceptor(new QSInterceptor2())
                 .build());

@@ -5,6 +5,7 @@ import android.util.Log;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import org.song.http.BuildConfig;
 import org.song.http.framework.ability.HttpCallback;
 import org.song.http.framework.ability.HttpFutureCallback;
 import org.song.http.framework.ability.Parser;
@@ -236,7 +237,7 @@ public class RequestParams {
 
         private String url;
         private RequestBody requestBody;
-        private Map<String, String> headers;
+        private Map<String, String> headers = new HashMap<>();
         private Map<String, Object> params;
         private List<String> pathParams;
         private Map<String, RequestBody> multipartBody;
@@ -262,15 +263,34 @@ public class RequestParams {
         private boolean toMultiBodyFlag;
 
         public Builder(String url) {
+            if (url == null) url = "";
             this.url = url;
         }
 
         public RequestParams build() {
-            if (toJsonBodyFlag & requestBody == null) {
+            if (toJsonBodyFlag && requestBody == null) {
                 jsonBody(params);
             } else if (toMultiBodyFlag) {
                 multipartBody(params);
             }
+
+            String base = QSHttpManage.getQSHttpClient(qsClient).getQsHttpConfig().baseUrl();
+            if (base != null && !url.startsWith("http")) {
+                int size = 0;
+                if (!base.isEmpty() && base.charAt(base.length() - 1) == '/') size++;
+                if (!url.isEmpty() && url.charAt(0) == '/') size++;
+                if (size == 0) {
+                    url = base + '/' + url;
+                } else if (size == 1) {
+                    url = base + url;
+                } else {
+                    url = base + url.substring(1);
+                }
+            }
+            if (!headers.containsKey("User-Agent") && !headers.containsKey("user-agent")) {
+                header("User-Agent", System.getProperty("http.agent") + " QSHttp/" + BuildConfig.VERSION_NAME);
+            }
+
             RequestParams requestParams = new RequestParams();
             requestParams.charset = charset;
             requestParams.url = url;
@@ -671,6 +691,7 @@ public class RequestParams {
         public String toString() {
             return "{ " + "ContentType:" + contentType + "; filename:" + filename + "; Content:" + content + " }";
         }
+
     }
 
     //
@@ -680,7 +701,7 @@ public class RequestParams {
         else {
             QSHttpClient qsHttpClient = QSHttpManage.getQSHttpClient(qsClient);
             if (qsHttpClient == null) {
-                Log.e(Utils.TAG, "can't find clint:" + qsClient);
+                Log.e(Utils.TAG, "can't find client:" + qsClient);
                 return -1;
             }
             return qsHttpClient.execute(this, cb);
