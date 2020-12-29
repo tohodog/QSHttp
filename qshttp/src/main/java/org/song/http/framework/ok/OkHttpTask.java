@@ -32,6 +32,7 @@ import javax.net.ssl.SSLSocketFactory;
 import okhttp3.Cache;
 import okhttp3.CacheControl;
 import okhttp3.Call;
+import okhttp3.FormBody;
 import okhttp3.FormBody2;
 import okhttp3.Headers;
 import okhttp3.Interceptor;
@@ -97,7 +98,7 @@ public class OkHttpTask implements IHttpTask {
 
     @Override
     public ResponseParams P_BODY(RequestParams params, IHttpProgress hp) throws HttpException {
-        RequestBody requestBody = buildRequestBody(params.requestBody().getContentType(), params.requestBody().getContent());
+        RequestBody requestBody = buildRequestBody(params.requestBody().getContentType(), params.requestBody().getContent(), params.requestBody().getCharset());
         if (hp != null)
             requestBody = new RequestBodyProgress(requestBody, hp);
         Request request = getRequest(params, requestBody);
@@ -197,7 +198,7 @@ public class OkHttpTask implements IHttpTask {
             else {
                 ResponseParams responseParams = new ResponseParams();
                 responseParams.setHeaders(response.headers().toMultimap());
-                Charset charset = Util.bomAwareCharset(response.body().source(), Charset.defaultCharset());
+                String charset = Utils.charsetName(response.header(HttpEnum.HEAD_KEY_CT, ""));
                 byte[] bytes = response.body().bytes();
                 responseParams.setBytes(bytes);
                 String result = new String(bytes, charset);
@@ -276,18 +277,19 @@ public class OkHttpTask implements IHttpTask {
     /**
      * 基本post一个内容的表单
      *
-     * @param content     一个json 视频 图片等
      * @param contentType Content-Type
+     * @param content     一个json 视频 图片等
+     * @param charset
      * @return RequestBody
      */
-    private RequestBody buildRequestBody(String contentType, Object content) {
+    private RequestBody buildRequestBody(String contentType, Object content, String charset) {
         RequestBody requestBody;
         if (content instanceof File)
             requestBody = RequestBody.create(MediaType.parse(contentType), (File) content);
         else if (content instanceof byte[])
             requestBody = RequestBody.create(MediaType.parse(contentType), (byte[]) content);
         else if (content != null)
-            requestBody = RequestBody.create(MediaType.parse(contentType), content.toString());
+            requestBody = RequestBody.create(MediaType.parse(contentType), content.toString().getBytes(Charset.forName(charset)));
         else
             requestBody = RequestBody.create(MediaType.parse(contentType), new byte[0]);
         return requestBody;
@@ -300,14 +302,27 @@ public class OkHttpTask implements IHttpTask {
      * @param values 参数
      * @return FormBody
      */
-    private FormBody2 buildFormBody(Map<String, Object> values, String charset) {
-        FormBody2.Builder builder = new FormBody2.Builder(Charset.forName(charset));
-        if (values != null) {
-            for (Map.Entry<String, ?> entry : values.entrySet()) {
-                builder.add(entry.getKey(), String.valueOf(entry.getValue()));
+    private RequestBody buildFormBody(Map<String, Object> values, String charset) {
+        RequestBody requestBody;
+        if (FormBody2.formbodyCharset) {
+            //自定义编码
+            FormBody2.Builder builder = new FormBody2.Builder(charset);
+            if (values != null) {
+                for (Map.Entry<String, ?> entry : values.entrySet()) {
+                    builder.add(entry.getKey(), String.valueOf(entry.getValue()));
+                }
             }
+            requestBody = builder.build();
+        } else {
+            FormBody.Builder builder = new FormBody.Builder();
+            if (values != null) {
+                for (Map.Entry<String, ?> entry : values.entrySet()) {
+                    builder.add(entry.getKey(), String.valueOf(entry.getValue()));
+                }
+            }
+            requestBody = builder.build();
         }
-        return builder.build();
+        return requestBody;
     }
 
 
@@ -333,7 +348,7 @@ public class OkHttpTask implements IHttpTask {
         if (content != null) {
             for (Map.Entry<String, RequestParams.RequestBody> entry : content.entrySet()) {
                 RequestParams.RequestBody body = entry.getValue();
-                RequestBody requestBody = buildRequestBody(body.getContentType(), body.getContent());
+                RequestBody requestBody = buildRequestBody(body.getContentType(), body.getContent(), body.getCharset());
                 if (hp != null)
                     requestBody = new RequestBodyProgress(requestBody, hp, entry.getKey());
                 builder.addFormDataPart(entry.getKey(), body.getFilename(), requestBody);

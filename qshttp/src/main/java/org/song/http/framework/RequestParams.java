@@ -85,6 +85,10 @@ public class RequestParams {
         return params;
     }
 
+    public List<String> pathParams() {
+        return pathParams;
+    }
+
     public Map<String, RequestBody> multipartBody() {
         return multipartBody;
     }
@@ -540,7 +544,7 @@ public class RequestParams {
         public RequestParams.Builder multipartBody(String key, String contentType, String filename, Object value) {
             toMultiBody();
             //new String(key)才能保证不同地址,key不重复
-            multipartBody.put(key, new RequestBody(contentType, filename, value));
+            multipartBody.put(new String(key), new RequestBody(contentType, filename, value));
             return this;
         }
 

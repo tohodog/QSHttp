@@ -65,7 +65,7 @@ public class QSHttpClient {
                     //拦截器
                     response = runInterceptor(0, threadLocal, hp);
                     response.setSuccess(true);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     e.printStackTrace();
                     HttpException httpException;
                     if (e instanceof HttpException) {

@@ -25,6 +25,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.security.KeyStore;
@@ -230,6 +231,16 @@ public class Utils {
         try {
             if (TextUtils.isEmpty(charset)) charset = HttpEnum.CHARSET_UTF8;
             value = URLEncoder.encode(value, charset);// 中文转化为网址格式（%xx%xx
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return value;
+    }
+
+    public static String URLDecoder(String value, String charset) {
+        try {
+            if (TextUtils.isEmpty(charset)) charset = HttpEnum.CHARSET_UTF8;
+            value = URLDecoder.decode(value, charset);// 网址格式（%xx%xx转化为中文
         } catch (UnsupportedEncodingException e) {
             e.printStackTrace();
         }

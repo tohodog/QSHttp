@@ -26,7 +26,7 @@ public class HttpException extends Exception {
     private int httpStatusCode;//http错误状态码
     private Object exObject;//额外参数
 
-    private HttpException(int type, Exception e) {
+    private HttpException(int type, Throwable e) {
         super(e);
         this.type = type;
     }
@@ -57,7 +57,7 @@ public class HttpException extends Exception {
         return new HttpException(TYPE_IO, e);
     }
 
-    public static HttpException Run(Exception e) {
+    public static HttpException Run(Throwable e) {
         return new HttpException(TYPE_RUN, e);
     }
 

@@ -16,18 +16,16 @@
 package okhttp3;
 
 import org.song.http.framework.HttpEnum;
+import org.song.http.framework.util.Utils;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
-import okhttp3.internal.Util;
 import okio.Buffer;
 import okio.BufferedSink;
-
-import static okhttp3.HttpUrl.FORM_ENCODE_SET;
-import static okhttp3.HttpUrl.percentDecode;
 
 /**
  * okhttp写死了CONTENT_TYPE
@@ -35,13 +33,20 @@ import static okhttp3.HttpUrl.percentDecode;
  */
 public final class FormBody2 extends RequestBody {
 
+    /**
+     * 如果post form需要自定义编码,把这个设置为true
+     */
+    public static boolean formbodyCharset = false;
+
     private final MediaType CONTENT_TYPE;
     private final List<String> encodedNames;
     private final List<String> encodedValues;
+    private final String charset;
 
     private FormBody2(List<String> encodedNames, List<String> encodedValues, String charset) {
-        this.encodedNames = Util.immutableList(encodedNames);
-        this.encodedValues = Util.immutableList(encodedValues);
+        this.encodedNames = Collections.unmodifiableList(encodedNames);
+        this.encodedValues = Collections.unmodifiableList(encodedValues);
+        this.charset = charset;
         this.CONTENT_TYPE = MediaType.parse(HttpEnum.CONTENT_TYPE_URL_ + charset);
     }
 
@@ -57,7 +62,7 @@ public final class FormBody2 extends RequestBody {
     }
 
     public String name(int index) {
-        return percentDecode(encodedName(index), true);
+        return Utils.URLDecoder(encodedName(index), charset);
     }
 
     public String encodedValue(int index) {
@@ -65,7 +70,7 @@ public final class FormBody2 extends RequestBody {
     }
 
     public String value(int index) {
-        return percentDecode(encodedValue(index), true);
+        return Utils.URLDecoder(encodedValue(index), charset);
     }
 
     @Override
@@ -117,13 +122,13 @@ public final class FormBody2 extends RequestBody {
     public static final class Builder {
         private final List<String> names = new ArrayList<>();
         private final List<String> values = new ArrayList<>();
-        private final Charset charset;
+        private final String charset;
 
         public Builder() {
-            this(Charset.defaultCharset());
+            this.charset = Charset.defaultCharset().name();
         }
 
-        public Builder(Charset charset) {
+        public Builder(String charset) {
             this.charset = charset;
         }
 
@@ -131,8 +136,8 @@ public final class FormBody2 extends RequestBody {
             if (name == null) throw new NullPointerException("name == null");
             if (value == null) throw new NullPointerException("value == null");
 
-            names.add(HttpUrl.canonicalize(name, FORM_ENCODE_SET, false, false, true, true, charset));
-            values.add(HttpUrl.canonicalize(value, FORM_ENCODE_SET, false, false, true, true, charset));
+            names.add(Utils.URLEncoder(name, charset));
+            values.add(Utils.URLEncoder(value, charset));
             return this;
         }
 
@@ -140,13 +145,13 @@ public final class FormBody2 extends RequestBody {
             if (name == null) throw new NullPointerException("name == null");
             if (value == null) throw new NullPointerException("value == null");
 
-            names.add(HttpUrl.canonicalize(name, FORM_ENCODE_SET, true, false, true, true, charset));
-            values.add(HttpUrl.canonicalize(value, FORM_ENCODE_SET, true, false, true, true, charset));
+            names.add(name);
+            values.add(value);
             return this;
         }
 
         public FormBody2 build() {
-            return new FormBody2(names, values, charset.name());
+            return new FormBody2(names, values, charset);
         }
     }
 }
