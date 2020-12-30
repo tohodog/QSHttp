@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
 /*
  * Created by song on 2016/9/18.
  * 中枢类 开线程 联网 解析 缓存 进度、结果回调主线程
- * 需要子类提供具体联网实现
+ * 需要提供IHttpTask具体联网实现
  * 联网模块可更换
  */
 public class QSHttpClient {
@@ -200,6 +200,10 @@ public class QSHttpClient {
             //Log.e("HTTP_PROGRESS", var1 + "/" + var2 + " " + var1 * 100 / var2 + "%");
         }
 
+    }
+
+    public IHttpTask getHttpTask() {
+        return iHttpTask;
     }
 
     public QSHttpConfig getQsHttpConfig() {

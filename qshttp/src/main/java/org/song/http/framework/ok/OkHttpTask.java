@@ -42,7 +42,6 @@ import okhttp3.OkHttpClient;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
-import okhttp3.internal.Util;
 import okio.Okio;
 
 /**
@@ -165,7 +164,7 @@ public class OkHttpTask implements IHttpTask {
                 break;
             case OPTIONS:
                 builder.url(params.urlEncode());
-                builder.method("OPTIONS", Util.EMPTY_REQUEST);
+                builder.method("OPTIONS", RequestBody.create(null, new byte[0]));
                 break;
         }
         builder.headers(getHeaders(params.headers()));
