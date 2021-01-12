@@ -69,6 +69,10 @@ public class HttpException extends Exception {
         return Custom(e).setExObject(o);
     }
 
+    public static HttpException Custom(Throwable e) {
+        return new HttpException(TYPE_CUSTOM, e);
+    }
+
 
     private HttpException setExObject(Object exObject) {
         this.exObject = exObject;
@@ -101,7 +105,7 @@ public class HttpException extends Exception {
                 case TYPE_IO:
                     return "IO异常";
                 case TYPE_RUN:
-                    return "请求结果运行异常";
+                    return "QSHttp框架运行异常";
             }
         } else {
             switch (type) {
@@ -121,7 +125,7 @@ public class HttpException extends Exception {
                 case TYPE_IO:
                     return "IO exception";
                 case TYPE_RUN:
-                    return "Run error";
+                    return "QSHttp Run error";
             }
         }
         return "Power by github.com/tohodog";

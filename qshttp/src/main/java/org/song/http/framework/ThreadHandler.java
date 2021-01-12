@@ -66,7 +66,7 @@ public class ThreadHandler extends Handler {
                     cb.onSuccess(responseParams);
                 } catch (Exception e) {
                     e.printStackTrace();
-                    cb.onFailure(HttpException.Run(e).responseParams(responseParams));
+                    cb.onFailure(HttpException.Custom(e).responseParams(responseParams));
                 }
                 if (cb instanceof HttpCallbackEx)
                     ((HttpCallbackEx) cb).onEnd();
