@@ -153,6 +153,7 @@ public class Utils {
     public static void Log(RequestParams request, ResponseParams response, long time) {
         String requestLog = requestLog(request);
         String responseLog = responseLog(response);
+        if (requestLog.length() > 2048) requestLog = requestLog.substring(0, 2048) + "...";
         String log = requestLog + "\nResponse[" + time + "ms]-> ↓↓↓ \n" + responseLog + "\n ";
         Log.d(TAG, log);
     }

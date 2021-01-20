@@ -494,7 +494,7 @@ public class RequestParams {
          * post/put 一个json body
          */
         public RequestParams.Builder jsonBody(Object object) {
-            String json = "{}";
+            String json = "";
             if (object != null) {
                 if (object instanceof org.json.JSONObject) {
                     json = object.toString();
