@@ -37,7 +37,7 @@ public class RequestParams {
     private RequestBody requestBody;//自定义post/put内容
     private Map<String, RequestBody> multipartBody;//上传内容参数
     private String multipartType;
-    private int bodyType;//0.键值对urlencode 1.requestBody 2.multiBody
+    private int paramToWhat;
 
     private Object tag;//标记
     private String qsClient;
@@ -125,8 +125,8 @@ public class RequestParams {
         return cacheTime;
     }
 
-    public int bodyType() {
-        return bodyType;
+    public int paramToWhat() {
+        return paramToWhat;
     }
 
     public String downloadPath() {
@@ -141,7 +141,7 @@ public class RequestParams {
         StringBuilder sbUrl = new StringBuilder();
         sbUrl.append(urlAndPath());
 
-        if (params != null) {
+        if (params != null && !params.isEmpty()) {
             String page = "";
             int pageIndex = sbUrl.lastIndexOf("#");
             if (pageIndex > 0) {
@@ -176,16 +176,19 @@ public class RequestParams {
         if (pathParams != null) {
             StringBuilder sbUrl = new StringBuilder(url);
             String page = "";
+            //截取url自带参数
             int pageIndex = sbUrl.lastIndexOf("?");
             int pageIndex2 = sbUrl.lastIndexOf("#");
-
-            if (pageIndex > 0) {
-                page = sbUrl.substring(pageIndex);
-                sbUrl.delete(pageIndex, sbUrl.length());
-            } else if (pageIndex2 > 0) {
-                page = sbUrl.substring(pageIndex2);
-                sbUrl.delete(pageIndex2, sbUrl.length());
+            int max = Math.max(pageIndex, pageIndex2);
+            int min = Math.min(pageIndex, pageIndex2);
+            if (min > -1) {//说明?#都有包含
+                page = sbUrl.substring(min);
+                sbUrl.delete(min, sbUrl.length());
+            } else if (max > -1) {//说明包含了一个
+                page = sbUrl.substring(max);
+                sbUrl.delete(max, sbUrl.length());
             }
+
             if (sbUrl.charAt(sbUrl.length() - 1) == '/') sbUrl.deleteCharAt(sbUrl.length() - 1);
             for (String value : pathParams) {
                 value = Utils.URLEncoder(value, charset);
@@ -227,7 +230,7 @@ public class RequestParams {
         builder.cacheTime = cacheTime;
         builder.timeOut = timeOut;
 
-        builder.bodyType = bodyType;
+        builder.paramToWhat = paramToWhat;
         return builder;
     }
 
@@ -246,7 +249,9 @@ public class RequestParams {
         private List<String> pathParams;
         private Map<String, RequestBody> multipartBody;
         private String multipartType;
-        private int bodyType;//0.键值对urlencode 1.requestBody 2.multiBody
+
+        //params参数在build()时要转成啥
+        private int paramToWhat;//0默认  1.jsonBody 2.multiBody 3.拼接在url
 
         private Object tag;//标记
 
@@ -263,8 +268,6 @@ public class RequestParams {
         private int cacheTime;//手动缓存 设置有效时间 [非服务器给的缓存配置 功能待定
         private int timeOut;// 超时ms
 
-        private boolean toJsonBodyFlag;
-        private boolean toMultiBodyFlag;
 
         public Builder(String url) {
             if (url == null) url = "";
@@ -272,10 +275,11 @@ public class RequestParams {
         }
 
         public RequestParams build() {
-            if (toJsonBodyFlag && requestBody == null) {
+            if (paramToWhat == 1) {
                 jsonBody(params);
-            } else if (toMultiBodyFlag) {
+            } else if (paramToWhat == 2) {
                 multipartBody(params);
+            } else if (paramToWhat == 3) {
             }
 
             String base = QSHttpManage.getQSHttpClient(qsClient).getQsHttpConfig().baseUrl();
@@ -318,7 +322,7 @@ public class RequestParams {
             requestParams.downloadPath = downloadPath;
             requestParams.timeOut = timeOut;
 
-            requestParams.bodyType = bodyType;
+            requestParams.paramToWhat = paramToWhat;
             return requestParams;
         }
 
@@ -454,6 +458,18 @@ public class RequestParams {
         }
 
         /**
+         * 键值对参数可以重复(string file byte[])
+         */
+        public RequestParams.Builder supportMultiKey() {
+            if (params == null)
+                params = new IdentityHashMap<>();
+            else
+                params = new IdentityHashMap<>(params);
+            return this;
+        }
+
+
+        /**
          * 请求键值对参数
          */
         public RequestParams.Builder param(Object object) {
@@ -486,7 +502,7 @@ public class RequestParams {
          * 把 params 转为一个json参数
          */
         public RequestParams.Builder toJsonBody() {
-            toJsonBodyFlag = true;
+            paramToWhat = 1;
             return this;
         }
 
@@ -513,7 +529,7 @@ public class RequestParams {
          */
         public RequestParams.Builder requestBody(String contentType, Object content) {
             requestBody = new RequestBody(contentType, content);
-            bodyType = 1;
+            paramToWhat = 1;
             return this;
         }
 
@@ -530,11 +546,10 @@ public class RequestParams {
          * 把 params 转为multipartBody参数
          */
         public RequestParams.Builder toMultiBody(String multipartType) {
-            toMultiBodyFlag = true;
             this.multipartType = multipartType;
             if (multipartBody == null)
                 multipartBody = new IdentityHashMap<>();//支持重复key,内存地址要不一样
-            bodyType = 2;
+            paramToWhat = 2;
             return this;
         }
 
@@ -544,7 +559,7 @@ public class RequestParams {
         public RequestParams.Builder multipartBody(String key, String contentType, String filename, Object value) {
             toMultiBody();
             //new String(key)才能保证不同地址,key不重复
-            multipartBody.put(new String(key), new RequestBody(contentType, filename, value));
+            multipartBody.put(key, new RequestBody(contentType, filename, value));
             return this;
         }
 
