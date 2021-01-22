@@ -16,6 +16,7 @@ public class QSInterceptor implements Interceptor {
 
         RequestParams newRequestParams = chain.request()
                 .newBuild()
+                .param("hhhh", "哼哼哈嘿")
                 .header("QSInterceptor", "QSInterceptor")
                 //继续添加修改其他
                 .build();
