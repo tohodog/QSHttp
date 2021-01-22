@@ -529,7 +529,6 @@ public class RequestParams {
          */
         public RequestParams.Builder requestBody(String contentType, Object content) {
             requestBody = new RequestBody(contentType, content);
-            paramToWhat = 1;
             return this;
         }
 
