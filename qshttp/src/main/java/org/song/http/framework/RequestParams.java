@@ -12,6 +12,7 @@ import org.song.http.framework.ability.Parser;
 import org.song.http.framework.util.Utils;
 
 import java.io.File;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -48,6 +49,7 @@ public class RequestParams {
     private HttpEnum.CacheMode cacheMode;//服务器设置了缓存时的控制
 
     private String downloadPath;//下载文件路径
+    private OutputStream outputStream;//下载文件输出流
     private Class<?> _class;//自动解析需要的模型
     private Parser parser;//手动解析需要的实现类
 
@@ -131,6 +133,10 @@ public class RequestParams {
 
     public String downloadPath() {
         return downloadPath;
+    }
+
+    public OutputStream outputStream() {
+        return outputStream;
     }
 
 
@@ -227,6 +233,7 @@ public class RequestParams {
         builder._class = _class;
         builder.parser = parser;
         builder.downloadPath = downloadPath;
+        builder.outputStream = outputStream;
         builder.cacheTime = cacheTime;
         builder.timeOut = timeOut;
 
@@ -263,6 +270,7 @@ public class RequestParams {
         private Class<?> _class;//自动解析需要的模型
         private Parser parser;
         private String downloadPath;
+        private OutputStream outputStream;//下载文件输出流
         private String qsClient;
 
         private int cacheTime;//手动缓存 设置有效时间 [非服务器给的缓存配置 功能待定
@@ -320,6 +328,7 @@ public class RequestParams {
             requestParams.parser = parser;
             requestParams.cacheTime = cacheTime;
             requestParams.downloadPath = downloadPath;
+            requestParams.outputStream = outputStream;
             requestParams.timeOut = timeOut;
 
             requestParams.paramToWhat = paramToWhat;
@@ -357,13 +366,18 @@ public class RequestParams {
             return this;
         }
 
-        public RequestParams.Builder resultByBytes() {
+        public RequestParams.Builder resultToBytes() {
             return resultType(HttpEnum.ResultType.BYTES);
         }
 
-        public RequestParams.Builder resultByFile(String downloadPath) {
+        public RequestParams.Builder resultToFile(String downloadPath) {
             this.downloadPath = downloadPath;
             return resultType(HttpEnum.ResultType.FILE);
+        }
+
+        public RequestParams.Builder resultToStream(OutputStream outputStream) {
+            this.outputStream = outputStream;
+            return resultType(HttpEnum.ResultType.STREAM);
         }
 
         /**

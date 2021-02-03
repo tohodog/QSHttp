@@ -21,6 +21,7 @@ import org.song.http.framework.ability.HttpCallbackProgress;
 import org.song.http.framework.ability.Parser;
 import org.song.http.framework.util.QSHttpCallback;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.util.concurrent.ExecutionException;
 
@@ -147,7 +148,9 @@ public class MainActivity extends AppCompatActivity {
 
     //文件下载
     public void downGET(String url) {
+        ByteArrayOutputStream o = new ByteArrayOutputStream();
         QSHttp.download(url, getExternalCacheDir().getPath() + "/http.txt")
+//                .resultToStream(o)
                 .buildAndExecute(new HttpCallbackProgress() {
                     @Override
                     public void onProgress(long var1, long var2, String var3) {
@@ -156,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
 
                     @Override
                     public void onSuccess(ResponseParams response) {
-                        tv.append(response.requestParams().url() + "成功down\n");
+                        tv.append(response.requestParams().url() + "成功down" + o.size() + "\n");
                     }
 
                     @Override
@@ -220,8 +223,8 @@ public class MainActivity extends AppCompatActivity {
                 .requestBody("image/jpeg", new File("xx.jpg"))
 
                 .parser(parser)//自定义解析,由自己写解析逻辑
-                .resultByBytes()//请求结果返回一个字节组 默认是返回字符
-                .resultByFile(".../1.txt")//本地路径 有此参数 请求的内容将被写入文件
+                .resultToBytes()//请求结果返回一个字节组 默认是返回字符
+                .resultToFile(".../1.txt")//本地路径 有此参数 请求的内容将被写入文件
 
                 .errCache()//开启这个 [联网失败]会使用缓存,如果有的话
                 .timeOut(10 * 1000)//单独设置超时

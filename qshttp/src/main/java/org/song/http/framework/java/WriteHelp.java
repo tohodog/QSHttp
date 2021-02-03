@@ -44,7 +44,7 @@ public class WriteHelp {
     public void writeBytes(byte[] bytes) throws IOException {
         int offset = 0, all = bytes.length;
         while (offset < all) {
-            int len = Math.min(1024, all - offset);
+            int len = Math.min(4096, all - offset);
             write(bytes, offset, len);
             offset += len;
         }
@@ -53,8 +53,8 @@ public class WriteHelp {
     //资源来自文件
     public void writeByFile(File file) throws IOException {
         FileInputStream fis = new FileInputStream(file);
-        BufferedInputStream bis = new BufferedInputStream(fis);
-        byte[] buf = new byte[1024];
+        BufferedInputStream bis = new BufferedInputStream(fis, 32 * 1024);
+        byte[] buf = new byte[4096];
         int len;
         while ((len = bis.read(buf)) > 0) {
             write(buf, 0, len);

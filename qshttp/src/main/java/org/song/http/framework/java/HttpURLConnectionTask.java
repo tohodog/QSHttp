@@ -241,18 +241,20 @@ public class HttpURLConnectionTask implements IHttpTask {
             ResponseParams response = new ResponseParams();
             response.setHeaders(conn.getHeaderFields());
             HttpEnum.ResultType type = params.resultType();
-            if (type == HttpEnum.ResultType.STRING)
+            if (type == HttpEnum.ResultType.STRING) {
                 response.setString(rh.readString(
                         Utils.charset(conn.getHeaderField(HttpEnum.HEAD_KEY_CT))));
-            if (type == HttpEnum.ResultType.BYTES)
+            } else if (type == HttpEnum.ResultType.BYTES) {
                 response.setBytes(rh.readBytes());
-            if (type == HttpEnum.ResultType.FILE) {
+            } else if (type == HttpEnum.ResultType.FILE) {
                 String filePath = params.downloadPath();
                 File downFile = new File(filePath);
                 //File tempFile = new File(filePath + ".temp");
                 downFile.getParentFile().mkdirs();
                 rh.readToFile(downFile);
                 response.setFile(filePath);
+            } else if (type == HttpEnum.ResultType.STREAM) {
+                rh.readToStream(params.outputStream(), false);
             }
             return response;
         } catch (SocketTimeoutException e) {

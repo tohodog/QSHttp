@@ -37,7 +37,8 @@ public class HttpEnum {
     public enum ResultType {
         STRING,
         BYTES,
-        FILE
+        FILE,
+        STREAM
     }
 
     //解析模式

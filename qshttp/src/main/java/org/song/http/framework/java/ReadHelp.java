@@ -10,6 +10,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.nio.charset.Charset;
 
 
@@ -57,7 +58,7 @@ public class ReadHelp {
     //读取后写入文件
     public void readToFile(File file) throws IOException {
         FileOutputStream fos = new FileOutputStream(file);
-        BufferedOutputStream bos = new BufferedOutputStream(fos);
+        BufferedOutputStream bos = new BufferedOutputStream(fos, 32 * 1024);
         byte[] buf = new byte[4096];
         int len;
         while ((len = read(buf)) > 0) {
@@ -65,6 +66,22 @@ public class ReadHelp {
         }
         bos.close();
         fos.close();
+    }
+
+    //读取后写入流 isClose是否关闭输出流
+    public void readToStream(OutputStream os, boolean isClose) throws IOException {
+        BufferedOutputStream bos = new BufferedOutputStream(os, 32 * 1024);
+        byte[] buf = new byte[4 * 1024];
+        int len;
+        while ((len = read(buf)) > 0) {
+            bos.write(buf, 0, len);
+        }
+        bos.flush();
+        if (isClose) {
+            bos.close();
+            os.close();
+        }
+        close();
     }
 
     private int read(byte[] bytes) throws IOException {

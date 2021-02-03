@@ -236,11 +236,11 @@ public class OkHttpTask implements IHttpTask {
         responseParams.setHeaders(response.headers().toMultimap());
         HttpEnum.ResultType type = params.resultType();
         try {
-            if (type == HttpEnum.ResultType.STRING)
+            if (type == HttpEnum.ResultType.STRING) {
                 responseParams.setString(response.body().string());
-            if (type == HttpEnum.ResultType.BYTES)
+            } else if (type == HttpEnum.ResultType.BYTES) {
                 responseParams.setBytes(response.body().bytes());
-            if (type == HttpEnum.ResultType.FILE) {
+            } else if (type == HttpEnum.ResultType.FILE) {
                 String filePath = params.downloadPath();
                 File downFile = new File(filePath);
                 //File tempFile = new File(filePath + ".temp");
@@ -250,6 +250,8 @@ public class OkHttpTask implements IHttpTask {
                 //if (downFile.exists())
                 //    downFile.delete();
                 //tempFile.renameTo(downFile);
+            } else if (type == HttpEnum.ResultType.STREAM) {
+                response.body().source().readAll(Okio.sink(params.outputStream()));
             }
             return responseParams;
         } catch (SocketTimeoutException e) {

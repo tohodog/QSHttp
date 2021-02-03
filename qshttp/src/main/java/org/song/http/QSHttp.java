@@ -92,7 +92,7 @@ public class QSHttp {
 
 
     public static RequestParams.Builder download(String url, String path) {
-        return get(url).resultByFile(path);
+        return get(url).resultToFile(path);
     }
 
     public static RequestParams.Builder upload(String url) {
