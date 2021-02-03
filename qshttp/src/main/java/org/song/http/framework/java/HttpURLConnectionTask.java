@@ -255,6 +255,7 @@ public class HttpURLConnectionTask implements IHttpTask {
                 response.setFile(filePath);
             } else if (type == HttpEnum.ResultType.STREAM) {
                 rh.readToStream(params.outputStream(), false);
+                response.setOutputStream(params.outputStream());
             }
             return response;
         } catch (SocketTimeoutException e) {

@@ -150,7 +150,7 @@ public class MainActivity extends AppCompatActivity {
     public void downGET(String url) {
         ByteArrayOutputStream o = new ByteArrayOutputStream();
         QSHttp.download(url, getExternalCacheDir().getPath() + "/http.txt")
-//                .resultToStream(o)
+                .resultToStream(o)
                 .buildAndExecute(new HttpCallbackProgress() {
                     @Override
                     public void onProgress(long var1, long var2, String var3) {

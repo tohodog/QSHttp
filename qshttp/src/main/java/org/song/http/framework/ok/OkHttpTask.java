@@ -252,6 +252,7 @@ public class OkHttpTask implements IHttpTask {
                 //tempFile.renameTo(downFile);
             } else if (type == HttpEnum.ResultType.STREAM) {
                 response.body().source().readAll(Okio.sink(params.outputStream()));
+                responseParams.setOutputStream(params.outputStream());
             }
             return responseParams;
         } catch (SocketTimeoutException e) {

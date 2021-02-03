@@ -221,6 +221,9 @@ public class Utils {
                 case BYTES:
                     responseLog = "Headers->" + response.headers() + "\nResult->bytes:" + response.bytes().length;
                     break;
+                case STREAM:
+                    responseLog = "Headers->" + response.headers() + "\nResult->" + response.outputStream().getClass().getSimpleName() + ":@" + response.outputStream().hashCode();
+                    break;
             }
         } else {
             responseLog = "Error->" + response.exception().getMessage();

@@ -6,6 +6,7 @@ import android.graphics.BitmapFactory;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONObject;
 
+import java.io.OutputStream;
 import java.util.List;
 import java.util.Map;
 
@@ -26,6 +27,8 @@ public class ResponseParams {
     private String string;
     private String file;
     private byte[] bytes;
+    private OutputStream outputStream;
+
     private Object parserObject;
 
     private Map<String, List<String>> headers;//头参数
@@ -56,6 +59,10 @@ public class ResponseParams {
 
     public byte[] bytes() {
         return bytes;
+    }
+
+    public OutputStream outputStream() {
+        return outputStream;
     }
 
     /**
@@ -146,6 +153,10 @@ public class ResponseParams {
     public ResponseParams setBytes(byte[] bytes) {
         this.bytes = bytes;
         return this;
+    }
+
+    public void setOutputStream(OutputStream outputStream) {
+        this.outputStream = outputStream;
     }
 
     public ResponseParams setParserObject(Object parserObject) {
