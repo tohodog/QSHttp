@@ -259,7 +259,7 @@ public class Utils {
                 contentType = contentType.toLowerCase();
                 String[] arr = contentType.split(";");
                 for (String s : arr) {
-                    if (s.contains("charset"))
+                    if (s != null && s.contains("charset"))
                         charset = s.substring(s.indexOf("=") + 1, s.length()).trim();
                 }
             }

@@ -125,7 +125,7 @@ public class HttpException extends Exception {
                 case TYPE_IO:
                     return "IO exception";
                 case TYPE_RUN:
-                    return "QSHttp Run error";
+                    return "QSHttp run error";
             }
         }
         return "Power by github.com/tohodog";

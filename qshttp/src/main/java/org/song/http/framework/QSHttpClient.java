@@ -54,7 +54,6 @@ public class QSHttpClient {
 
         executorService.submit(new Runnable() {
 
-
             @Override
             public void run() {
                 threadLocal.set(request);

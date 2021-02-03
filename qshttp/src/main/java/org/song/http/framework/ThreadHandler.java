@@ -64,7 +64,7 @@ public class ThreadHandler extends Handler {
                 ResponseParams responseParams = (ResponseParams) message.obj;
                 try {
                     cb.onSuccess(responseParams);
-                } catch (Exception e) {
+                } catch (Throwable e) {
                     e.printStackTrace();
                     cb.onFailure(HttpException.Custom(e).responseParams(responseParams));
                 }
