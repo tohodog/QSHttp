@@ -130,7 +130,7 @@ public class QSHttpClient {
 
         try {
             response = HttpCache.instance().checkAndGetCache(request);
-        } catch (Exception e) {
+        } catch (Throwable e) {
             e.printStackTrace();
         }
 

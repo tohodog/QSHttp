@@ -327,16 +327,18 @@ public class Utils {
      */
     public static String getDiskCacheDir() {
         Context context = QSHttpManage.application;
-        File cacheDir;
-        if (context == null)
+        File cacheDir = null;
+        if (context == null) {
             cacheDir = new File(Environment.getExternalStorageDirectory(), "qshttp_cache");
-        else if ((Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState())
-                || !Environment.isExternalStorageRemovable())
-                && checkPer(context, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)) {
-            cacheDir = new File(context.getExternalCacheDir(), "qshttp_cache");
-        } else {
-            cacheDir = new File(context.getCacheDir(), "qshttp_cache");
+        } else if (Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState()) || !Environment.isExternalStorageRemovable()) {
+            if (Build.VERSION.SDK_INT > 29) {
+                cacheDir = new File(context.getExternalCacheDir(), "qshttp_cache");
+            } else if (checkPer(context, Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)) {
+                cacheDir = new File(context.getExternalCacheDir(), "qshttp_cache");
+            }
         }
+        if (cacheDir == null)
+            cacheDir = new File(context.getCacheDir(), "qshttp_cache");
         if (!cacheDir.exists())
             cacheDir.mkdirs();
         if (Utils.cacheDir != null) {
